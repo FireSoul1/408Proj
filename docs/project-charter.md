@@ -1,3 +1,7 @@
+
+See the PDF version or Drive link for most up-to-date version
+
+
 # Project Charter
 ## Destress yo’ self
 Guna Kondapaneni, Lisa Campbell, Matthew Pace, Brian Kaetzel, Joseph Khawly
