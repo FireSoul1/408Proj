@@ -1,0 +1,18 @@
+{
+  "name": "408proj",
+  "version": "1.0.0",
+  "description": "Helps you with your stressful week",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FireSoul1/408Proj.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FireSoul1/408Proj/issues"
+  },
+  "homepage": "https://github.com/FireSoul1/408Proj#readme"
+}
