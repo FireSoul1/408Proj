@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Helps you with your stressful week",
   "engines": {
-    "node": "6.7.0",
-    "npm": "4.0.2"
+    "node": "6.9.5",
+    "npm": "4.1.2"
   },
   "scripts": {
     "dev": "webpack -d --watch",
