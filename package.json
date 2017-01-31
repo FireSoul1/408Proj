@@ -2,8 +2,14 @@
   "name": "408proj",
   "version": "1.0.0",
   "description": "Helps you with your stressful week",
+  "engines": {
+    "node": "6.7.0",
+    "npm": "4.0.2"
+  },
   "scripts": {
-    "dev": "webpack -d --watch"
+    "dev": "webpack -d --watch",
+    "build": "webpack --config webpack.prod.config.js -p",
+    "heroku-postbuild": "webpack --config webpack.prod.config.js -p"
   },
   "repository": {
     "type": "git",
