@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Helps you with your stressful week",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack -d --watch"
   },
   "repository": {
     "type": "git",
