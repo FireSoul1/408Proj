@@ -14,7 +14,7 @@ See the docs folder for PDF copies of these documents.
 
 Download and install:
 
-* (node)[https://nodejs.org/en/] >= 6.9.5
+* [node](https://nodejs.org/en/) >= 6.9.5
 * npm >= 4.1.2
   * `sudo npm i -g npm@latest` after installing node
 
