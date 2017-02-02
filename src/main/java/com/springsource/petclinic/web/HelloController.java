@@ -1,5 +1,7 @@
 package com.springsource.petclinic.web;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -8,17 +10,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class HelloController {
    private String message;
 
-   public void setMessage(String message){
-      this.message  = message;
-   }
-
-
+   // public void setMessage(String message){
+   //    this.message  = message;
+   // }
    @RequestMapping("/")
    public ModelAndView starting() {
         String message = "WELCOME SPRING MVC";
         return new ModelAndView("welcomepage", "message", message);
    }
-   public void getMessage(){
-      System.out.println("Your Message : " + message);
-   }
+   // public void getMessage(){
+   //    System.out.println("Your Message : " + message);
+   // }
 }
