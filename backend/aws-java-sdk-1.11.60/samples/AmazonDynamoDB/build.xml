@@ -3,8 +3,8 @@
      before trying to run it.  -->
 <project name="Amazon DynamoDB Sample" default="run" basedir=".">
     <path id="aws.java.sdk.classpath">
-        <fileset dir="${basedir}/../../third-party" includes="**/*.jar"/>
-        <fileset dir="${basedir}/../../lib" includes="**/*.jar"/>
+        <fileset dir="../../third-party/lib" includes="*.jar"/>
+        <fileset dir="../../lib" includes="*.jar"/>
         <pathelement location="."/>
     </path>
 

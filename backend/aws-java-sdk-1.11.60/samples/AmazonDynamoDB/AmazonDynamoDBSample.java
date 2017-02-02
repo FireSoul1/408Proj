@@ -88,6 +88,8 @@ public class AmazonDynamoDBSample {
                     e);
         }
         dynamoDB = new AmazonDynamoDBClient(credentials);
+        System.out.println("Setup is done!!!");
+
         Region usWest2 = Region.getRegion(Regions.US_WEST_2);
         dynamoDB.setRegion(usWest2);
     }
@@ -135,7 +137,7 @@ public class AmazonDynamoDBSample {
             ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
             ScanResult scanResult = dynamoDB.scan(scanRequest);
             System.out.println("Result: " + scanResult);
-
+            
         } catch (AmazonServiceException ase) {
             System.out.println("Caught an AmazonServiceException, which means your request made it "
                     + "to AWS, but was rejected with an error response for some reason.");
