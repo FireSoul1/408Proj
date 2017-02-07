@@ -1,6 +1,8 @@
 import React from 'react'
 import { render } from 'react-dom'
 
+import 'style/bootswatch'
+
 import MainLayout from './MainLayout'
 
 class TestComponent extends React.Component {
