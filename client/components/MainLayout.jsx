@@ -1,10 +1,12 @@
 import React from 'react'
 
+import Navigation from './Navigation'
+
 class MainLayout extends React.Component {
   render() {
     return (
-      <div id='container'>
-        <p>Hello</p>
+      <div>
+        <Navigation />
         <this.props.activeView />
       </div>
     )
