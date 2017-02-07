@@ -2,11 +2,11 @@ var webpack = require('webpack');
 var path = require('path');
 
 var BUILD_DIR = path.resolve(__dirname, 'src/main/resources/static');
-var APP_DIR = path.resolve(__dirname, 'javascript');
+var APP_DIR = path.resolve(__dirname, 'client');
 
 var config = {
-  devtool: 'eval',
-  entry: APP_DIR + '/App.jsx',
+  devtool: 'hidden-source-map',
+  entry: APP_DIR + '/components/App.jsx',
   output: {
     path: BUILD_DIR,
     filename: 'js/bundle.js'
