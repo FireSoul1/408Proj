@@ -3,22 +3,15 @@ import { render } from 'react-dom'
 
 import 'style/bootswatch'
 
+import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
-
-class TestComponent extends React.Component {
-  render() {
-    return (
-      <p>Hi</p>
-    )
-  }
-}
 
 class App extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      activeView: TestComponent
+      activeView: LoginPage
     }
   }
 
