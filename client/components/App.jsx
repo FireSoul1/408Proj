@@ -1,10 +1,35 @@
 import React from 'react'
 import { render } from 'react-dom'
 
-class App extends React.Component {
+import MainLayout from './MainLayout'
+
+class TestComponent extends React.Component {
   render() {
     return (
-      <p>Hello, World!</p>
+      <p>Hi</p>
+    )
+  }
+}
+
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      activeView: TestComponent
+    }
+  }
+
+  setActiveView(activeView) {
+    this.setState({ activeView })
+  }
+
+  render() {
+    return (
+      <MainLayout
+        activeView={this.state.activeView}
+        setActiveView={activeView => this.setActiveView(activeView)}
+      />
     )
   }
 }
