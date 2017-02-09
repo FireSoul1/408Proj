@@ -11,28 +11,6 @@ import javax.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-<<<<<<< HEAD
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.*;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-
-
-
-import java.security.Principal;
-
-
-
-@SpringBootApplication
-@EnableOAuth2Sso
-@RestController
-public class BackendApplication extends WebSecurityConfigurerAdapter {
-=======
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -76,27 +54,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("authenticated!!!!");
 		return map;
 	}
->>>>>>> master
 
-	// @Override
-	// protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-	// 	return application.sources(BackendApplication.class);
-	// }
-	@RequestMapping("/user")
-	public Principal user(Principal principal) {
-  		return principal;
-	}
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-<<<<<<< HEAD
-  		http
-		.antMatcher("/**")
-		.authorizeRequests()
-	  	.antMatchers("/", "/login**", "/webjars/**")
-	  	.permitAll()
-		.anyRequest()
-	  	.authenticated();
-=======
 		// @formatter:off
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
@@ -116,9 +76,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
 			// @formatter:on
 		}
->>>>>>> master
 	}
-
 
 	public static void main(String[] args) {
 

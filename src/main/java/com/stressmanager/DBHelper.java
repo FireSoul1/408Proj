@@ -16,7 +16,7 @@ public class DBHelper {
     DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
         new ProfileCredentialsProvider()));
 
-    dynamoDB.setEndpoint("http://dynamodb.us-east-1.amazonaws.com");
+    // dynamoDB.setEndpoint("http://dynamodb.us-east-1.amazonaws.com");
     
     public static void main(String[] args) throws Exception {
 
