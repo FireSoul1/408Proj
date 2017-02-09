@@ -1,5 +1,6 @@
 node_modules/
-bundle*
+backend/src/main/resources/static/*
+!backend/src/main/resources/static/index.html
 *log
 
 target/
