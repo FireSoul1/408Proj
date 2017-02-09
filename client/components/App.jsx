@@ -1,5 +1,6 @@
 import React from 'react'
 import { render } from 'react-dom'
+import ajax from 'jquery'
 
 import 'style/bootswatch'
 
@@ -11,7 +12,7 @@ class App extends React.Component {
     super(props)
 
     this.state = {
-      activeView: LoginPage
+      activeView: LoginPage,
     }
   }
 
