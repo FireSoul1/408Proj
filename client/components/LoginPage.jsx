@@ -1,10 +1,10 @@
 import React from 'react'
-
 import { Button, Jumbotron } from 'react-bootstrap'
 
 class LoginPage extends React.Component {
   render() {
     const { authUser } = this.props
+
     return (
       <div className='container'>
         <Jumbotron>
