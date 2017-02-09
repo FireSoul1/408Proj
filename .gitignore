@@ -13,6 +13,7 @@ target/
 .project
 .settings
 .springBeans
+.env
 
 ### IntelliJ IDEA ###
 .idea
