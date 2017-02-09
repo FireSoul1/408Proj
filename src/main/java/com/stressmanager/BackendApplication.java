@@ -42,6 +42,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	  	.authenticated();
 	}
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);
 	}
