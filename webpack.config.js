@@ -8,7 +8,7 @@ var config = {
   entry: APP_DIR + '/App.jsx',
   output: {
     path: BUILD_DIR,
-    filename: 'bundle.js'
+    filename: 'js/bundle.js'
   },
   module : {
     loaders : [
