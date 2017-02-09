@@ -9,17 +9,15 @@ import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 
-public class DBHelper {
-    // Adds stuff to tables and sets them up and accesses them
-    // inserts users into table
+public class DBSetup {
+    // config basic AWS setup before accessing the tables like validating credentials
 
     DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
-        new ProfileCredentialsProvider()));
+    new ProfileCredentialsProvider()));
 
-    dynamoDB.setEndpoint("http://dynamodb.us-east-1.amazonaws.com");
-    
-    public static void main(String[] args) throws Exception {
+    // dynamoDB.setEndpoint("http://dynamodb.us-east-1.amazonaws.com");
 
-
+    public static void main (String[] args) {
+        //
     }
 }
