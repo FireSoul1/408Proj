@@ -2,7 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
-var BUILD_DIR = path.resolve(__dirname, 'src/main/resources/static');
+const BUILD_DIR = path.resolve(__dirname, 'src/main/resources/static');
 const APP_DIR = path.resolve(__dirname, 'client')
 
 const config = {
