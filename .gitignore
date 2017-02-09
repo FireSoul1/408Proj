@@ -1,6 +1,6 @@
 node_modules/
-backend/src/main/resources/static/*
-!backend/src/main/resources/static/index.html
+src/main/resources/static/*
+!src/main/resources/static/index.html
 *log
 
 target/
