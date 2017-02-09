@@ -14,7 +14,6 @@ class App extends React.Component {
     super(props)
 
     this.state = {
-
       activeView: LoginPage,
       authenticated: false,
       user: {}
@@ -24,7 +23,6 @@ class App extends React.Component {
   setActiveView(activeView) {
     this.setState({ activeView })
   }
-
 
   authUser() {
     ajax({
@@ -40,8 +38,6 @@ class App extends React.Component {
       }
     })
   }
-
-
 
   render() {
     return (
