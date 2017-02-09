@@ -27,8 +27,8 @@ Download and install:
 
 ### Backend
 
-* `maven install` will install all of the backend dependencies.
-* `maven package` will package up the app and put it in *target/*
+* `mvn install` will install all of the backend dependencies.
+* `mvn package` will package up the app and put it in *target/*
 
 You can run the backend with `java -jar target/backend-0.0.1-SNAPSHOT.jar`
 Then navigate to *localhost:8080* in your web browser.
