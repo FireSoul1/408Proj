@@ -27,3 +27,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### Jest ###
+client/__tests__/__snapshots__/
+*.snap
