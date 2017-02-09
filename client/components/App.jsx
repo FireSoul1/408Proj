@@ -25,7 +25,7 @@ class App extends React.Component {
   authUser() {
     ajax({
       type: 'get',
-      url: '/user',
+      url: '/login',
       success: data => {
         this.setState({
           user: data.userAuthentication.details.name,
