@@ -17,8 +17,18 @@ Download and install:
 * [node](https://nodejs.org/en/) >= 6.9.5
 * npm >= 4.1.2
   * `sudo npm i -g npm@latest` after installing node
+* [maven](http://maven.apache.org/install.html)
 
 ### Frontend
 
-Running `npm run dev` will watch all files in *javascript/* for changes, and recompile
-*bundle.js*. You can also run `npm run build` to produce a minified version of the bundle.
+* `npm run dev` will watch all files in *javascript/* for changes, and recompile
+*bundle.js*.
+* `npm run build` to produce a minified version of the bundle.
+
+### Backend
+
+* `maven install` will install all of the backend dependencies.
+* `maven package` will package up the app and put it in *target/*
+
+You can run the backend with `java -jar target/backend-0.0.1-SNAPSHOT.jar`
+Then navigate to *localhost:8080* in your web browser.
