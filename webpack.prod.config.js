@@ -50,6 +50,7 @@ const config = {
       }
     }),
     new webpack.optimize.UglifyJsPlugin({
+      mangle: true,
       compress: {
         warnings: false,
         screw_ie8: true,
