@@ -21,14 +21,24 @@ Download and install:
 
 ### Frontend
 
-* `npm run dev` will watch all files in *javascript/* for changes, and recompile
-*bundle.js*.
-* `npm run build` to produce a minified version of the bundle.
+* `npm install` will install all of the frontend dependencies.
+* `npm run dev` will watch all files in *client/* for changes, and recompile
+*bundle.js* and all other assets.
+* `npm run build` to produce a minified version of the bundle an all other assets.
 
 ### Backend
 
-* `maven install` will install all of the backend dependencies.
-* `maven package` will package up the app and put it in *target/*
+* `mvn install` will install all of the backend dependencies.
+* `mvn package` will package up the app and put it in *target/*
 
 You can run the backend with `java -jar target/backend-0.0.1-SNAPSHOT.jar`
 Then navigate to *localhost:8080* in your web browser.
+
+### Recommended Workflow
+
+First, install all necessary dependencies with `npm install` and `mvn install`.
+
+Then, have one terminal session running `npm run dev`, which will automatically rebuild
+the frontend whenever you make changes. When you make changes to the backend
+(or frontend, for that matter), kill the server if you have one running and
+run `mvn package && java -jar target/backend-0.0.1-SNAPSHOT.jar`

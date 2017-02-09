@@ -1,6 +1,7 @@
 security:
   oauth2:
     client:
+<<<<<<< HEAD
       clientId: 473172503353-s63jercc1jmctsfhvdt1jeatvsp9922u.apps.googleusercontent.com
       clientSecret: 8BrM4VbRR5dgYlinrySTKNU5
       accessTokenUri: https://www.googleapis.com/oauth2/v4/token
@@ -13,3 +14,21 @@ security:
     resource:
       userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
       preferTokenInfo: true
+=======
+      client-id: acme
+      client-secret: acmesecret
+      scope: read,write
+      auto-approve-scopes: '.*'
+google:
+    client:
+      accessTokenUri: https://www.googleapis.com/oauth2/v4/token
+      userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+      clientAuthenticationScheme: form
+      scope: profile
+    resource:
+      userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+      preferTokenInfo: true
+logging:
+  level:
+    org.springframework.security: DEBUG
+>>>>>>> master
