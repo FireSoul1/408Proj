@@ -22,3 +22,11 @@ Download and install:
 
 Running `npm run dev` will watch all files in *javascript/* for changes, and recompile
 *bundle.js*. You can also run `npm run build` to produce a minified version of the bundle.
+
+## Backend
+Go to the directory *starter* and type in `make`
+    Notes: Make sure you have Maven installed.
+If anything breaks, check that the *pom.xml* has all the dependencies.
+Procfile has the Heroku deployment (subject to change)
+
+*tut-react-and-spring-data-rest* is a sample finished app to show how React interacts. Has a `Makefile` as well that you can run to see how it is deployed. 
