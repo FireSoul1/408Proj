@@ -1,5 +1,6 @@
 import React from 'react'
 import { render } from 'react-dom'
+import ajax from 'jquery'
 
 import ajax from 'jquery'
 
@@ -15,7 +16,7 @@ class App extends React.Component {
     this.state = {
 
       activeView: LoginPage,
-      authenicated: false,
+      authenticated: false,
       user: {}
     }
   }
@@ -32,16 +33,20 @@ class App extends React.Component {
       success: data => {
         this.setState({
           user: data.userAuthentication.details.name,
-          authenicated: true
+
+          authenticated: true
+
         })
       }
     })
   }
+
+
+
   render() {
     return (
       <MainLayout
         activeView={this.state.activeView}
-
         authUser={() => this.authUser()}
         setActiveView={activeView => this.setActiveView(activeView)}
       />
