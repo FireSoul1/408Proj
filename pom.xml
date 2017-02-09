@@ -40,6 +40,18 @@
 			<artifactId>jquery</artifactId>
 			<version>2.0.3-1</version>
 		</dependency>
+		<!-- Google OAuth2.0 API -->
+		<dependency>
+    			<groupId>com.google.api.client</groupId>
+    			<artifactId>google-api-client-auth-oauth2</artifactId>
+    			<version>1.2.3-alpha</version>
+		</dependency>
+		<!-- DynamoDB SDK -->
+		<dependency>
+    			<groupId>com.amazonaws</groupId>
+    			<artifactId>aws-java-sdk-dynamodb</artifactId>
+			<version>1.11.22</version>
+  		</dependency>
 		<!-- Provided -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
