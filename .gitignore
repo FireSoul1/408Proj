@@ -1,6 +1,7 @@
 node_modules/
 src/main/resources/static/*
 !src/main/resources/static/index.html
+src/main/resources/application.yml
 *log
 
 target/
@@ -13,6 +14,7 @@ target/
 .project
 .settings
 .springBeans
+.env
 
 ### IntelliJ IDEA ###
 .idea
