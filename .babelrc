@@ -1,4 +1,16 @@
 {
   "presets" : ["es2015", "react", "stage-2"],
-  "plugins": ["transform-class-properties"]
+  "plugins": [
+    "transform-class-properties",
+    ["transform-imports", {
+      "react-bootstrap": {
+        "transform": "react-bootstrap/lib/${member}",
+        "preventFullImport": true
+      },
+      "lodash": {
+        "transform": "lodash/${member}",
+        "preventFullImport": true
+      }
+    }]
+  ]
 }
