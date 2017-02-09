@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
 var BUILD_DIR = path.resolve(__dirname, 'src/main/resources/static');
 const APP_DIR = path.resolve(__dirname, 'client')
@@ -27,11 +28,10 @@ const config = {
       },
       {
         test: /\.less$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          'less-loader'
-        ]
+        loader: ExtractTextPlugin.extract({
+          use: ['css-loader', 'less-loader'],
+          fallback: 'style-loader'
+        })
       },
       {
         test: /\.(woff|woff2|eot|ttf)$/,
@@ -42,7 +42,12 @@ const config = {
         loader: 'url-loader?limit=10000&name=img/[name].[ext]'
       }
     ]
-  }
+  },
+  plugins: [
+    new ExtractTextPlugin({
+      filename: 'css/style.css'
+    })
+  ]
 }
 
 module.exports = config
