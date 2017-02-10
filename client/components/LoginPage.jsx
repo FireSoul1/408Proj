@@ -7,7 +7,7 @@ class LoginPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Please sign in with your Google Account to use Stress Manager.</p>
-          <Button href='/login/google'>Sign in</Button>
+          <Button href='/login/google' className='signinbtn'>Sign in</Button>
         </Jumbotron>
       </div>
     )
