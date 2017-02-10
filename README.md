@@ -34,6 +34,12 @@ Download and install:
 You can run the backend with `java -jar target/backend-0.0.1-SNAPSHOT.jar`
 Then navigate to *localhost:8080* in your web browser.
 
+### Tests
+
+* `npm test` will run all test suites
+
+The output will show in your terminal.  If the snapshot tests do not pass, delete the old snapshots that are files that end in .snap and then re-run the tests.
+
 ### Recommended Workflow
 
 First, install all necessary dependencies with `npm install` and `mvn install`.
