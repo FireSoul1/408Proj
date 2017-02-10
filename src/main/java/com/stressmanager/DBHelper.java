@@ -13,10 +13,22 @@ public class DBHelper {
     // Adds stuff to tables and sets them up and accesses them
     // inserts users into table
 
-    DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
-        new ProfileCredentialsProvider()));
+    // DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
+    //     new ProfileCredentialsProvider()));
 
-    // dynamoDB.setEndpoint("http://dynamodb.us-east-1.amazonaws.com");
+    DBSetup setup = new DBSetup();;
+    
+    public void accessDB() {
+        setup.remoteDB();
+    }
+
+    public void addToTable() {
+
+    }
+
+    void removeFromTable() {
+
+    }
     
     public static void main(String[] args) throws Exception {
 
