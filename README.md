@@ -36,7 +36,7 @@ Then navigate to *localhost:8080* in your web browser.
 
 ### Tests
 
-* `npm test` will run all test suites
+* `npm test` will run all frontend test suites
 
 The output will show in your terminal.  If the snapshot tests do not pass, delete the old snapshots that are files that end in .snap and then re-run the tests.
 
