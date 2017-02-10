@@ -12,12 +12,26 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 public class DBSetup {
     // config basic AWS setup before accessing the tables like validating credentials
 
-    DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
-    new ProfileCredentialsProvider()));
+    // DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
+    // new ProfileCredentialsProvider()));
 
-    // dynamoDB.setEndpoint("http://dynamodb.us-east-1.amazonaws.com");
+    static AmazonDynamoDBClient localtest = new AmazonDynamoDBClient()
+    .withEndpoint("http://localhost:8080");
+
+    static AmazonDynamoDBClient remotetest = new AmazonDynamoDBClient()
+    .withEndpoint("http://dynamodb.us-east-2.amazonaws.com");
+
+    static DynamoDB currentDB;
+
+    public static void localDB() {
+        currentDB = new DynamoDB(localtest);
+    }
+
+    public static void remoteDB() {
+        currentDB = new DynamoDB(remotetest);
+    }
 
     public static void main (String[] args) {
-        //
+    
     }
 }
