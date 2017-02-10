@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactTestUtils from 'react-addons-test-utils';
 import {shallow} from 'enzyme';
 import LoginPage from '../components/LoginPage';
 
