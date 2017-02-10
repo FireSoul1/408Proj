@@ -15,12 +15,8 @@ test('Renders Login Page correctly', () => {
 test('Check to see if button exists and can click it', () => {
   // Render a checkbox with label in the document
   	const signButton = shallow(
-	  	<LoginPage>
-	  	<div className='container'>
-	          <button href='/login/google' className='signbtn'>Sign in</button>
-	    </div>
-	    </LoginPage>
+	  	<LoginPage />
     );
     signButton.simulate('click');
-	expect(signButton.contains('signbtn'));
+	expect(signButton.contains('signinbtn'));
 });
