@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "webpack -d --watch",
-    "build": "webpack --config webpack.prod.config.js -p",
-    "heroku-postbuild": "webpack --config webpack.prod.config.js -p"
+    "build": "webpack --config webpack.prod.config.js",
+    "heroku-postbuild": "webpack --config webpack.prod.config.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -25,13 +26,40 @@
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
     "babel-plugin-transform-class-properties": "^6.22.0",
+    "babel-plugin-transform-imports": "^1.1.0",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-2": "^6.22.0",
+    "jest": "^17.0.0",
+    "enzyme": "^2.7.1",
+    "bootstrap": "^3.3.7",
+    "bootswatch": "^3.3.7",
+    "css-loader": "^0.26.1",
+    "extract-text-webpack-plugin": "^2.0.0-rc.3",
+    "file-loader": "^0.10.0",
     "jquery": "^3.1.1",
+    "less": "^2.7.2",
+    "less-loader": "^2.2.3",
     "lodash": "^4.17.4",
     "react": "^15.4.2",
+    "react-bootstrap": "^0.30.7",
     "react-dom": "^15.4.2",
+    "react-native": "^0.41.2",
+    "react-test-renderer": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "sinon-spy-react": "^2.0.1",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
     "webpack": "^2.2.1"
+  },
+  "jest": {
+    "globals": {
+      "__DEV__": true
+    },
+    "preset": "react-native"
+  },
+  "devDependencies": {
+    "jest": "^17.0.3",
+    "react-native-babel-jest": "^0.2.0"
   }
 }
