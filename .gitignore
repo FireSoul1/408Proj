@@ -29,10 +29,7 @@ dist/
 nbdist/
 .nb-gradle/
 
-<<<<<<< HEAD
 .vscode
-=======
 ### Jest ###
 client/__tests__/__snapshots__/
 *.snap
->>>>>>> 0a7d78bc7abc614a9ddf66f7c634ec3dd6c8f9e7

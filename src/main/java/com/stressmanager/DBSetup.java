@@ -31,6 +31,10 @@ public class DBSetup {
         currentDB = new DynamoDB(remotetest);
     }
 
+    public Table getUsersTable() {
+        return currentDB.getTable("Users");
+    }
+
     public static void main (String[] args) {
     
     }

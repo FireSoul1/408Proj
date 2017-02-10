@@ -22,11 +22,13 @@ public class DBHelper {
         setup.remoteDB();
     }
 
-    public void addToTable() {
-
+    public void addToTable(String username, String authToken) {
+        Table users = setup.getUsersTable();
+        //TODO add user's name, auth token, and other stuff to the table
     }
 
-    void removeFromTable() {
+
+     void removeFromTable() {
 
     }
     
