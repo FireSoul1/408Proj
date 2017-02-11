@@ -8,6 +8,8 @@
 
 [Test Plan](https://docs.google.com/document/d/1Wng8cIEPiLTz2BrBfEY_Hg_nauLI5P6y5QURing2764/edit?usp=sharing)
 
+[Sprint 1 Design Inspection, Code Inspection, Unit Testing](https://docs.google.com/document/d/1286QKHC_SKXjvaOQllOBXlMAwIpHeSg2QAVMARqN_hA/edit?usp=sharing)
+
 See the docs folder for PDF copies of these documents.
 
 ## Project Setup
@@ -22,14 +24,17 @@ Download and install:
 ### Frontend
 
 * `npm install` will install all of the frontend dependencies.
+* `npm test` will run the frontend tests
 * `npm run dev` will watch all files in *client/* for changes, and recompile
 *bundle.js* and all other assets.
 * `npm run build` to produce a minified version of the bundle an all other assets.
+* `npm run cleanup` will clean up the snapshots of the frontend tests
 
 ### Backend
 
 * `mvn install` will install all of the backend dependencies.
-* `mvn package` will package up the app and put it in *target/*
+* `mvn package` will package up the app and put it in *target/*. This will also
+  run the backend tests.
 
 You can run the backend with `java -jar target/backend-0.0.1-SNAPSHOT.jar`
 Then navigate to *localhost:8080* in your web browser.
