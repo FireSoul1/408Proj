@@ -83,7 +83,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	public static void main(String[] args) {
 		//TODO: GENERATE YML FILE AND CLIENT ID
-
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
