@@ -8,6 +8,8 @@
 
 [Test Plan](https://docs.google.com/document/d/1Wng8cIEPiLTz2BrBfEY_Hg_nauLI5P6y5QURing2764/edit?usp=sharing)
 
+[Sprint 1 Design Inspection, Code Inspection, Unit Testing](https://docs.google.com/document/d/1286QKHC_SKXjvaOQllOBXlMAwIpHeSg2QAVMARqN_hA/edit?usp=sharing)
+
 See the docs folder for PDF copies of these documents.
 
 ## Project Setup
