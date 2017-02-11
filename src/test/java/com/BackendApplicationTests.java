@@ -16,6 +16,7 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 //selenium
 // import org.openqa.selenium.WebDriver;
@@ -32,8 +33,8 @@ import org.testng.Assert;
 public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
     @Autowired
     BackendApplication controller;
-    @Autowired
-    TestRestTemplate restTemplate;
+//    @Autowired
+//    TestRestTemplate restTemplate;
 
     @Before
     public void setup() {
@@ -43,7 +44,7 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
     @Test
 	public void homeNotNullTest() {
         System.out.println("\nRunnning test case 1: Checking that maincontroller is working.");
-        //Assert.assertNotNull(controller);
+        Assert.assertNotNull(controller);
 	}
     @Test
 	public void checkHomePageTest() throws Exception{
@@ -53,9 +54,13 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 	}
     @Test
 	public void DBSetUpLocalTest() throws Exception{
-        System.out.println("\nRunnning test case 2: Checking that the Local DB is setup.");
-
+        System.out.println("\nRunnning test case 3: Checking that the Local DB is setup.");
+        DBSetup.localDB();
 	}
-
+    @Test
+	public void DBSetUpRemoteTest() throws Exception{
+        System.out.println("\nRunnning test case 4: Checking that the Remote DB is setup.");
+        DBSetup.remoteDB();
+	}
 
 }
