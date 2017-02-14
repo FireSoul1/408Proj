@@ -42,14 +42,19 @@ Then navigate to *localhost:8080* in your web browser.
 ### Tests
 
 * `npm test` will run all frontend test suites
+* `mvn package` will run all backend test suites
 
-The output will show in your terminal.  If the snapshot tests do not pass, delete the old snapshots that are files that end in .snap and then re-run the tests.
+The output will show in your terminal. If the frontend snapshot tests do not pass,
+delete the old snapshots that are files that end in .snap and then re-run the tests.
 
 ### Recommended Workflow
 
 First, install all necessary dependencies with `npm install` and `mvn install`.
 
 Then, have one terminal session running `npm run dev`, which will automatically rebuild
-the frontend whenever you make changes. When you make changes to the backend
-(or frontend, for that matter), kill the server if you have one running and
-run `mvn package && java -jar target/backend-0.0.1-SNAPSHOT.jar`
+the frontend whenever you make changes. When you make changes to the backend, kill
+the server if you have one running and run `mvn package && java -jar target/backend-0.0.1-SNAPSHOT.jar`
+
+`npm run dev` will run `webpack-dev-server`, which will host the frontend at
+*localhost:9000*. While running locally, all backend calls will be made to *localhost:8080*,
+which is the backend server.
