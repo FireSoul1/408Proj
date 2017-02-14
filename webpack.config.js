@@ -43,6 +43,10 @@ const config = {
       }
     ]
   },
+  devServer: {
+    contentBase: BUILD_DIR,
+    port: 9000
+  },
   plugins: [
     new ExtractTextPlugin({
       filename: 'css/style.css'

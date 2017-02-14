@@ -7,7 +7,7 @@
     "npm": "4.1.2"
   },
   "scripts": {
-    "dev": "webpack -d --watch",
+    "dev": "webpack-dev-server",
     "build": "webpack --config webpack.prod.config.js",
     "heroku-postbuild": "webpack --config webpack.prod.config.js",
     "cleanup": "rm -r client/__tests__/__snapshots__/",
@@ -63,6 +63,8 @@
     "jest": "^17.0.3",
     "jsdom": "9.10.0",
     "jsdom-global": "2.1.1",
-    "react-native-babel-jest": "^0.2.0"
+    "react-native-babel-jest": "^0.2.0",
+    "sinon": "^1.17.7",
+    "webpack-dev-server": "^2.3.0"
   }
 }
