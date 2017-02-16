@@ -2,6 +2,8 @@ import React from 'react'
 import { render } from 'react-dom'
 import ajax from 'jquery'
 
+import ajax from 'jquery'
+
 import 'style/bootswatch'
 
 import LoginPage from './LoginPage'
@@ -12,7 +14,9 @@ class App extends React.Component {
     super(props)
 
     this.state = {
-      activeView: LoginPage
+      activeView: LoginPage,
+      authenticated: false,
+      user: {}
     }
   }
 
@@ -20,10 +24,26 @@ class App extends React.Component {
     this.setState({ activeView })
   }
 
+  authUser() {
+    ajax({
+      type: 'get',
+      url: '/user',
+      success: data => {
+        this.setState({
+          user: data.userAuthentication.details.name,
+
+          authenticated: true
+
+        })
+      }
+    })
+  }
+
   render() {
     return (
       <MainLayout
         activeView={this.state.activeView}
+        authUser={() => this.authUser()}
         setActiveView={activeView => this.setActiveView(activeView)}
       />
     )

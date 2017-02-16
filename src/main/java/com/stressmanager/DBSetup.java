@@ -35,7 +35,4 @@ public class DBSetup {
         return currentDB.getTable("Users");
     }
 
-    public static void main (String[] args) {
-
-    }
 }
