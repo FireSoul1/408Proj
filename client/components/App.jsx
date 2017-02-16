@@ -2,8 +2,6 @@ import React from 'react'
 import { render } from 'react-dom'
 import ajax from 'jquery'
 
-import ajax from 'jquery'
-
 import 'style/bootswatch'
 
 import LoginPage from './LoginPage'
