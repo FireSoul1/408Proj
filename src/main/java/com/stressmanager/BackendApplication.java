@@ -1,13 +1,23 @@
 package com.stressmanager;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.Filter;
 
+import com.google.api.client.http.HttpTransport;
+import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.client.googleapis.compute.ComputeCredential.Builder;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+
+
+
+
+import com.google.api.client.auth.oauth2.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,10 +36,12 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -37,6 +49,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.CompositeFilter;
 import org.springframework.boot.autoconfigure.*;
+import org.springframework.security.oauth2.client.resource.*;
+
+
 
 @RestController
 @EnableOAuth2Client
@@ -49,11 +64,22 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
+
 	@RequestMapping({ "/user", "/me" })
 	public Map<String, String> user(Principal principal) {
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("name", principal.getName());
+		map.put("auth", oauth2ClientContext.getAccessToken().toString());
+
+
+		System.out.println();
+		System.out.println();
+		System.out.println("========================================");
+		System.out.println(oauth2ClientContext.getAccessToken().toString());
+		System.out.println("========================================");
 		System.out.println("authenticated!!!!");
+
+
 		return map;
 	}
 
@@ -129,10 +155,16 @@ class ClientResources {
 
 	@NestedConfigurationProperty
 	private ResourceServerProperties resource = new ResourceServerProperties();
+//
+//	@Autowired
+//	private AuthorizationServerTokenServices tokens;
 
 	public ClientResources() {
 		client.setClientId(System.getenv("GOOGLE_CLIENT_ID"));
 		client.setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"));
+		List<String> str = new ArrayList<>();
+		str.add(CalendarScopes.CALENDAR);
+		client.setScope(str);
 	}
 
 	public AuthorizationCodeResourceDetails getClient() {
