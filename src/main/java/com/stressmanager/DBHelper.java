@@ -1,5 +1,8 @@
 package com.stressmanager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
@@ -7,6 +10,9 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.amazonaws.services.dynamodbv2.document.Table;
 
 public class DBHelper {
@@ -24,12 +30,17 @@ public class DBHelper {
 
     public void addToTable(String username, String authToken) {
         Table users = setup.getUsersTable();
-        //TODO add user's name, auth token, and other stuff to the table
+
+        PutItemOutcome outcome = users.putItem(new Item()
+                .withPrimaryKey("username", username, "authToken", authToken));
     }
 
 
-     void removeFromTable() {
+    void removeFromTable(String username, String authToken) {
+        Table users = setup.getUsersTable();
 
+        DeleteItemSpec deleteItemSpec = new DeleteItemSpec()
+            .withPrimaryKey("username", username, "authToken", authToken);
     }
     
     public static void main(String[] args) throws Exception {

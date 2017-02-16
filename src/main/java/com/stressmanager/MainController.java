@@ -16,4 +16,7 @@ public class MainController {
         return "Pong";
     }
 
+    //POST that takes calID and request calendar from API and parse it.
+    // Send "OK" as a response.
+
 }
