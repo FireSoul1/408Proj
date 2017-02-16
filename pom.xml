@@ -52,12 +52,23 @@
     		<version>2.8.0</version>
 		</dependency>
 
-		<!-- Google OAuth2.0 API -->
+		<!-- Google API Dependencies-->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.22.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>v3-rev234-1.22.0</version>
+		</dependency>
 		<dependency>
     			<groupId>com.google.api.client</groupId>
     			<artifactId>google-api-client-auth-oauth2</artifactId>
     			<version>1.2.3-alpha</version>
 		</dependency>
+
 		<!-- DynamoDB SDK -->
 		<dependency>
     			<groupId>com.amazonaws</groupId>
