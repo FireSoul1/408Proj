@@ -24,8 +24,7 @@ public class MainController {
 
     ///temp call to Google Calendar API
     @RequestMapping(value="/calendar")
-    public String calendar(String str) throws Exception{
-
+    public String calendar() throws Exception {
 
         System.out.println("========================================");
         //System.out.println(User.accessToken.toString());
@@ -34,44 +33,42 @@ public class MainController {
         HttpURLConnection connection = null;
         try {
 
-            String url = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
-
-            URL obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-            // optional default is GET
-            con.setRequestMethod("GET");
-
-            //add request header
-            //con.setRequestProperty("User-Agent", USER_AGENT);
-
-            int responseCode = con.getResponseCode();
-            System.out.println("\nSending 'GET' request to URL : " + url);
-            System.out.println("Response Code : " + responseCode);
-
-            BufferedReader in = new BufferedReader(
-            new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-
-
-
-            //Send the Response
-            System.out.println(response.toString());
-            logger.debug(response.toString());
-            Data new1 = new Data(response.toString());
-            Gson json = new Gson();
-
-            return json.toJson(new1);
+                String url = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
+        //
+               URL obj = new URL(url);
+        //     HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        //
+        //     // optional default is GET
+        //     con.setRequestMethod("GET");
+        //
+        //     //add request header
+        //     //con.setRequestProperty("User-Agent", USER_AGENT);
+        //
+        //     int responseCode = con.getResponseCode();
+        //     System.out.println("\nSending 'GET' request to URL : " + url);
+        //     System.out.println("Response Code : " + responseCode);
+        //
+        //     BufferedReader in = new BufferedReader(
+        //         new InputStreamReader(con.getInputStream()));
+        //     String inputLine;
+        //     StringBuffer response = new StringBuffer();
+        //
+        //     while ((inputLine = in.readLine()) != null) {
+        //         response.append(inputLine);
+        //     }
+        //
+        //     //Send the Response
+        //     System.out.println(response.toString());
+        //     logger.debug(response.toString());
+        //     Data new1 = new Data(response.toString());
+        //     Gson json = new Gson();
+        //
+        //     return json.toJson(new1);
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+                e.printStackTrace();
+                return null;
         }
-
+        return "";
 
     }
 

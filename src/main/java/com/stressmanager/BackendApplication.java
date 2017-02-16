@@ -1,9 +1,14 @@
 package com.stressmanager;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.Principal;
 import java.util.*;
 
 import javax.servlet.Filter;
+import javax.servlet.http.*;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.calendar.CalendarScopes;
@@ -13,11 +18,23 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-
-
-
-
 import com.google.api.client.auth.oauth2.*;
+import com.google.gson.Gson;
+import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.*;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.client.util.DateTime;
+
+import org.springframework.security.core.*;
+import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -64,13 +81,14 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
+	//static Credentials credz;
+
 
 	@RequestMapping({ "/user", "/me" })
-	public Map<String, String> user(Principal principal) {
+	public Map<String, String> user(Principal principal) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("name", principal.getName());
 		map.put("auth", oauth2ClientContext.getAccessToken().toString());
-
 
 		System.out.println();
 		System.out.println();
@@ -79,8 +97,139 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("========================================");
 		System.out.println("authenticated!!!!");
 
+		//set up google credz
+		com.google.api.services.calendar.Calendar service =
+			getCalendarService();
+		DateTime now = new DateTime(System.currentTimeMillis());
+		Events events = service.events().list("primary")
+			.setMaxResults(10)
+			.setTimeMin(now)
+			.setOrderBy("startTime")
+			.setSingleEvents(true)
+			.execute();
 
 		return map;
+	}
+	public Credential authorize() throws Exception {
+		final List<String> SCOPES =
+        	Arrays.asList(CalendarScopes.CALENDAR);
+
+		TokenResponse tolkien = new TokenResponse();
+		tolkien.setAccessToken(oauth2ClientContext.getAccessToken().toString());
+
+		Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
+			.setFromTokenResponse(tolkien);
+		System.out.println("authorized!!!");
+		return credz;
+
+	}
+
+	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
+		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		Credential credz = authorize();
+
+		return new com.google.api.services.calendar.Calendar.Builder(
+			HTTP_TRANSPORT, JSON_FACTORY, credz)
+			.setApplicationName("Stressmanager")
+			.build();
+	}
+
+
+
+
+
+
+
+
+
+
+
+	// @Bean
+    // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
+    //         final AuthenticationManager authenticationManager) {
+    //     RequestHeaderAuthenticationFilter filter = new MyRequestHeaderAuthenticationFilter();
+    //     filter.setAuthenticationManager(authenticationManager);
+    //     filter.setExceptionIfHeaderMissing(false);
+    //     filter.setInvalidateSessionOnPrincipalChange(true);
+    //     filter.setCheckForPrincipalChanges(true);
+    //     filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
+    //     return filter;
+    // }
+	// public static Credential authorize() throws Exception {
+    //     // Load client secrets.
+    //     InputStream in =
+    //         Quickstart.class.getResourceAsStream("/client_secret.json");
+    //     GoogleClientSecrets clientSecrets =
+    //         GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+	//
+    //     // Build flow and trigger user authorization request.
+    //     GoogleAuthorizationCodeFlow flow =
+    //             new GoogleAuthorizationCodeFlow.Builder(
+    //                     HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+    //             .setDataStoreFactory(DATA_STORE_FACTORY)
+    //             .setAccessType("offline")
+    //             .build();
+    //     Credential credential = new AuthorizationCodeInstalledApp(
+    //         flow, new LocalServerReceiver()).authorize("user");
+    //     System.out.println(
+    //             "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+    //     return credential;
+    // }
+
+
+
+	///temp call to Google Calendar API
+	@RequestMapping(value="/me/calendar")
+	public String calendar(String str) throws Exception{
+
+		HttpURLConnection connection = null;
+		try {
+
+			String url = "https://www.googleapis.com/calendar/v3/users/me/calendarList?key=AIzaSyDoVkWadSYb9GA8zT-ZVMvHDovYk1N-P98";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is GET
+			con.setRequestMethod("GET");
+
+			//add request header
+			//con.setRequestProperty("User-Agent", USER_AGENT);
+
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
+
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+
+			//Send the Response
+			System.out.println(response.toString());
+
+			Data new1 = new Data(response.toString());
+			Gson json = new Gson();
+			System.out.println("========================================");
+			System.out.println("========================================");
+			System.out.println(response.toString());
+			System.out.println("========================================");
+			System.out.println("========================================");
+
+
+			return json.toJson(new1);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+
 	}
 
 
@@ -147,6 +296,21 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 }
+class MyRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
+
+	   @Override
+	   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+			   AuthenticationException failed) {
+		  try{
+		   super.unsuccessfulAuthentication(request, response, failed);
+		   // see comments in Servlet API around using sendError as an alternative
+		   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+	   } catch (Exception e) {
+		   e.printStackTrace();
+	   }
+	   }
+   }
 
 class ClientResources {
 
@@ -155,9 +319,7 @@ class ClientResources {
 
 	@NestedConfigurationProperty
 	private ResourceServerProperties resource = new ResourceServerProperties();
-//
-//	@Autowired
-//	private AuthorizationServerTokenServices tokens;
+
 
 	public ClientResources() {
 		client.setClientId(System.getenv("GOOGLE_CLIENT_ID"));
