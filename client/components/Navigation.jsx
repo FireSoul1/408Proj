@@ -1,7 +1,24 @@
 import React from 'react'
-import { Navbar } from 'react-bootstrap'
+import {
+  MenuItem,
+  Nav,
+  Navbar,
+  NavDropdown
+} from 'react-bootstrap'
 
 class Navigation extends React.Component {
+  renderDropdown() {
+    if (this.props.authorized) {
+      return (
+        <Nav pullRight>
+          <NavDropdown title='Tools' id='basic-nav-dropdown'>
+            <MenuItem>Import Calendar</MenuItem>
+          </NavDropdown>
+        </Nav>
+      )
+    }
+  }
+
   render() {
     return (
       <Navbar>
@@ -10,6 +27,7 @@ class Navigation extends React.Component {
             <a href="#">Stress Manager</a>
           </Navbar.Brand>
         </Navbar.Header>
+        {this.renderDropdown()}
       </Navbar>
     )
   }
