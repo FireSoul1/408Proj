@@ -43,14 +43,15 @@ class App extends React.Component {
       success: (user, status, xhr) => {
         const ct = xhr.getResponseHeader('content-type') || '';
 
-        if (ct.indexOf('html') > -1) {
-          this.setState({ user: {}, authorized: false })
-        } else if (ct.indexOf('json') > -1) {
+        if (ct.indexOf('json') > -1) {
           this.setState({ user, authorized: true })
+          return
         }
+
+        this.setState({ user: {}, authorized: false })
       },
       error: response => {
-        console.log(error)
+        this.setState({ user: {}, authorized: false })
       }
     })
   }
