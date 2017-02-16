@@ -66,9 +66,11 @@ class App extends React.Component {
   render() {
     return (
       <MainLayout
+        authorized={this.state.authorized}
         activeView={this.state.activeView}
-        authUser={() => this.authUser()}
+        isActiveView={view => this.isActiveView(view)}
         setActiveView={activeView => this.setActiveView(activeView)}
+        user={this.state.user}
       />
     )
   }
