@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application-configuration>
+  <setupStep>setupLicense</setupStep>
+  <setupType>initial</setupType>
+  <buildNumber>51513</buildNumber>
+  <properties>
+    <property name="bamboo.jms.broker.client.uri">failover:(tcp://10.0.1.29:54663?wireFormat.maxInactivityDuration=300000)?maxReconnectAttempts=10&amp;initialReconnectDelay=15000</property>
+    <property name="bamboo.jms.broker.uri">tcp://0.0.0.0:54663</property>
+    <property name="serverId">BOHW-PBW0-GNDR-XBLO</property>
+    <property name="serverKey">436</property>
+  </properties>
+</application-configuration>
