@@ -81,8 +81,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
-	//static Credentials credz;
+	//set up google credz
+	static com.google.api.services.calendar.Calendar service;
 
+	//static Credentials credz;
 
 	@RequestMapping({ "/user", "/me" })
 	public Map<String, String> user(Principal principal) throws Exception{
@@ -97,9 +99,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("========================================");
 		System.out.println("authenticated!!!!");
 
-		//set up google credz
-		com.google.api.services.calendar.Calendar service =
-			getCalendarService();
+		service = MainController.getCalendarService();
+
 		DateTime now = new DateTime(System.currentTimeMillis());
 		Events events = service.events().list("primary")
 			.setMaxResults(10)
@@ -110,39 +111,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		return map;
 	}
-	public Credential authorize() throws Exception {
-		final List<String> SCOPES =
-        	Arrays.asList(CalendarScopes.CALENDAR);
-
-		TokenResponse tolkien = new TokenResponse();
-		tolkien.setAccessToken(oauth2ClientContext.getAccessToken().toString());
-
-		Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
-			.setFromTokenResponse(tolkien);
-		System.out.println("authorized!!!");
-		return credz;
-
-	}
-
-	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
-		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-		Credential credz = authorize();
-
-		return new com.google.api.services.calendar.Calendar.Builder(
-			HTTP_TRANSPORT, JSON_FACTORY, credz)
-			.setApplicationName("Stressmanager")
-			.build();
-	}
-
-
-
-
-
-
-
-
-
 
 
 	// @Bean
@@ -156,28 +124,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
     //     filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
     //     return filter;
     // }
-	// public static Credential authorize() throws Exception {
-    //     // Load client secrets.
-    //     InputStream in =
-    //         Quickstart.class.getResourceAsStream("/client_secret.json");
-    //     GoogleClientSecrets clientSecrets =
-    //         GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-	//
-    //     // Build flow and trigger user authorization request.
-    //     GoogleAuthorizationCodeFlow flow =
-    //             new GoogleAuthorizationCodeFlow.Builder(
-    //                     HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-    //             .setDataStoreFactory(DATA_STORE_FACTORY)
-    //             .setAccessType("offline")
-    //             .build();
-    //     Credential credential = new AuthorizationCodeInstalledApp(
-    //         flow, new LocalServerReceiver()).authorize("user");
-    //     System.out.println(
-    //             "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-    //     return credential;
-    // }
-
-
 
 	///temp call to Google Calendar API
 	@RequestMapping(value="/me/calendar")
@@ -230,6 +176,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 
+	}
+
+	@RequestMapping(value = "/me/calendar/events")
+	public String events() throws Exception {
+		return "";
 	}
 
 
