@@ -210,7 +210,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
 		System.out.println("FILTER LIST MADE");
-		String path = "/login/google"
+		String path = "/login/google";
 		filters.add(ssoFilter(google(), path));
 		filter.setFilters(filters);
 		System.out.println("RESOURCE BEING MADE");
