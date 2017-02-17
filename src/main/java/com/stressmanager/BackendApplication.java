@@ -84,7 +84,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		service = getCalendarService();
 
-
 		DateTime now = new DateTime(System.currentTimeMillis());
 
 		Events events = service.events().list("primary")
@@ -194,6 +193,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Bean
 	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
+		System.out.println("FILTER BEING MADE"):
 		registration.setFilter(filter);
 		registration.setOrder(-100);
 		return registration;
@@ -202,14 +202,17 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Bean
 	@ConfigurationProperties("google")
 	public ClientResources google() {
+		System.out.println("RESOURCE BEING MADE"):
 		return new ClientResources();
 	}
 
 	private Filter ssoFilter() {
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
+		System.out.println("FILTER LIST MADE"):
 		filters.add(ssoFilter(google(), "/login/google"));
 		filter.setFilters(filters);
+		System.out.println("RESOURCE BEING MADE"):
 		return filter;
 	}
 
@@ -226,21 +229,21 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 }
-class MyRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
-
-	   @Override
-	   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-			   AuthenticationException failed) {
-		  try{
-		   super.unsuccessfulAuthentication(request, response, failed);
-		   // see comments in Servlet API around using sendError as an alternative
-		   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-	   } catch (Exception e) {
-		   e.printStackTrace();
-	   }
-	   }
-   }
+// class MyRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
+//
+// 	   @Override
+// 	   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+// 			   AuthenticationException failed) {
+// 		  try{
+// 		   super.unsuccessfulAuthentication(request, response, failed);
+// 		   // see comments in Servlet API around using sendError as an alternative
+// 		   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//
+// 	   } catch (Exception e) {
+// 		   e.printStackTrace();
+// 	   }
+// 	   }
+//   }
 
 class ClientResources {
 
