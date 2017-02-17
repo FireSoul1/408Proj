@@ -63,7 +63,7 @@ class App extends React.Component {
     const { user } = this.state
 
     ajax({
-      url: '/calendar',
+      url: '/calendar/list',
       method: 'GET',
       data: { token: user.auth },
       success: (data, status, xhr) => {
