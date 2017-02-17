@@ -34,14 +34,18 @@ class App extends React.Component {
     }
   }
 
+  responseIsJson(xhr) {
+    const ct = xhr.getResponseHeader('content-type') || '';
+
+    return (ct.indexOf('json') > -1)
+  }
+
   getAuthorized() {
     ajax({
       url: '/me',
       method: 'GET',
       success: (user, status, xhr) => {
-        const ct = xhr.getResponseHeader('content-type') || '';
-
-        if (ct.indexOf('json') > -1) {
+        if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
           this.setActiveView(UserPage)
           return
@@ -63,9 +67,7 @@ class App extends React.Component {
       method: 'GET',
       data: { token: user.state },
       success: (data, status, xhr) => {
-        const ct = xhr.getResponseHeader('content-type') || '';
-
-        if (ct.indexOf('json') > -1) {
+        if (this.responseIsJson(xhr)) {
           this.setState({ calendarList: data.items })
           this.setActiveView(ImportPage)
         }
