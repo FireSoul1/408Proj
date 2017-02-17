@@ -1,0 +1,47 @@
+<AdministrationConfiguration>
+  <myBaseUrl>http://10.186.35.92:8085</myBaseUrl>
+  <myUseGzipCompression>true</myUseGzipCompression>
+  <myInstanceName>Atlassian Bamboo</myInstanceName>
+  <deploymentExpiryEnabled>true</deploymentExpiryEnabled>
+  <myBuildExpiryConfiguration>
+    <myDuration>0</myDuration>
+    <buildsToKeep>0</buildsToKeep>
+    <maxIgnoredLogSize>-1</maxIgnoredLogSize>
+    <expiryTypeNothing>false</expiryTypeNothing>
+    <expiryTypeResult>false</expiryTypeResult>
+    <expiryTypeArtifact>false</expiryTypeArtifact>
+    <expiryTypeBuildLog>false</expiryTypeBuildLog>
+    <enabled>false</enabled>
+  </myBuildExpiryConfiguration>
+  <concurrentBuildConfig>
+    <enabled>false</enabled>
+    <numberConcurrentBuilds>1</numberConcurrentBuilds>
+  </concurrentBuildConfig>
+  <storageLimits>
+    <softLimit>20</softLimit>
+    <hardLimit>25</hardLimit>
+  </storageLimits>
+  <dashboardPageSize>50</dashboardPageSize>
+  <enableSignup>true</enableSignup>
+  <enableAnonymousAccess>true</enableAnonymousAccess>
+  <enableExternalUserManagement>false</enableExternalUserManagement>
+  <enableViewContactDetails>false</enableViewContactDetails>
+  <enableRestrictedAdmin>false</enableRestrictedAdmin>
+  <soxComplianceModeEnabled>false</soxComplianceModeEnabled>
+  <remoteAgentFunctionEnabled>true</remoteAgentFunctionEnabled>
+  <remoteAgentAuthenticationEnabled>true</remoteAgentAuthenticationEnabled>
+  <auditLoggingEnabled>true</auditLoggingEnabled>
+  <gravatarSupportEnabled>true</gravatarSupportEnabled>
+  <gravatarServerUrl>https://secure.gravatar.com/avatar/</gravatarServerUrl>
+  <systemProperties/>
+  <buildHangedInQueueNotificationTimeout>120</buildHangedInQueueNotificationTimeout>
+  <branchDetectionCheckInterval>300</branchDetectionCheckInterval>
+  <xsrfProtectionEnabled>true</xsrfProtectionEnabled>
+  <xsrfAllowsMutativeGets>false</xsrfAllowsMutativeGets>
+  <serializationSecurityConfig>
+    <bandanaMethod>STRICT_BLACKLIST</bandanaMethod>
+    <xStreamMethod>WHITELIST</xStreamMethod>
+  </serializationSecurityConfig>
+  <securityTokenRequiredFromAgents>false</securityTokenRequiredFromAgents>
+  <manageAcceptedSshHostKeys>false</manageAcceptedSshHostKeys>
+</AdministrationConfiguration>

@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <application-configuration>
-  <setupStep>setupLicense</setupStep>
-  <setupType>initial</setupType>
+  <setupStep>complete</setupStep>
+  <setupType>custom</setupType>
   <buildNumber>51513</buildNumber>
   <properties>
+    <property name="bamboo.artifacts.directory">${bambooHome}/artifacts</property>
+    <property name="bamboo.config.directory">${bambooHome}/xml-data/configuration</property>
     <property name="bamboo.jms.broker.client.uri">failover:(tcp://10.0.1.29:54663?wireFormat.maxInactivityDuration=300000)?maxReconnectAttempts=10&amp;initialReconnectDelay=15000</property>
-    <property name="bamboo.jms.broker.uri">tcp://0.0.0.0:54663</property>
+    <property name="bamboo.jms.broker.uri">tcp://0.0.0.0:54663?wireFormat.maxInactivityDuration=300000</property>
+    <property name="bamboo.project.directory">${bambooHome}/xml-data/builds</property>
+    <property name="buildWorkingDir">${bambooHome}/xml-data/build-dir</property>
+    <property name="daily.backup.dir">${bambooHome}/backups</property>
+    <property name="hibernate.c3p0.acquire_increment">3</property>
+    <property name="hibernate.c3p0.idle_test_period">30</property>
+    <property name="hibernate.c3p0.max_size">100</property>
+    <property name="hibernate.c3p0.max_statements">0</property>
+    <property name="hibernate.c3p0.min_size">3</property>
+    <property name="hibernate.c3p0.timeout">120</property>
+    <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
+    <property name="hibernate.connection.password"></property>
+    <property name="hibernate.connection.url">jdbc:hsqldb:${bambooHome}/database/defaultdb</property>
+    <property name="hibernate.connection.username">sa</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+    <property name="hibernate.setup">true</property>
+    <property name="license.string">AAABQg0ODAoPeNp1kE1Pg0AQhu/7Kzbxooc1QD8MTfZQPlQSCgTQevCy4NhuAkuzuzT230v5iNbY4 8xk5n3mucn3LX6EAptLbM5X8+VqZmM3y7FlmA+oYHXRNPchL0Eo8D+45o2gfpT7aZIGmY+iti5Ax p8vCqSi1sKYVqaB05dhU7JqvQOhFSUmSlpZ7pkCj2mg5yBiWKSLm3K+Dlyefg1nxLRRBvIIMvCoE z9vSeJsDfIUeSl5c8J4SmWl5kegWrbwP0gKdaNhJLmKm1RM9KCX/+enA0SsBurGm42fusE6RBvGh QbBRHkFe9ztuMPAy/yIhLZlz0x7gbqCXjRiuWOCK9ZLVlqCUjUTbAcSuRL69l9j1XD9tbN/XrKQB 6qU/NCfGJ7Bt4O5O9z9iwcBeDDwvsL+kVVtfxqPpOinNYj8Bp/LtEAwLAIUREcpC6umS2V2eBmyU kiSZ8oWRzYCFH1yyjc15ihwu0nspQQeXodr3A3mX02g0</property>
+    <property name="lucene.index.dir">${bambooHome}/index</property>
     <property name="serverId">BOHW-PBW0-GNDR-XBLO</property>
     <property name="serverKey">436</property>
+    <property name="webwork.multipart.saveDir">${bambooHome}/temp</property>
   </properties>
 </application-configuration>

@@ -1,0 +1,16 @@
+<BuildResults>
+  <myReasonForBuild>
+    <myReason>Initial clean build</myReason>
+  </myReasonForBuild>
+  <myBuildState>
+    <myState>Failed</myState>
+  </myBuildState>
+  <myBuildErrors class="com.atlassian.bamboo.collections.message.FinalArrayList">
+    <string>Could not find test result reports in the /Users/lisacampbell/408Project/408Proj/bamboo_logs/xml-data/build-dir/SM-WEB-JOB1 directory.</string>
+    <string>Unable to find executable at 408Proj/bin/mvn. Will try to run it anyway.</string>
+  </myBuildErrors>
+  <myBuildNumber>1</myBuildNumber>
+  <myBuildDate>1487292061770</myBuildDate>
+  <myBuildDuration>186</myBuildDuration>
+  <mySuccessfulTestResults/>
+</BuildResults>

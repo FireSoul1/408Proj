@@ -1,0 +1,175 @@
+;
+/* module-key = 'bamboo.deployments:deployment-project-list', location = '/feature/deployment/project/project-list/project-list.soy' */
+// This file was automatically generated from project-list.soy.
+// Please don't edit this file by hand.
+
+/**
+ * @fileoverview Templates in namespace bamboo.feature.deployment.project.projectList.
+ */
+
+if (typeof bamboo == 'undefined') { var bamboo = {}; }
+if (typeof bamboo.feature == 'undefined') { bamboo.feature = {}; }
+if (typeof bamboo.feature.deployment == 'undefined') { bamboo.feature.deployment = {}; }
+if (typeof bamboo.feature.deployment.project == 'undefined') { bamboo.feature.deployment.project = {}; }
+if (typeof bamboo.feature.deployment.project.projectList == 'undefined') { bamboo.feature.deployment.project.projectList = {}; }
+
+
+bamboo.feature.deployment.project.projectList.container = function(opt_data, opt_ignored) {
+  return '<div id="' + soy.$$escapeHtml(opt_data.id) + '">' + widget.icons.icon({type: 'loading'}) + '</div><script type="text/javascript">require([\'jquery\', \'feature/deployment-project-list\'], function($, DeploymentProjectList){return new DeploymentProjectList({el: \'#' + soy.$$escapeJsString(opt_data.id) + '\', showProject: ' + soy.$$escapeHtml(opt_data.showProject) + ', fetchUrl: \'' + soy.$$escapeHtml("" + '/rest/api/latest/deploy/dashboard/') + ((opt_data.projectId) ? soy.$$escapeHtml(opt_data.projectId) : '') + '\', currentUrl: \'' + soy.$$escapeHtml(opt_data.currentUrl) + '\'});});<\/script>';
+};
+if (goog.DEBUG) {
+  bamboo.feature.deployment.project.projectList.container.soyTemplateName = 'bamboo.feature.deployment.project.projectList.container';
+}
+
+
+bamboo.feature.deployment.project.projectList.projectList = function(opt_data, opt_ignored) {
+  var output = '<div class="dashboard-project">';
+  if (opt_data.projectsWithEnvironmentStatuses && opt_data.projectsWithEnvironmentStatuses.length > 0) {
+    output += '<table class="aui"><colgroup>' + ((opt_data.showProject) ? '<col width="20%"/><col width="28%"/><col width="18%"/><col width="15%"/><col width="15%"/><col width="70px"/>' : '<col width="34%"/><col width="24%"/><col width="20%"/><col width="18%"/><col width="70px"/>') + '</colgroup><thead><tr>' + ((opt_data.showProject) ? '<th>' + soy.$$escapeHtml("Deployment project") + '</th>' : '') + '<th>' + soy.$$escapeHtml("Environment") + '</th><th>' + soy.$$escapeHtml("Release") + '</th><th>' + soy.$$escapeHtml("Result") + '</th><th>' + soy.$$escapeHtml("Completed") + '</th><th>' + soy.$$escapeHtml("Actions") + '</th></tr></thead>';
+    var projectWithEnvironmentStatusesList48 = opt_data.projectsWithEnvironmentStatuses;
+    var projectWithEnvironmentStatusesListLen48 = projectWithEnvironmentStatusesList48.length;
+    for (var projectWithEnvironmentStatusesIndex48 = 0; projectWithEnvironmentStatusesIndex48 < projectWithEnvironmentStatusesListLen48; projectWithEnvironmentStatusesIndex48++) {
+      var projectWithEnvironmentStatusesData48 = projectWithEnvironmentStatusesList48[projectWithEnvironmentStatusesIndex48];
+      if (projectWithEnvironmentStatusesData48.environmentStatuses && projectWithEnvironmentStatusesData48.environmentStatuses.length > 0) {
+        var environmentStatusList51 = projectWithEnvironmentStatusesData48.environmentStatuses;
+        var environmentStatusListLen51 = environmentStatusList51.length;
+        for (var environmentStatusIndex51 = 0; environmentStatusIndex51 < environmentStatusListLen51; environmentStatusIndex51++) {
+          var environmentStatusData51 = environmentStatusList51[environmentStatusIndex51];
+          output += '<tr id="' + soy.$$escapeHtml('environment-' + environmentStatusData51.environment.id) + '" class="' + ((environmentStatusIndex51 == 0) ? 'first' : '') + ' ' + ((environmentStatusIndex51 == environmentStatusListLen51 - 1) ? 'last' : '') + ' ' + ((environmentStatusData51.deploymentResult && (environmentStatusData51.deploymentResult.lifeCycleState == 'FINISHED' && (environmentStatusData51.deploymentResult.deploymentState == 'FAILED' || environmentStatusData51.deploymentResult.deploymentState == 'UNKNOWN') || environmentStatusData51.deploymentResult.lifeCycleState == 'NOT_BUILT')) ? 'error' : '') + '">' + ((opt_data.showProject) ? '<td class="deployment">' + ((environmentStatusIndex51 == 0) ? '<a class="deployment-project-name" href="' + soy.$$escapeHtml("" + '/deploy/viewDeploymentProjectEnvironments.action?id=' + projectWithEnvironmentStatusesData48.deploymentProject.id) + '"' + ((projectWithEnvironmentStatusesData48.deploymentProject.description) ? 'title="' + soy.$$escapeHtml(projectWithEnvironmentStatusesData48.deploymentProject.description) + '"' : '') + '>' + soy.$$escapeHtml(projectWithEnvironmentStatusesData48.deploymentProject.name) + '</a>' : '') + '</td>' : '') + bamboo.feature.deployment.project.projectList.environment(soy.$$augmentMap(environmentStatusData51, {currentUrl: opt_data.currentUrl})) + '</tr>';
+        }
+      } else {
+        output += '<tr class="first">' + ((opt_data.showProject) ? '<td class="deployment"><a class="deployment-project-name" href="' + soy.$$escapeHtml("" + '/deploy/viewDeploymentProjectEnvironments.action?id=' + projectWithEnvironmentStatusesData48.deploymentProject.id) + '">' + soy.$$escapeHtml(projectWithEnvironmentStatusesData48.deploymentProject.name) + '</a></td>' : '') + '<td colspan="5" class="empty-text">' + soy.$$escapeHtml("No environments found.") + ((projectWithEnvironmentStatusesData48.deploymentProject.operations.canEdit) ? ' ' + soy.$$filterNoAutoescape(AJS.format("\x3ca href\x3d\x22{0}\x22\x3eCreate a new environment\x3c/a\x3e to start tracking your deployments.","" + '/deploy/config/createEnvironment.action?deploymentProjectId=' + projectWithEnvironmentStatusesData48.deploymentProject.id + '&returnUrl=' + opt_data.currentUrl)) : '') + '</td></tr>';
+      }
+    }
+    output += '</table>';
+  } else {
+    output += '<p>' + soy.$$filterNoAutoescape("\x3cp\x3eWith Bamboo deployments you can track your code from a JIRA issue, through testing in a build, all the way to deployment. Deployments allow you to: \x3cul\x3e\x3cli\x3eSnapshot your artifacts from any successful build into a release\x3c/li\x3e \x3cli\x3eDeploy, rollback and promote releases to environments\x3c/li\x3e \x3cli\x3eTrack what, when and who deployed releases to your environments\x3c/li\x3e \x3c/ul\x3e\x3c/p\x3e") + '</p>';
+  }
+  output += '</div>';
+  return output;
+};
+if (goog.DEBUG) {
+  bamboo.feature.deployment.project.projectList.projectList.soyTemplateName = 'bamboo.feature.deployment.project.projectList.projectList';
+}
+
+
+bamboo.feature.deployment.project.projectList.environment = function(opt_data, opt_ignored) {
+  return '<td><a href="' + soy.$$escapeHtml("" + '/deploy/viewEnvironment.action?id=' + opt_data.environment.id) + '">' + soy.$$escapeHtml(opt_data.environment.name) + '</a></td>' + ((opt_data.deploymentResult) ? '<td>' + bamboo.feature.deployment.result.version({deploymentVersion: opt_data.deploymentResult.deploymentVersion, deploymentVersionName: opt_data.deploymentResult.deploymentVersionName, subtle: true}) + '</td><td>' + bamboo.feature.deployment.result.environmentState({deploymentResult: opt_data.deploymentResult, showDetailsLinkAlways: true, isLatestResult: true}) + '</td><td>' + bamboo.feature.deployment.result.finishedTimeOrDuration(soy.$$augmentMap(opt_data.deploymentResult, {hideLink: true})) + '</td>' : '<td>&nbsp;</td><td colspan="2" class="empty-text">' + soy.$$escapeHtml("Never deployed") + '<a>') + '<td class="operations">' + ((opt_data.environment.operations.canEdit) ? widget.icons.auiFontLink({iconType: 'edit', relativeUrl: '/deploy/config/configureDeploymentProject.action?id=' + opt_data.environment.deploymentProjectId + '&environmentId=' + opt_data.environment.id + '&returnUrl=' + opt_data.currentUrl, text: "Edit environment"}) : '') + ' ' + ((opt_data.environment.operations.allowedToExecute) ? (opt_data.environment.operations.canExecute) ? '<a href="' + soy.$$escapeHtml("" + '/deploy/selectVersionForExecute.action?environmentId=' + opt_data.environment.id + '&returnUrl=' + opt_data.currentUrl) + '" title="' + soy.$$escapeHtml("Deploy") + '">' + widget.icons.fontIcon({type: 'deploy', text: "Deploy"}) + '</a>' : '<span class="operation-disabled">' + widget.icons.fontIcon({type: 'deploy', text: opt_data.environment.operations.cantExecuteReason, showTitle: true}) + '</span>' : '') + '</td>';
+};
+if (goog.DEBUG) {
+  bamboo.feature.deployment.project.projectList.environment.soyTemplateName = 'bamboo.feature.deployment.project.projectList.environment';
+}
+;
+;
+/* module-key = 'bamboo.deployments:deployment-project-list', location = '/feature/deployment/project/project-list/project-list.js' */
+define('feature/deployment-project-list', [
+    'jquery',
+    'underscore',
+    'brace',
+    'model'
+], function(
+    $,
+    _,
+    Brace,
+    model
+) {
+
+    'use strict';
+
+    var DeploymentProjectListCollection = Brace.Collection.extend({
+
+        model: model.DeploymentProjectWithEnvironmentStatuses,
+
+        fetchUrl: [
+            AJS.contextPath(),
+            'rest/api/latest/deploy/dashboard'
+        ].join('/'),
+
+        url: function() {
+            return this.fetchUrl;
+        },
+
+        comparator: function(projectWithEnvironmentStatus) {
+            return projectWithEnvironmentStatus.getDeploymentProject().getName().toLowerCase();
+        },
+
+        initialize: function(bootstrap, options) {
+            if (options.fetchUrl) {
+                this.fetchUrl = options.fetchUrl;
+            }
+        }
+
+    });
+
+    var DeploymentProjectList = Brace.View.extend({
+
+        initialize: function(options) {
+            this.options.bootstrap = options.bootstrap || [];
+            this.collection = new DeploymentProjectListCollection(
+                this.options.bootstrap, {
+                    fetchUrl: options.fetchUrl
+                }
+            );
+
+            this.collection.on('reset', _.bind(this.render, this));
+            this._updateTimeoutSuccess = options.updateTimeoutSuccess || 20000;
+            this._updateTimeoutFailure = options.updateTimeoutFailure || 60000;
+
+            if (!options.bootstrap.length) {
+                this.onUpdate();
+            }
+        },
+
+        render: function() {
+            this.$el.html(bamboo.feature.deployment.project.projectList.projectList({
+                projectsWithEnvironmentStatuses: this.collection.toJSON(),
+                showProject: this.options.showProject,
+                currentUrl: this.options.currentUrl
+            }));
+
+            this.$el.find('td.deployment > a').tooltip({aria: true});
+            this.$el.find('span.icon-deploy-success, span.icon-deploy-fail, span.aui-icon-deploy-success, span.aui-icon-deploy-fail').tooltip({gravity: 'n'});
+
+            return this;
+        },
+
+        onUpdate: function() {
+            return this.collection.fetch({
+                cache: false
+            })
+                .done(_.bind(this.render, this))
+                .fail(_.bind(this.onError, this))
+                .always(_.bind(this.onScheduleNext, this));
+        },
+
+        onError: function(jqXHR, textStatus, errorThrown) {
+            this.$el.children('.icon-loading, .aui-message').remove();
+            this.$el.prepend(AJS.messages.warning({
+                title: "Background page refresh cannot contact server. Please ensure Bamboo server is available.",
+                closeable: false
+            }));
+        },
+
+        /**
+         * Schedules next poll
+         * @param {Object} data the data from a successful request, or the jqXHR object for a failed request
+         * @param {String} textStatus
+         * @param {Object|String} jqXHR the jqXHR object for a successful request, or the errorThrown for a failed request
+         */
+        onScheduleNext: function(data, textStatus, jqXHR) {
+            clearTimeout(this._timeout);
+
+            var delayBeforeUpdate = ((typeof textStatus === 'undefined' || textStatus === 'success') ?
+                this._updateTimeoutSuccess : this._updateTimeoutFailure);
+
+            this._timeout = setTimeout(
+                _.bind(this.onUpdate, this),
+                delayBeforeUpdate
+            );
+        }
+
+    });
+
+    return DeploymentProjectList;
+});
+;
