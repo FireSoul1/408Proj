@@ -65,6 +65,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//static Credentials credz;
 
 	static com.google.api.services.calendar.Calendar service;
+//	static OAuth2AccessToken token;
 
 	//static Credentials credz;
 
@@ -81,9 +82,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("========================================");
 		System.out.println("authenticated!!!!");
 
-		service = MainController.getCalendarService();
+		service = getCalendarService();
 
-		// service = getCalendarService();
 
 		DateTime now = new DateTime(System.currentTimeMillis());
 
