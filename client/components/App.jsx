@@ -5,6 +5,7 @@ import { isEmpty } from 'lodash'
 
 import 'style/bootswatch'
 
+import ImportPage from './ImportPage'
 import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
@@ -16,6 +17,7 @@ class App extends React.Component {
     this.state = {
       activeView: LoginPage,
       authorized: false,
+      calendarList: [],
       user: {}
     }
   }
@@ -53,6 +55,28 @@ class App extends React.Component {
     })
   }
 
+  getCalendars() {
+    const { user } = this.state
+
+    ajax({
+      url: '/calendar',
+      method: 'GET',
+      data: { token: user.state },
+      success: (data, status, xhr) => {
+        const ct = xhr.getResponseHeader('content-type') || '';
+
+        if (ct.indexOf('json') > -1) {
+          this.setState({ calendarList: data.items })
+          this.setActiveView(ImportPage)
+        }
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   setActiveView(activeView) {
     this.setState({ activeView })
   }
@@ -66,8 +90,9 @@ class App extends React.Component {
       <MainLayout
         authorized={this.state.authorized}
         activeView={this.state.activeView}
+        calendarList={this.state.calendarList}
+        getCalendars={() => this.getCalendars()}
         isActiveView={view => this.isActiveView(view)}
-        setActiveView={activeView => this.setActiveView(activeView)}
         user={this.state.user}
       />
     )
