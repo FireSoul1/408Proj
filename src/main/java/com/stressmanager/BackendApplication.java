@@ -193,7 +193,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Bean
 	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
-		System.out.println("FILTER BEING MADE"):
+		System.out.println("FILTER BEING MADE");
 		registration.setFilter(filter);
 		registration.setOrder(-100);
 		return registration;
@@ -202,17 +202,17 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Bean
 	@ConfigurationProperties("google")
 	public ClientResources google() {
-		System.out.println("RESOURCE BEING MADE"):
+		System.out.println("RESOURCE BEING MADE");
 		return new ClientResources();
 	}
 
 	private Filter ssoFilter() {
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
-		System.out.println("FILTER LIST MADE"):
+		System.out.println("FILTER LIST MADE");
 		filters.add(ssoFilter(google(), "/login/google"));
 		filter.setFilters(filters);
-		System.out.println("RESOURCE BEING MADE"):
+		System.out.println("RESOURCE BEING MADE");
 		return filter;
 	}
 
