@@ -10,13 +10,13 @@ import ImportPage from './ImportPage'
 
 class Navigation extends React.Component {
   renderDropdown() {
-    const { authorized, setActiveView } = this.props
+    const { authorized, getCalendars } = this.props
 
     if (authorized) {
       return (
         <Nav pullRight>
           <NavDropdown title='Tools' id='basic-nav-dropdown'>
-            <MenuItem onClick={() => setActiveView(ImportPage)}>
+            <MenuItem onClick={() => getCalendars()}>
               Import Calendar
             </MenuItem>
           </NavDropdown>
