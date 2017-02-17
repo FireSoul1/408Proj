@@ -27,10 +27,6 @@ class App extends React.Component {
   componentDidUpdate() {
     const { authorized } = this.state
 
-    if (!this.isActiveView(UserPage) && authorized) {
-      this.setActiveView(UserPage)
-    }
-
     if (!this.isActiveView(LoginPage) && !authorized) {
       this.setActiveView(LoginPage)
     }
@@ -45,6 +41,7 @@ class App extends React.Component {
 
         if (ct.indexOf('json') > -1) {
           this.setState({ user, authorized: true })
+          this.setActiveView(UserPage)
           return
         }
 
