@@ -1,9 +1,7 @@
 import React from 'react'
 import {
-  ControlLabel,
   FormControl,
   FormGroup,
-  HelpBlock,
   Jumbotron
 } from 'react-bootstrap'
 import { map } from 'lodash'
