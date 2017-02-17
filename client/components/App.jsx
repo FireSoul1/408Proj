@@ -65,7 +65,7 @@ class App extends React.Component {
     ajax({
       url: '/calendar',
       method: 'GET',
-      data: { token: user.state },
+      data: { token: user.auth },
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ calendarList: data.items })
