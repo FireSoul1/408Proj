@@ -6,13 +6,19 @@ import {
   NavDropdown
 } from 'react-bootstrap'
 
+import ImportPage from './ImportPage'
+
 class Navigation extends React.Component {
   renderDropdown() {
-    if (this.props.authorized) {
+    const { authorized, setActiveView } = this.props
+
+    if (authorized) {
       return (
         <Nav pullRight>
           <NavDropdown title='Tools' id='basic-nav-dropdown'>
-            <MenuItem>Import Calendar</MenuItem>
+            <MenuItem onClick={() => setActiveView(ImportPage)}>
+              Import Calendar
+            </MenuItem>
           </NavDropdown>
         </Nav>
       )

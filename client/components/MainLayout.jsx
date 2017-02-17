@@ -10,6 +10,7 @@ class MainLayout extends React.Component {
       <div>
         <Navigation
           authorized={this.props.authorized}
+          setActiveView={activeView => this.props.setActiveView(activeView)}
           user={this.props.user}
         />
         <this.props.activeView />
