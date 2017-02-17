@@ -94,7 +94,6 @@ class App extends React.Component {
         activeView={this.state.activeView}
         calendarList={this.state.calendarList}
         getCalendars={() => this.getCalendars()}
-        isActiveView={view => this.isActiveView(view)}
         user={this.state.user}
       />
     )
