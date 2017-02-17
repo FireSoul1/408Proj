@@ -1,9 +1,5 @@
 package com.stressmanager;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.Principal;
 import java.util.*;
 
@@ -12,28 +8,15 @@ import javax.servlet.http.*;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.client.googleapis.compute.ComputeCredential.Builder;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.http.GenericUrl;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.auth.oauth2.*;
-import com.google.gson.Gson;
-import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.*;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.model.*;
 
 import org.springframework.security.core.*;
-import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -53,12 +36,11 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -66,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.CompositeFilter;
 import org.springframework.boot.autoconfigure.*;
-import org.springframework.security.oauth2.client.resource.*;
 
 
 
@@ -81,7 +62,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
-	//set up google credz
+	//static Credentials credz;
+
 	static com.google.api.services.calendar.Calendar service;
 
 	//static Credentials credz;
@@ -101,7 +83,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		service = MainController.getCalendarService();
 
+		// service = getCalendarService();
+
 		DateTime now = new DateTime(System.currentTimeMillis());
+
 		Events events = service.events().list("primary")
 			.setMaxResults(10)
 			.setTimeMin(now)
@@ -109,9 +94,48 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setSingleEvents(true)
 			.execute();
 
-		return map;
+		List<Event> items = events.getItems();
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+		}
+		else {
+			System.out.println("Upcoming events");
+			for (Event event : items) {
+				DateTime start = event.getStart().getDateTime();
+				if (start == null) {
+					start = event.getStart().getDate();
+				}
+				System.out.printf("%s (%s)\n", event.getSummary(), start);
+			}
+		}
+
+		return map;///list.get(1).getColorId();
 	}
 
+	public Credential authorize() throws Exception {
+		final List<String> SCOPES =
+        	Arrays.asList(CalendarScopes.CALENDAR);
+
+		TokenResponse tolkien = new TokenResponse();
+		tolkien.setAccessToken(oauth2ClientContext.getAccessToken().toString());
+
+		Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
+			.setFromTokenResponse(tolkien);
+		System.out.println("authorized!!!");
+		return credz;
+
+	}
+
+	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
+		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		Credential credz = authorize();
+
+		return new com.google.api.services.calendar.Calendar.Builder(
+			HTTP_TRANSPORT, JSON_FACTORY, credz)
+			.setApplicationName("Stressmanager")
+			.build();
+	}
 
 	// @Bean
     // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
@@ -126,55 +150,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
     // }
 
 	///temp call to Google Calendar API
-	@RequestMapping(value="/me/calendar")
+	@RequestMapping(value="/calendar")
 	public String calendar(String str) throws Exception{
 
-		HttpURLConnection connection = null;
-		try {
-
-			String url = "https://www.googleapis.com/calendar/v3/users/me/calendarList?key=AIzaSyDoVkWadSYb9GA8zT-ZVMvHDovYk1N-P98";
-
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("GET");
-
-			//add request header
-			//con.setRequestProperty("User-Agent", USER_AGENT);
-
-			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'GET' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
-
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			//Send the Response
-			System.out.println(response.toString());
-
-			Data new1 = new Data(response.toString());
-			Gson json = new Gson();
-			System.out.println("========================================");
-			System.out.println("========================================");
-			System.out.println(response.toString());
-			System.out.println("========================================");
-			System.out.println("========================================");
-
-
-			return json.toJson(new1);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-
+		return "This is where the cal go";
 
 	}
 
