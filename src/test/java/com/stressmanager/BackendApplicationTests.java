@@ -22,24 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 
-	@Test
-	public void contextLoads() throws Exception{
-	}
-
-	// @Rule
-	// public OutputCapture capture = new OutputCapture();
-
-	// @Autowired
-    // private MockMvc mockMvc;
-
-	@Test
-	public void isAuthenticated() throws Exception {
-		// this.mockMvc.perform(get("/login/google").accept(MediaType.TEXT_PLAIN))
-		// 	.andExpect(status().isOk());
-		// assertThat(capture.toString(), containsString("authenticated!!!!"));
-	}
-
-
     @Autowired
     BackendApplication controller;
 //    @Autowired
