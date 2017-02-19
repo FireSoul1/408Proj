@@ -48,34 +48,4 @@ public class MainController {
 
         return callist.toPrettyString();
     }
-    // public static Credential authorize() throws Exception {
-	// 	final List<String> SCOPES = Arrays.asList(CalendarScopes.CALENDAR);
-    //
-	// 	TokenResponse tolkien = new TokenResponse();
-    //     if(oauth2ClientContext == null) {
-    //         System.out.println("");
-    //         return null;
-    //     }
-	//     tolkien.setAccessToken(oauth2ClientContext.getAccessToken().toString());
-    //
-	// 	Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
-	// 		.setFromTokenResponse(tolkien);
-	// 	System.out.println("authorized!!!");
-	// 	return credz;
-    //
-	// }
-
-	// public static com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
-	// 	final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	// 	HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-	// 	Credential credz = authorize();
-    //
-	// 	return new com.google.api.services.calendar.Calendar.Builder(
-	// 		HTTP_TRANSPORT, JSON_FACTORY, credz)
-	// 		.setApplicationName("Stressmanager")
-	// 		.build();
-	// }
-
-
-
 }
