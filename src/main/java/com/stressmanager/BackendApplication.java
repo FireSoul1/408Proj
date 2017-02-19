@@ -135,7 +135,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setApplicationName("Stressmanager")
 			.build();
 	}
-
+	
+	
+	//TODO: Possible custom Error Codes and pages. This Bean will be needed
 	// @Bean
     // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
     //         final AuthenticationManager authenticationManager) {
