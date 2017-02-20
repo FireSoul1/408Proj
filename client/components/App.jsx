@@ -69,8 +69,9 @@ class App extends React.Component {
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ calendarList: data.items })
-          this.setActiveView(ImportPage)
         }
+
+        this.setActiveView(ImportPage)
       },
       error: response => {
         // TODO give feedback to user
