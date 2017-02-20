@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from 'react-dom'
-import ajax from 'jquery'
+import { ajax } from 'jquery'
 import { isEmpty } from 'lodash'
 
 import 'style/bootswatch'
@@ -43,7 +43,7 @@ class App extends React.Component {
   getAuthorized() {
     ajax({
       url: '/me',
-      method: 'GET',
+      type: 'get',
       success: (user, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
@@ -64,7 +64,7 @@ class App extends React.Component {
 
     ajax({
       url: '/calendar/list',
-      method: 'GET',
+      type: 'get',
       data: { token: user.auth },
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
