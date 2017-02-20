@@ -8,9 +8,13 @@ class MainLayout extends React.Component {
     const { authUser } = this.props
     return (
       <div>
-        <Navigation />
+        <Navigation
+          authorized={this.props.authorized}
+          getCalendars={() => this.props.getCalendars()}
+          user={this.props.user}
+        />
         <this.props.activeView
-          authUser={() => authUser()}
+          calendarList={this.props.calendarList}
         />
       </div>
     )
