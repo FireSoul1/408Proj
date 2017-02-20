@@ -43,7 +43,14 @@ const config = {
       }
     ]
   },
+  devServer: {
+    contentBase: BUILD_DIR,
+    port: 9000
+  },
   plugins: [
+    new webpack.DefinePlugin({
+      PRODUCTION: JSON.stringify(false)
+    }),
     new ExtractTextPlugin({
       filename: 'css/style.css'
     })
