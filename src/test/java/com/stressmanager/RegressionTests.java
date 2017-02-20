@@ -33,15 +33,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class RegressionTests {
 	@Autowired
 	private WebApplicationContext context;
-	@Autowired
-	private TestingConfig properties;
 
 	private MockMvc mockMvc;
 	private String clientId;
 	private String clientSecret;
 	@Before
     public void setUp() {
-    	 this.properties = properties;
          mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
          //mockResources = MockMvcBuilders.standaloneSetup(new ClientResources().build());
          clientId = System.getenv("GOOGLE_CLIENT_ID");
@@ -59,7 +56,6 @@ public class RegressionTests {
 	@Bean
 	@ConfigurationProperties("google")
 	public ClientResources google() {
-		this.properties = properties;
 		System.out.println("RESOURCE BEING MADE");
 		return new ClientResources();
 	}
