@@ -55,4 +55,4 @@ First, install all necessary dependencies with `npm install` and `mvn install`.
 Then, have one terminal session running `npm run dev`, which will automatically rebuild
 the frontend whenever you make changes. When you make changes to the backend
 (or frontend, for that matter), kill the server if you have one running and
-run `mvn package && java -jar target/backend-0.0.1-SNAPSHOT.jar`
+run `mvn -Pdev package && java -jar target/backend-0.0.1-SNAPSHOT.jar`

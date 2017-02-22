@@ -160,6 +160,24 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@RequestMapping(value = "/me/calendar/events")
 	public String events() throws Exception {
+		// Returns all events in the current month
+		service = getCalendarService();
+
+		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+
+		// The first day of the month
+		currentDate.set(currentDate.DATE, 1); 
+		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+		// The last day of the month
+		currentDate.set(currentDate.DATE, -1); 
+		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+		
+		Events events = service.events().list("primary") // Get events from primary calendar...
+		.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+		.setTimeMax(endOfMonth) // and ending at the last day of the month
+		.execute();
+
 		return "";
 	}
 
