@@ -3,7 +3,7 @@ src/main/resources/static/*
 !src/main/resources/static/index.html
 *log
 web/
-
+client/mock/
 
 target/
 !.mvn/wrapper/maven-wrapper.jar

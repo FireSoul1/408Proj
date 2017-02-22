@@ -10,6 +10,9 @@
 
 [Sprint 1 Design Inspection, Code Inspection, Unit Testing](https://docs.google.com/document/d/1286QKHC_SKXjvaOQllOBXlMAwIpHeSg2QAVMARqN_hA/edit?usp=sharing)
 
+
+[Incremental and Regression Testing](https://docs.google.com/document/d/1vN7wMspZt-SuaZ3SMEV28CeFf54eZ4NnjWjsXfhb9bg/edit?usp=sharing)
+
 See the docs folder for PDF copies of these documents.
 
 ## Project Setup

@@ -291,3 +291,29 @@ class ClientResources {
 		return resource;
 	}
 }
+class ClientResourcesTest {
+
+	@NestedConfigurationProperty
+	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
+
+	@NestedConfigurationProperty
+	private ResourceServerProperties resource = new ResourceServerProperties();
+
+
+	public ClientResourcesTest() {
+		client.setClientId(System.getenv("GOOGLE_CLIENT_ID_TEST"));
+		client.setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET_TEST"));
+		List<String> str = new ArrayList<>();
+		str.add(CalendarScopes.CALENDAR);
+		client.setScope(str);
+	}
+
+	public AuthorizationCodeResourceDetails getClient() {
+		return client;
+	}
+
+	public ResourceServerProperties getResource() {
+		return resource;
+	}
+}
+
