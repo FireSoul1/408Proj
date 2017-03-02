@@ -48,7 +48,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.CompositeFilter;
 import org.springframework.boot.autoconfigure.*;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 @RestController
@@ -62,13 +64,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
-	//static Credentials credz;
-
 	static com.google.api.services.calendar.Calendar service;
-//	static OAuth2AccessToken token;
 
-	//static Credentials credz;
-
+	//set up the access token and check that is works
 	@RequestMapping({ "/user", "/me" })
 	public Map<String, String> user(Principal principal) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
@@ -111,6 +109,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		return map;///list.get(1).getColorId();
 	}
 
+	//get the Credz for the new User
 	public Credential authorize() throws Exception {
 		final List<String> SCOPES =
         	Arrays.asList(CalendarScopes.CALENDAR);
@@ -124,7 +123,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		return credz;
 
 	}
-
+	//get and instance of Google Calendar API services
 	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -135,8 +134,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setApplicationName("Stressmanager")
 			.build();
 	}
-	
-	
+
+
 	//TODO: Possible custom Error Codes and pages. This Bean will be needed
 	// @Bean
     // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
@@ -150,40 +149,64 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
     //     return filter;
     // }
 
-	///temp call to Google Calendar API
-	@RequestMapping(value="/calendar")
-	public String calendar(String str) throws Exception{
-
-		return "This is where the cal go";
-
+	///Logout a user using the Servlet Context
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	if (auth != null){
+        	new SecurityContextLogoutHandler().logout(request, response, auth);
+    	}
+    	return "You were logged out";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
+	//get a month worth of events from the First day of the month to the first of the next month
 	@RequestMapping(value = "/me/calendar/events")
 	public String events() throws Exception {
 		// Returns all events in the current month
 		service = getCalendarService();
 
 		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+		currentDate.set(java.util.Calendar.DATE, 1);
 
 		// The first day of the month
-		currentDate.set(currentDate.DATE, 1); 
 		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+		System.out.println(beginningOfMonth.toString());
 
 		// The last day of the month
-		currentDate.set(currentDate.DATE, -1); 
+		currentDate.roll(java.util.Calendar.MONTH, 1);
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
-		
-		Events events = service.events().list("primary") // Get events from primary calendar...
-		.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
-		.setTimeMax(endOfMonth) // and ending at the last day of the month
-		.execute();
+		System.out.println(endOfMonth.toString());
 
-		return "";
+		Events events = service.events().list("primary") // Get events from primary calendar...
+			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+			.setTimeMax(endOfMonth) // and ending at the last day of the month
+			.execute();
+
+		//get the data from the HttpServletRequest
+		List<Event> items = events.getItems();
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+		}
+		else {
+			System.out.println("Upcoming events");
+			for (Event event : items) {
+				DateTime start = event.getStart().getDateTime();
+				if (start == null) {
+					start = event.getStart().getDate();
+				}
+				System.out.printf("%s: ==> (%s)\n", event.getSummary(), DateTime.parseRfc3339(start.toStringRfc3339()).toString());
+			}
+		}
+
+		return events.toPrettyString();
 	}
 
-
+	/*
+	* Spring Security Set up
+	*/
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		//temp = http;
 		// @formatter:off
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
@@ -193,7 +216,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
 		// @formatter:on
 	}
-
 	@Configuration
 	@EnableResourceServer
 	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
@@ -204,12 +226,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			// @formatter:on
 		}
 	}
-
-	public static void main(String[] args) {
-		//TODO: GENERATE YML FILE AND CLIENT ID
-		SpringApplication.run(BackendApplication.class, args);
-	}
-
 	@Bean
 	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -218,14 +234,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		registration.setOrder(-100);
 		return registration;
 	}
-
 	@Bean
-	@ConfigurationProperties("google")
+	@ConfigurationProperties("google")//Google Login setup
 	public ClientResources google() {
 		System.out.println("RESOURCE BEING MADE");
 		return new ClientResources();
 	}
-
 	private Filter ssoFilter() {
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
@@ -236,7 +250,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("RESOURCE BEING MADE");
 		return filter;
 	}
-
 	private Filter ssoFilter(ClientResources client, String path) {
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 				path);
@@ -247,6 +260,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		tokenServices.setRestTemplate(template);
 		filter.setTokenServices(tokenServices);
 		return filter;
+	}
+
+	//Deploy the Server
+	public static void main(String[] args) {
+		//TODO: GENERATE YML FILE AND CLIENT ID
+		SpringApplication.run(BackendApplication.class, args);
 	}
 
 }
@@ -316,4 +335,3 @@ class ClientResourcesTest {
 		return resource;
 	}
 }
-
