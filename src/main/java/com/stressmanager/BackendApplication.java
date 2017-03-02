@@ -160,25 +160,48 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@RequestMapping(value = "/me/calendar/events")
 	public String events() throws Exception {
+		//HTTP Headers
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
 		// Returns all events in the current month
 		service = getCalendarService();
 
 		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+		currentDate.set(java.util.Calendar.DATE, 1);
 
 		// The first day of the month
-		currentDate.set(currentDate.DATE, 1); 
 		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+		System.out.println(beginningOfMonth.toString());
 
 		// The last day of the month
-		currentDate.set(currentDate.DATE, -1); 
+		currentDate.roll(java.util.Calendar.MONTH, 1);
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
-		
-		Events events = service.events().list("primary") // Get events from primary calendar...
-		.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
-		.setTimeMax(endOfMonth) // and ending at the last day of the month
-		.execute();
+		System.out.println(endOfMonth.toString());
 
-		return events.toPrettyString();
+		Events events = service.events().list("primary") // Get events from primary calendar...
+			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+			.setTimeMax(endOfMonth) // and ending at the last day of the month
+			.execute();
+
+		//get the data from the HttpServletRequest
+		List<Event> items = events.getItems();
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+		}
+		else {
+			System.out.println("Upcoming events");
+			for (Event event : items) {
+				DateTime start = event.getStart().getDateTime();
+				if (start == null) {
+					start = event.getStart().getDate();
+				}
+				System.out.printf("%s: ==> (%s)\n", event.getSummary(), DateTime.parseRfc3339(start.toStringRfc3339()).toString());
+			}
+		}
+
+		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+
 	}
 
 
@@ -250,21 +273,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 }
-// class MyRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
-//
-// 	   @Override
-// 	   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-// 			   AuthenticationException failed) {
-// 		  try{
-// 		   super.unsuccessfulAuthentication(request, response, failed);
-// 		   // see comments in Servlet API around using sendError as an alternative
-// 		   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//
-// 	   } catch (Exception e) {
-// 		   e.printStackTrace();
-// 	   }
-// 	   }
-//   }
 
 class ClientResources {
 
