@@ -10,7 +10,7 @@ import ImportPage from './ImportPage'
 
 class Navigation extends React.Component {
   renderDropdown() {
-    const { authorized, getCalendars } = this.props
+    const { authorized, getCalendars, getLogout } = this.props
 
     if (authorized) {
       return (
@@ -20,7 +20,7 @@ class Navigation extends React.Component {
               Import Calendar
             </MenuItem>
             <MenuItem divider/>
-            <MenuItem>
+            <MenuItem onClick={() => getLogout()}>
               Logout
             </MenuItem>
           </NavDropdown>
