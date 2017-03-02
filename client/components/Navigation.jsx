@@ -19,6 +19,10 @@ class Navigation extends React.Component {
             <MenuItem onClick={() => getCalendars()}>
               Import Calendar
             </MenuItem>
+            <MenuItem divider/>
+            <MenuItem>
+              Logout
+            </MenuItem>
           </NavDropdown>
         </Nav>
       )
