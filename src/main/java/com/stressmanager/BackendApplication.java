@@ -178,7 +178,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		.setTimeMax(endOfMonth) // and ending at the last day of the month
 		.execute();
 
-		return "";
+		return events.toPrettyString();
 	}
 
 
