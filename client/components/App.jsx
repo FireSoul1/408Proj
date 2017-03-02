@@ -1,11 +1,14 @@
 import React from 'react'
 import { render } from 'react-dom'
-import ajax from 'jquery'
+import { ajax } from 'jquery'
+import { isEmpty } from 'lodash'
 
 import 'style/bootswatch'
 
+import ImportPage from './ImportPage'
 import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
+import UserPage from './UserPage'
 
 class App extends React.Component {
   constructor(props) {
@@ -13,36 +16,86 @@ class App extends React.Component {
 
     this.state = {
       activeView: LoginPage,
-      authenticated: false,
+      authorized: false,
+      calendarList: [],
       user: {}
     }
+  }
+
+  componentDidMount() {
+    this.getAuthorized()
+  }
+
+  componentDidUpdate() {
+    const { authorized } = this.state
+
+    if (!this.isActiveView(LoginPage) && !authorized) {
+      this.setActiveView(LoginPage)
+    }
+  }
+
+  responseIsJson(xhr) {
+    const ct = xhr.getResponseHeader('content-type') || '';
+
+    return (ct.indexOf('json') > -1)
+  }
+
+  getAuthorized() {
+    ajax({
+      url: '/me',
+      type: 'get',
+      success: (user, status, xhr) => {
+        if (this.responseIsJson(xhr)) {
+          this.setState({ user, authorized: true })
+          this.setActiveView(UserPage)
+          return
+        }
+
+        this.setState({ user: {}, authorized: false })
+      },
+      error: response => {
+        this.setState({ user: {}, authorized: false })
+      }
+    })
+  }
+
+  getCalendars() {
+    const { user } = this.state
+
+    ajax({
+      url: '/calendar/list',
+      type: 'get',
+      data: { token: user.auth },
+      success: (data, status, xhr) => {
+        if (this.responseIsJson(xhr)) {
+          this.setState({ calendarList: data.items })
+        }
+
+        this.setActiveView(ImportPage)
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
   }
 
   setActiveView(activeView) {
     this.setState({ activeView })
   }
 
-  authUser() {
-    ajax({
-      type: 'get',
-      url: '/user',
-      success: data => {
-        this.setState({
-          user: data.userAuthentication.details.name,
-
-          authenticated: true
-
-        })
-      }
-    })
+  isActiveView(view) {
+    return view === this.state.activeView
   }
 
   render() {
     return (
       <MainLayout
+        authorized={this.state.authorized}
         activeView={this.state.activeView}
-        authUser={() => this.authUser()}
-        setActiveView={activeView => this.setActiveView(activeView)}
+        calendarList={this.state.calendarList}
+        getCalendars={() => this.getCalendars()}
+        user={this.state.user}
       />
     )
   }
