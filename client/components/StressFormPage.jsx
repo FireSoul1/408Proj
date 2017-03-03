@@ -7,7 +7,7 @@ import {
   HelpBlock
 } from 'react-bootstrap'
 
-import {eventListResponse} from 'mock/events'
+
 
 class StressFormPage extends React.Component {
 
@@ -39,7 +39,6 @@ class StressFormPage extends React.Component {
   		if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)) { return Number(value); }
 
   		return NaN;
-
   	}
 
   	handleChange(e, id) {
@@ -51,7 +50,8 @@ class StressFormPage extends React.Component {
 
 	renderForms() {
 
-		const options = map(eventListResponse.items, event => {
+		const { unratedEvents } = this.props
+		const options = map(unratedEvents, event => {
 		  	return (
 			  <form key={event.id}>
 		        <FormGroup
