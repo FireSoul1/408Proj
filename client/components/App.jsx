@@ -11,9 +11,6 @@ import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
 
-import { eventListResponse } from 'mock/events'
-
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -115,8 +112,8 @@ class App extends React.Component {
 
   unratedEvents() {
 
-    return filter(eventListResponse.items, event => {
-      return event.stressValue === null
+    return filter(this.state.eventList, event => {
+      return event.stressValue === null || event.stressValue === undefined
     })
 
   }
