@@ -68,8 +68,8 @@ public class MainController {
          //get the eventID
          System.out.println("URL: "+request.toPrettyString());
          //String stress = (String)request.get("stressValue");
-         String calendarEvent = (String)request.get("calID");
-         String calendarID = (String)request.get("userName");
+         String calID = (String)request.get("calID");
+         String userName = (String)request.get("userName");
          System.out.println("  "+calID + "  "+userName);
 
          //get the event from the API
@@ -91,8 +91,8 @@ public class MainController {
         //get the eventID
         System.out.println("URL: "+request.toPrettyString());
         String stress = (String)request.get("stressValue");
-        String calendarEvent = (String)request.get("calEvent");
-        String calendarID = (String)request.get("userName");
+        String calID = (String)request.get("calEvent");
+        String userName = (String)request.get("userName");
         System.out.println(stress+"  "+calID + "  "+userName);
 
         //get the event from the API
