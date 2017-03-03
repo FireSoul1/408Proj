@@ -115,6 +115,30 @@ class App extends React.Component {
     })
   }
 
+  postCalendarAdd(calID) {
+    const data = {
+      calID,
+      userName: this.state.user.name
+    }
+
+    ajax({
+      url: '/calendar/add',
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: () => {
+        // TODO give feedback to user
+        console.log("Added Calendar Successfully")
+
+        this.setActiveView(UserPage)
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   // App Methods
 
   isActiveView(view) {
@@ -134,6 +158,7 @@ class App extends React.Component {
         eventList={this.state.eventList}
         getCalendars={() => this.getCalendars()}
         getLogout={() => this.getLogout()}
+        postCalendarAdd={calId => this.postCalendarAdd(calId)}
         user={this.state.user}
       />
     )
