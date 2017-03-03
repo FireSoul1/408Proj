@@ -62,12 +62,9 @@ class App extends React.Component {
   }
 
   getCalendars() {
-    const { user } = this.state
-
     ajax({
       url: '/calendar/list',
       type: 'get',
-      data: { token: user.auth },
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ calendarList: data.items })
@@ -83,12 +80,9 @@ class App extends React.Component {
   }
 
   getEventList() {
-    const { user } = this.state
-
     ajax({
       url: '/me/calendar/events',
       type: 'get',
-      data: { token: user.auth },
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ eventList: data.items })
@@ -102,12 +96,9 @@ class App extends React.Component {
   }
 
   getLogout() {
-    const { user } = this.state
-
     ajax({
       url: '/logout',
       type: 'get',
-      data: { token: user.auth },
       success: (data, status, xhr) => {
         this.setState({ authorized: false })
       },
