@@ -18,12 +18,14 @@ class App extends React.Component {
       activeView: LoginPage,
       authorized: false,
       calendarList: [],
+      eventList: [],
       user: {}
     }
   }
 
   componentDidMount() {
     this.getAuthorized()
+    this.getEventList()
   }
 
   componentDidUpdate() {
@@ -80,6 +82,25 @@ class App extends React.Component {
     })
   }
 
+  getEventList() {
+    const { user } = this.state
+
+    ajax({
+      url: '/me/calendar/events',
+      type: 'get',
+      data: { token: user.auth },
+      success: (data, status, xhr) => {
+        if (this.responseIsJson(xhr)) {
+          this.setState({ eventList: data.items })
+        }
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   setActiveView(activeView) {
     this.setState({ activeView })
   }
@@ -94,6 +115,7 @@ class App extends React.Component {
         authorized={this.state.authorized}
         activeView={this.state.activeView}
         calendarList={this.state.calendarList}
+        eventList={this.state.eventList}
         getCalendars={() => this.getCalendars()}
         user={this.state.user}
       />
