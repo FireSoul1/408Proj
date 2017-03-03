@@ -48,6 +48,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.CompositeFilter;
 import org.springframework.boot.autoconfigure.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 
 
 
@@ -159,7 +163,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 	@RequestMapping(value = "/me/calendar/events")
-	public String events() throws Exception {
+	public ResponseEntity<String> events() throws Exception {
 		//HTTP Headers
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
