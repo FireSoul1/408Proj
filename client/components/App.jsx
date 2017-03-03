@@ -102,6 +102,23 @@ class App extends React.Component {
     })
   }
 
+  getLogout() {
+    const { user } = this.state
+
+    ajax({
+      url: '/logout',
+      type: 'get',
+      data: { token: user.auth },
+      success: (data, status, xhr) => {
+        this.setState({ authorized: false })
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   setActiveView(activeView) {
     this.setState({ activeView })
   }
@@ -126,6 +143,7 @@ class App extends React.Component {
         calendarList={this.state.calendarList}
         eventList={this.state.eventList}
         getCalendars={() => this.getCalendars()}
+        getLogout={() => this.getLogout()}
         unratedEvents={this.unratedEvents()}
         user={this.state.user}
         setActiveView={activeView => this.setActiveView(activeView)}

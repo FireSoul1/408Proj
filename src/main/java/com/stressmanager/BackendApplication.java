@@ -15,7 +15,7 @@ import com.google.api.client.auth.oauth2.*;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.*;
-
+import com.google.api.client.json.*;
 import org.springframework.security.core.*;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.autoconfigure.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -40,12 +41,15 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.CompositeFilter;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +57,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 
+import com.amazonaws.services.dynamodbv2.document.*;
 
 
 @RestController
@@ -66,13 +71,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
-	//static Credentials credz;
-
 	static com.google.api.services.calendar.Calendar service;
-//	static OAuth2AccessToken token;
 
-	//static Credentials credz;
-
+	//set up the access token and check that is works
 	@RequestMapping({ "/user", "/me" })
 	public Map<String, String> user(Principal principal) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
@@ -115,6 +116,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		return map;///list.get(1).getColorId();
 	}
 
+	//get the Credz for the new User
 	public Credential authorize() throws Exception {
 		final List<String> SCOPES =
         	Arrays.asList(CalendarScopes.CALENDAR);
@@ -129,39 +131,29 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	}
 
+	//get and instance of Google Calendar API services
 	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		Credential credz = authorize();
-
 		return new com.google.api.services.calendar.Calendar.Builder(
 			HTTP_TRANSPORT, JSON_FACTORY, credz)
 			.setApplicationName("Stressmanager")
 			.build();
 	}
-	
-	
-	//TODO: Possible custom Error Codes and pages. This Bean will be needed
-	// @Bean
-    // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
-    //         final AuthenticationManager authenticationManager) {
-    //     RequestHeaderAuthenticationFilter filter = new MyRequestHeaderAuthenticationFilter();
-    //     filter.setAuthenticationManager(authenticationManager);
-    //     filter.setExceptionIfHeaderMissing(false);
-    //     filter.setInvalidateSessionOnPrincipalChange(true);
-    //     filter.setCheckForPrincipalChanges(true);
-    //     filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
-    //     return filter;
-    // }
 
-	///temp call to Google Calendar API
-	@RequestMapping(value="/calendar")
-	public String calendar(String str) throws Exception{
 
-		return "This is where the cal go";
-
+	///Logout a user using the Servlet Context
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	if (auth != null){
+        	new SecurityContextLogoutHandler().logout(request, response, auth);
+    	}
+    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
+	//get a month worth of events from the First day of the month to the first of the next month
 	@RequestMapping(value = "/me/calendar/events")
 	public ResponseEntity<String> events() throws Exception {
 		//HTTP Headers
@@ -187,7 +179,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
 			.setTimeMax(endOfMonth) // and ending at the last day of the month
 			.execute();
-
 		//get the data from the HttpServletRequest
 		List<Event> items = events.getItems();
 		if (items.size() == 0) {
@@ -207,16 +198,18 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
 	}
-
-
+	/*
+	* Spring Security Set up
+	*/
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		//temp = http;
 		// @formatter:off
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
-				.logoutSuccessUrl("/").permitAll().and().csrf()
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+				.logoutSuccessUrl("/").permitAll().and().csrf().disable()
+				///disabled the CSRF Tokens
 				.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
 		// @formatter:on
 	}
@@ -232,11 +225,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	public static void main(String[] args) {
-		//TODO: GENERATE YML FILE AND CLIENT ID
-		SpringApplication.run(BackendApplication.class, args);
-	}
-
 	@Bean
 	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -247,12 +235,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@ConfigurationProperties("google")
+	@ConfigurationProperties("google")//Google Login setup
 	public ClientResources google() {
 		System.out.println("RESOURCE BEING MADE");
 		return new ClientResources();
 	}
-
 	private Filter ssoFilter() {
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
@@ -263,7 +250,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("RESOURCE BEING MADE");
 		return filter;
 	}
-
 	private Filter ssoFilter(ClientResources client, String path) {
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 				path);
@@ -275,6 +261,14 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		filter.setTokenServices(tokenServices);
 		return filter;
 	}
+
+	//Deploy the Server
+	public static void main(String[] args) {
+		//TODO: setup the DB
+
+		SpringApplication.run(BackendApplication.class, args);
+	}
+
 
 }
 
@@ -328,4 +322,3 @@ class ClientResourcesTest {
 		return resource;
 	}
 }
-

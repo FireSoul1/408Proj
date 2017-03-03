@@ -11,7 +11,7 @@ import StressFormPage from './StressFormPage'
 
 class Navigation extends React.Component {
   renderDropdown() {
-    const { authorized, getCalendars, setActiveView } = this.props
+    const { authorized, getCalendars, getLogout, setActiveView } = this.props
 
     if (authorized) {
       return (
@@ -22,6 +22,10 @@ class Navigation extends React.Component {
             </MenuItem>
             <MenuItem onClick={() => setActiveView(StressFormPage)}>
               Rate Events
+            </MenuItem>
+            <MenuItem divider/>
+            <MenuItem onClick={() => getLogout()}>
+              Logout
             </MenuItem>
           </NavDropdown>
         </Nav>
