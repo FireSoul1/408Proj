@@ -23,6 +23,8 @@ class App extends React.Component {
     }
   }
 
+  // Component Lifecycle Methods
+
   componentDidMount() {
     this.getAuthorized()
     this.getEventList()
@@ -36,11 +38,15 @@ class App extends React.Component {
     }
   }
 
+  // API Helpers
+
   responseIsJson(xhr) {
     const ct = xhr.getResponseHeader('content-type') || '';
 
     return (ct.indexOf('json') > -1)
   }
+
+  // API Methods
 
   getAuthorized() {
     ajax({
@@ -109,12 +115,14 @@ class App extends React.Component {
     })
   }
 
-  setActiveView(activeView) {
-    this.setState({ activeView })
-  }
+  // App Methods
 
   isActiveView(view) {
     return view === this.state.activeView
+  }
+
+  setActiveView(activeView) {
+    this.setState({ activeView })
   }
 
   render() {
