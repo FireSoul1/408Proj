@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  Button,
   FormControl,
   FormGroup,
   Jumbotron
@@ -11,7 +12,7 @@ class ImportPage extends React.Component {
     super(props)
 
     this.state = {
-      calendarId: ''
+      calID: ''
     }
   }
 
@@ -26,6 +27,9 @@ class ImportPage extends React.Component {
   }
 
   render() {
+    const { postCalendarAdd } = this.props
+    const { calID } = this.state
+
     return (
       <div className='container'>
         <Jumbotron>
@@ -34,12 +38,19 @@ class ImportPage extends React.Component {
           <FormGroup controlId="formControlsSelect">
             <FormControl
               componentClass="select"
-              onChange={e => this.setState({ calendarId: e.target.value })}
+              onChange={e => this.setState({ calID: e.target.value })}
               placeholder="select"
             >
               {this.renderOptions()}
             </FormControl>
           </FormGroup>
+
+          <Button
+            bsStyle='primary'
+            onClick={() => postCalendarAdd(calID)}
+          >
+            Submit
+          </Button>
 
         </Jumbotron>
       </div>
