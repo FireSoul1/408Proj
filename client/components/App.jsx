@@ -9,21 +9,22 @@ import ImportPage from './ImportPage'
 import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
+import StressFormPage from './StressFormPage'
 
 class App extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      activeView: LoginPage,
-      authorized: false,
+      activeView: StressFormPage,
+      authorized: true,
       calendarList: [],
       user: {}
     }
   }
 
   componentDidMount() {
-    this.getAuthorized()
+    // this.getAuthorized()
   }
 
   componentDidUpdate() {
