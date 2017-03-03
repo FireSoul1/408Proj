@@ -22,9 +22,12 @@ class StressFormPage extends React.Component {
 	getValidationState(id) {
 
 		if (this.state.value[id]) {
-		    const num = this.state.value[id]
+		    const val = this.state.value[id]
+		    const num = this.filterInt(val)
 
-		    if (fliterInt(num).isNan()) return 'error';
+		    if (Number.isNaN(num)) { return 'error' }
+		    if (num > 10 || num < -10) {return 'error'}
+
 		    return 'success'
 		}
 		
@@ -58,12 +61,11 @@ class StressFormPage extends React.Component {
 		          <ControlLabel>{event.summary}</ControlLabel>
 		          <FormControl
 		            type="text"
-		            value={this.state.value[event.id]}
+		            value={this.state.value[event.id] || ''}
 		            placeholder="Enter Text"
 		            onChange={e => this.handleChange(e, event.id)}
 		          />
-		          <FormControl.Feedback />
-		          <HelpBlock>Validation is based on string length.</HelpBlock>
+		          <HelpBlock>Validation is based integers between -10 and 10.</HelpBlock>
 		        </FormGroup>
 		      </form>
 			)
