@@ -10,17 +10,13 @@ import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 
 public class DBSetup {
-    // config basic AWS setup before accessing the tables like validating credentials
-
-    // DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
-    // new ProfileCredentialsProvider()));
-
+    //used for Localtesting
     static AmazonDynamoDBClient localtest = new AmazonDynamoDBClient()
-    .withEndpoint("http://localhost:8080");
-
+        .withEndpoint("http://localhost:8080");
+    //used for remote testing
     static AmazonDynamoDBClient remotetest = new AmazonDynamoDBClient()
-    .withEndpoint("http://dynamodb.us-east-2.amazonaws.com");
-
+        .withEndpoint("http://dynamodb.us-east-2.amazonaws.com");
+    //the current instance of DynamoDB
     static DynamoDB currentDB;
 
     public static void localDB() {
@@ -31,7 +27,7 @@ public class DBSetup {
         currentDB = new DynamoDB(remotetest);
     }
 
-    public Table getUsersTable() {
+    public static Table getUsersTable() {
         return currentDB.getTable("Users");
     }
 
