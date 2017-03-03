@@ -10,8 +10,6 @@ import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 
-import { eventListResponse } from 'mock/events'
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -85,24 +83,22 @@ class App extends React.Component {
   }
 
   getEventList() {
-    // const { user = this.state }
-    //
-    // ajax({
-    //   url: '/events/list',
-    //   type: 'get',
-    //   data { token: user.auth },
-    //   success: (data, status, xhr) => {
-    //     if (this.responseIsJson(xhr)) {
-    //       this.setState({ eventList: data.items })
-    //     }
-    //   },
-    //   error: response => {
-    //     // TODO give feedback to user
-    //     console.log(response)
-    //   }
-    // })
+    const { user } = this.state
 
-    this.setState({ eventList: eventListResponse.items })
+    ajax({
+      url: '/me/calendar/events',
+      type: 'get',
+      data: { token: user.auth },
+      success: (data, status, xhr) => {
+        if (this.responseIsJson(xhr)) {
+          this.setState({ eventList: data.items })
+        }
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
   }
 
   setActiveView(activeView) {
