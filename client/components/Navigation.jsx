@@ -31,10 +31,10 @@ class Navigation extends React.Component {
 
   render() {
     return (
-      <Navbar>
+      <Navbar fixedTop>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#">Stress Manager</a>
+            <a href="/">Stress Manager</a>
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}

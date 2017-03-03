@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import java.util.List;
 
 @RestController
@@ -37,15 +42,17 @@ public class MainController {
     }
     //A route to just test out the Spring Framework
     @RequestMapping(value = "/calendar/list")
-    @ResponseBody
-    public String pingTemp() throws Exception{
+    public ResponseEntity<String> pingTemp() throws Exception{
+        final HttpHeaders httpHeaders = new HttpHeaders();
         CalendarList callist = BackendApplication.service.calendarList().list().execute();
+
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         List<CalendarListEntry> list = callist.getItems();
         for (CalendarListEntry event : list) {
              System.out.printf("%s (%s)\n", event.getSummary(), event.getColorId());
         }
 
-        return callist.toPrettyString();
+        return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
     }
 }
