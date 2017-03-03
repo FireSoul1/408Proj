@@ -57,6 +57,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 
+import com.amazonaws.services.dynamodbv2.document.*;
+
 
 @RestController
 @EnableOAuth2Client
@@ -139,19 +141,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setApplicationName("Stressmanager")
 			.build();
 	}
-	@RequestMapping(value = "/check")
-	public ResponseEntity<String> checkUser(@RequestBody String name) {
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		//check if the User exists in the DB,
-			//If not, add them to the DB
 
-			//else, send their calendar data
-
-
-
-		return new ResponseEntity<String>("name:whatis", httpHeaders, HttpStatus.OK);
-	}
 
 	///Logout a user using the Servlet Context
 	@RequestMapping(value="/logout", method = RequestMethod.GET)
@@ -160,7 +150,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
     	if (auth != null){
         	new SecurityContextLogoutHandler().logout(request, response, auth);
     	}
-    	return "You were logged out";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
 	//get a month worth of events from the First day of the month to the first of the next month
@@ -274,9 +264,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//Deploy the Server
 	public static void main(String[] args) {
-		//TODO: GENERATE YML FILE AND CLIENT ID
+		//TODO: setup the DB
+
 		SpringApplication.run(BackendApplication.class, args);
 	}
+
 
 }
 

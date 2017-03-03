@@ -43,46 +43,49 @@ public class MainController {
         return "Pong";
     }
     //A route to get the calendarList
-     @RequestMapping(value = "/calendar/list")
-     @ResponseBody
-     public ResponseEntity<String> calList() throws Exception{
-         final HttpHeaders httpHeaders = new HttpHeaders();
-         CalendarList callist = BackendApplication.service.calendarList().list().execute();
-         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-         List<CalendarListEntry> list = callist.getItems();
-         for (CalendarListEntry event : list) {
-              System.out.printf("%s (%s)\n", event.getSummary(), event.getColorId());
-         }
+    @RequestMapping(value = "/calendar/list")
+    @ResponseBody
+    public ResponseEntity<String> calList() throws Exception{
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        CalendarList callist = BackendApplication.service.calendarList().list().execute();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        List<CalendarListEntry> list = callist.getItems();
+        for (CalendarListEntry event : list) {
+            System.out.printf("%s (%s)\n", event.getSummary(), event.getColorId());
+        }
 
-         return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
-     }
-     //A route for setting an the calendar that is added
-     @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-     @ResponseBody
-     public String calendarAdd(@RequestBody GenericJson request) throws Exception{
+        return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
+    }
 
-         //set up the HTTP Headers
-         final HttpHeaders httpHeaders = new HttpHeaders();
-         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    //A route for setting an the calendar that is added
+    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String calendarAdd(@RequestBody GenericJson request) throws Exception{
 
-         //get the eventID
-         System.out.println("URL: "+request.toPrettyString());
-         //String stress = (String)request.get("stressValue");
-         String calID = (String)request.get("calID");
-         String userName = (String)request.get("userName");
-         System.out.println("  "+calID + "  "+userName);
+        //set up the HTTP Headers
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-         //get the event from the API
-         //or get it from the DB
+        //get the eventID
+        System.out.println("URL: "+request.toPrettyString());
+        //String stress = (String)request.get("stressValue");
+        String calID = (String)request.get("calID");
+        String userName = (String)request.get("userName");
+        System.out.println("  "+calID + "  "+userName);
 
-         //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
-         return "OK";
-     }
+        //add the CalID to the user in the DB
+        
+
+
+
+        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
+        return "OK";
+    }
 
     //A route for setting an event's stress by eventID
     @RequestMapping(value = "/calendar/event", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String calendarEvent(@RequestBody GenericJson request) throws Exception{
+    public String addCalendarEvent(@RequestBody GenericJson request) throws Exception{
 
         //set up the HTTP Headers
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -105,6 +108,22 @@ public class MainController {
     //A route for setting an event by eventID
     @RequestMapping(value = "/calendar/event/details", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    public String calendarEventsMonth(@RequestBody GenericJson request) throws Exception{
+
+        //set up the HTTP Headers
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        //get calendar service
+
+
+
+        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
+        return "OK";
+    }
+
+    //A route for getting events for a particular calendar
+    @RequestMapping(value = "/calendar/cal/events", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     public String calendarEvents(@RequestBody GenericJson request) throws Exception{
 
         //set up the HTTP Headers
@@ -112,8 +131,6 @@ public class MainController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         //get the eventID
-
-
 
         //get the event from the API
         //or get it from the DB

@@ -32,8 +32,8 @@ public class DBHelper {
 
     public void addToTable(String username, String authToken) {
         Table users = setup.getUsersTable();
-
         //TODO add user's name, auth token, and other stuff to the table
+        
     }
 
     void removeFromTable(String username, String authToken) {
