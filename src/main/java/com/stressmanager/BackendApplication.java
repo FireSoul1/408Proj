@@ -15,7 +15,7 @@ import com.google.api.client.auth.oauth2.*;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.*;
-
+import com.google.api.client.json.*;
 import org.springframework.security.core.*;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.autoconfigure.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -40,17 +41,20 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.filter.CompositeFilter;
-import org.springframework.boot.autoconfigure.*;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.filter.CompositeFilter;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 
 @RestController
@@ -123,31 +127,30 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		return credz;
 
 	}
+
 	//get and instance of Google Calendar API services
 	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		Credential credz = authorize();
-
 		return new com.google.api.services.calendar.Calendar.Builder(
 			HTTP_TRANSPORT, JSON_FACTORY, credz)
 			.setApplicationName("Stressmanager")
 			.build();
 	}
+	@RequestMapping(value = "/check")
+	public ResponseEntity<String> checkUser(@RequestBody String name) {
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		//check if the User exists in the DB,
+			//If not, add them to the DB
+
+			//else, send their calendar data
 
 
-	//TODO: Possible custom Error Codes and pages. This Bean will be needed
-	// @Bean
-    // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
-    //         final AuthenticationManager authenticationManager) {
-    //     RequestHeaderAuthenticationFilter filter = new MyRequestHeaderAuthenticationFilter();
-    //     filter.setAuthenticationManager(authenticationManager);
-    //     filter.setExceptionIfHeaderMissing(false);
-    //     filter.setInvalidateSessionOnPrincipalChange(true);
-    //     filter.setCheckForPrincipalChanges(true);
-    //     filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
-    //     return filter;
-    // }
+
+		return new ResponseEntity<String>("name:whatis", httpHeaders, HttpStatus.OK);
+	}
 
 	///Logout a user using the Servlet Context
 	@RequestMapping(value="/logout", method = RequestMethod.GET)
@@ -161,7 +164,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//get a month worth of events from the First day of the month to the first of the next month
 	@RequestMapping(value = "/me/calendar/events")
-	public String events() throws Exception {
+	public ResponseEntity<String>  events() throws Exception {
+		//HTTP Headers
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
 		// Returns all events in the current month
 		service = getCalendarService();
 
@@ -198,7 +205,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			}
 		}
 
-		return events.toPrettyString();
+		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 	}
 
 	/*
@@ -211,11 +218,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
-				.logoutSuccessUrl("/").permitAll().and().csrf()
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+				.logoutSuccessUrl("/").permitAll().and().csrf().disable()
+				///disabled the CSRF Tokens
 				.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
 		// @formatter:on
 	}
+
 	@Configuration
 	@EnableResourceServer
 	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
@@ -226,6 +234,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			// @formatter:on
 		}
 	}
+
 	@Bean
 	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -234,6 +243,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		registration.setOrder(-100);
 		return registration;
 	}
+
 	@Bean
 	@ConfigurationProperties("google")//Google Login setup
 	public ClientResources google() {
@@ -269,21 +279,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 }
-// class MyRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
-//
-// 	   @Override
-// 	   protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-// 			   AuthenticationException failed) {
-// 		  try{
-// 		   super.unsuccessfulAuthentication(request, response, failed);
-// 		   // see comments in Servlet API around using sendError as an alternative
-// 		   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//
-// 	   } catch (Exception e) {
-// 		   e.printStackTrace();
-// 	   }
-// 	   }
-//   }
 
 class ClientResources {
 

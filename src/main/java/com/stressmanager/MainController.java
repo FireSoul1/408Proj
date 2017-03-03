@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.auth.oauth2.*;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -54,22 +56,71 @@ public class MainController {
 
          return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
      }
-    //TODO: A route for posting Event with it's value
+     //A route for setting an the calendar that is added
+     @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+     @ResponseBody
+     public String calendarAdd(@RequestBody GenericJson request) throws Exception{
 
+         //set up the HTTP Headers
+         final HttpHeaders httpHeaders = new HttpHeaders();
+         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-    //A route for getting an event by eventID
-    @RequestMapping(value = "/calendar/event")
+         //get the eventID
+         System.out.println("URL: "+request.toPrettyString());
+         //String stress = (String)request.get("stressValue");
+         String calendarEvent = (String)request.get("calID");
+         String calendarID = (String)request.get("userName");
+         System.out.println("  "+calID + "  "+userName);
+
+         //get the event from the API
+         //or get it from the DB
+
+         //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
+         return "OK";
+     }
+
+    //A route for setting an event's stress by eventID
+    @RequestMapping(value = "/calendar/event", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String calendarEvent(HttpServletRequest request) throws Exception{
+    public String calendarEvent(@RequestBody GenericJson request) throws Exception{
+
+        //set up the HTTP Headers
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        //get the eventID
+        System.out.println("URL: "+request.toPrettyString());
+        String stress = (String)request.get("stressValue");
+        String calendarEvent = (String)request.get("calEvent");
+        String calendarID = (String)request.get("userName");
+        System.out.println(stress+"  "+calID + "  "+userName);
+
+        //get the event from the API
+        //or get it from the DB
+
+        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
+        return "OK";
+    }
+
+    //A route for setting an event by eventID
+    @RequestMapping(value = "/calendar/event/details", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String calendarEvents(@RequestBody GenericJson request) throws Exception{
+
+        //set up the HTTP Headers
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         //get the eventID
 
+
+
         //get the event from the API
+        //or get it from the DB
 
-        //return the JSON with the information
-        return "Cool beans";
+        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
+        return "OK";
     }
-
 
 
 }
