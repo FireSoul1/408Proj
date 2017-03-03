@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { ajax } from 'jquery'
-import { isEmpty } from 'lodash'
+import { isEmpty, filter } from 'lodash'
 
 import 'style/bootswatch'
 
@@ -11,20 +11,23 @@ import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
 
+import { eventListResponse } from 'mock/events'
+
+
 class App extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      activeView: StressFormPage,
-      authorized: true,
+      activeView: LoginPage,
+      authorized: false,
       calendarList: [],
       user: {}
     }
   }
 
   componentDidMount() {
-    // this.getAuthorized()
+    this.getAuthorized()
   }
 
   componentDidUpdate() {
@@ -89,6 +92,14 @@ class App extends React.Component {
     return view === this.state.activeView
   }
 
+  unratedEvents() {
+
+    return filter(eventListResponse.items, event => {
+      return event.stressValue === null
+    })
+
+  }
+
   render() {
     return (
       <MainLayout
@@ -96,7 +107,9 @@ class App extends React.Component {
         activeView={this.state.activeView}
         calendarList={this.state.calendarList}
         getCalendars={() => this.getCalendars()}
+        unratedEvents={this.unratedEvents()}
         user={this.state.user}
+        setActiveView={activeView => this.setActiveView(activeView)}
       />
     )
   }

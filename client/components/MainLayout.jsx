@@ -12,9 +12,12 @@ class MainLayout extends React.Component {
           authorized={this.props.authorized}
           getCalendars={() => this.props.getCalendars()}
           user={this.props.user}
+          setActiveView={activeView => this.props.setActiveView(activeView)}
+
         />
         <this.props.activeView
           calendarList={this.props.calendarList}
+          unratedEvents={this.props.unratedEvents}
         />
       </div>
     )
