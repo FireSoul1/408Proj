@@ -6,11 +6,6 @@ import java.util.*;
 import javax.servlet.Filter;
 import javax.servlet.http.*;
 
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
-
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.client.json.JsonFactory;
@@ -77,9 +72,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 //	static OAuth2AccessToken token;
 
 	//static Credentials credz;
-
-	DBHelper db = new DBHelper();
-	
 
 	@RequestMapping({ "/user", "/me" })
 	public Map<String, String> user(Principal principal) throws Exception{
@@ -214,29 +206,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
-	}
-
-	@RequestMapping(value = "/me/find")
-	public ResponseEntity<String> findUser(Principal principal) throws Exception {
-		String username = principal.getName();
-		String token = oauth2ClientContext.getAccessToken().toString();
-		db.accessDB();
-
-		Table table = db.setup.getUsersTable();
-
-		try { // If user exists, send calendar data.
-			GetItemSpec spec = new GetItemSpec()
-				.withPrimaryKey("userID", username, "token", token);
-			table.getItem(spec);
-
-			return events();
-		} catch (Exception e) { // If not, add them to the DB
-			table.putItem(new Item()
-				.withPrimaryKey("userID", username, "token", token)
-			);
-
-			return new ResponseEntity<String>("New user created", HttpStatus.OK);
-		}
 	}
 
 

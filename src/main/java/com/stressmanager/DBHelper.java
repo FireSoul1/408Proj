@@ -24,7 +24,7 @@ public class DBHelper {
     // DynamoDB dynamoDB = new DynamoDB(new AmazonDynamoDBClient(
     //     new ProfileCredentialsProvider()));
 
-    DBSetup setup = new DBSetup();
+    DBSetup setup = new DBSetup();;
 
     public void accessDB() {
         setup.remoteDB();
