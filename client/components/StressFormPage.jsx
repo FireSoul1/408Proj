@@ -4,7 +4,8 @@ import {
   FormControl,
   FormGroup,
   ControlLabel,
-  HelpBlock
+  HelpBlock,
+  Panel
 } from 'react-bootstrap'
 
 
@@ -75,8 +76,19 @@ class StressFormPage extends React.Component {
   	}
 
 	render() {
+
+		const title = (<h3>How to DESTRESS your week!!</h3>)
+
 	    return (
+
 	      <div className='container'>
+	      	
+	      	<Panel header={title}>	      	  
+	      		<p>For each event rate how stressed you feel about it on a scale of -10 to 10.</p>
+	      		<p>Any event that stresses you out should have a positive value, and any event that destresses you should have a negative value. </p>	      	  
+	      		<p>10 means you are the most stressed about this event.</p>
+	      		<p>-10 means this event is most destressing for you.</p>
+	      	</Panel>
 
 	      	{this.renderForms()}
 	        
