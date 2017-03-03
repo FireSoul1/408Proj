@@ -27,6 +27,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import com.amazonaws.services.dynamodbv2.document.Table;
+
 
 @RestController
 @EnableOAuth2Client
@@ -74,7 +76,11 @@ public class MainController {
         System.out.println("  "+calID + "  "+userName);
 
         //add the CalID to the user in the DB
+        Table tab = DBSetup.getUsersTable();
         
+
+        System.out.println(tab.toString());
+
 
 
 

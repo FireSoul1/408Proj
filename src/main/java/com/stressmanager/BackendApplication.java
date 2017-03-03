@@ -265,7 +265,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//Deploy the Server
 	public static void main(String[] args) {
 		//TODO: setup the DB
-
+		DBSetup.remoteDB();
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
