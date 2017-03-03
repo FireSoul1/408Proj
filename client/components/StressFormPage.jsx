@@ -22,14 +22,21 @@ class StressFormPage extends React.Component {
 	getValidationState(id) {
 
 		if (this.state.value[id]) {
-		    const length = this.state.value[id].length
+		    const num = this.state.value[id]
 
-		    if (length > 10) return 'success';
-		    else if (length > 5) return 'warning';
-		    else if (length > 0) return 'error';
+		    if (fliterInt(num).isNan()) return 'error';
+		    return 'success'
 		}
 		
 		return null
+  	}
+
+  	filterInt(value) {
+
+  		if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)) { return Number(value); }
+
+  		return NaN;
+
   	}
 
   	handleChange(e, id) {
