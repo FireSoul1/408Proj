@@ -51,10 +51,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.CompositeFilter;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.autoconfigure.*;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 
 
 @RestController
@@ -164,7 +165,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//get a month worth of events from the First day of the month to the first of the next month
 	@RequestMapping(value = "/me/calendar/events")
-	public ResponseEntity<String>  events() throws Exception {
+	public ResponseEntity<String> events() throws Exception {
 		//HTTP Headers
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -188,7 +189,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
 			.setTimeMax(endOfMonth) // and ending at the last day of the month
 			.execute();
-
 		//get the data from the HttpServletRequest
 		List<Event> items = events.getItems();
 		if (items.size() == 0) {
@@ -206,8 +206,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
-	}
 
+	}
 	/*
 	* Spring Security Set up
 	*/
