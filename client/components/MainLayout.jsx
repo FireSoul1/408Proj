@@ -18,6 +18,7 @@ class MainLayout extends React.Component {
           calendarList={this.props.calendarList}
           unratedEvents={this.props.unratedEvents}
           eventList={this.props.eventList}
+          postCalendarAdd={calID => this.props.postCalendarAdd(calID)}
         />
       </div>
     )
