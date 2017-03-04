@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { ajax } from 'jquery'
-import { isEmpty } from 'lodash'
+import { isEmpty, filter } from 'lodash'
 
 import 'style/bootswatch'
 
@@ -9,6 +9,7 @@ import ImportPage from './ImportPage'
 import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
+import StressFormPage from './StressFormPage'
 
 class App extends React.Component {
   constructor(props) {
@@ -149,6 +150,12 @@ class App extends React.Component {
     this.setState({ activeView })
   }
 
+  unratedEvents() {
+    return filter(this.state.eventList, event => {
+      return event.stressValue === null || event.stressValue === undefined
+    })
+  }
+
   render() {
     return (
       <MainLayout
@@ -159,7 +166,9 @@ class App extends React.Component {
         getCalendars={() => this.getCalendars()}
         getLogout={() => this.getLogout()}
         postCalendarAdd={calId => this.postCalendarAdd(calId)}
+        unratedEvents={this.unratedEvents()}
         user={this.state.user}
+        setActiveView={activeView => this.setActiveView(activeView)}
       />
     )
   }
