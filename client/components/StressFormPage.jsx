@@ -50,21 +50,20 @@ class StressFormPage extends React.Component {
 
     return map(unratedEvents, event => {
       return (
-        <form key={event.id}>
-          <FormGroup
-            controlId='formBasicText'
-            validationState={this.getValidationState(event.id)}
-          >
-            <ControlLabel>{event.summary}</ControlLabel>
-            <FormControl
-              type='text'
-              value={this.state.value[event.id] || ''}
-              placeholder='Enter Text'
-              onChange={e => this.handleChange(e, event.id)}
-            />
-            <HelpBlock>Validation is based integers between -10 and 10.</HelpBlock>
-          </FormGroup>
-        </form>
+        <FormGroup
+          controlId='formBasicText'
+          key={event.id}
+          validationState={this.getValidationState(event.id)}
+        >
+          <ControlLabel>{event.summary}</ControlLabel>
+          <FormControl
+            type='text'
+            value={this.state.value[event.id] || ''}
+            placeholder='Enter Text'
+            onChange={e => this.handleChange(e, event.id)}
+          />
+          <HelpBlock>Validation is based integers between -10 and 10.</HelpBlock>
+        </FormGroup>
       )
     })
   }
