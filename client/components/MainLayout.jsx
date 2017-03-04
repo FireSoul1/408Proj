@@ -15,6 +15,7 @@ class MainLayout extends React.Component {
         <this.props.activeView
           calendarList={this.props.calendarList}
           eventList={this.props.eventList}
+          postCalendarAdd={calID => this.props.postCalendarAdd(calID)}
         />
       </div>
     )
