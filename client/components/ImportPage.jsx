@@ -19,11 +19,9 @@ class ImportPage extends React.Component {
   renderOptions() {
     const { calendarList } = this.props
 
-    const options = map(calendarList, calendar => {
+    return map(calendarList, calendar => {
       return (<option key={calendar.id} value={calendar.id}>{calendar.summary}</option>)
     })
-
-    return options
   }
 
   render() {
