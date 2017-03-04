@@ -45,7 +45,7 @@ class ImportPage extends React.Component {
 
           <Button
             bsStyle='primary'
-            className='import-page-submit'
+            className='submit-button-right'
             onClick={() => postCalendarAdd(calID)}
           >
             Submit

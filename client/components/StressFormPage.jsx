@@ -1,6 +1,7 @@
 import React from 'react'
-import { extend, map } from 'lodash'
+import { each, extend, map } from 'lodash'
 import {
+  Button,
   ControlLabel,
   FormControl,
   FormGroup,
@@ -81,6 +82,14 @@ class StressFormPage extends React.Component {
         </Panel>
 
         {this.renderForms()}
+
+        <Button
+          bsStyle='primary'
+          className='submit-button-right'
+          onClick={() => this.submitRatings()}
+        >
+          Submit
+        </Button>
       </div>
     )
   }
