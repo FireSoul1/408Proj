@@ -12,3 +12,13 @@ test('Renders import page correctly', () => {
   ).toJSON();
   expect(tree).toMatchSnapshot();
 });
+
+//tests to see if submit button is clickable
+test('Check to see if submit button exists and can click it', () => {
+
+  	const submitButton = shallow(
+	  	<ImportPage />
+    );
+    submitButton.simulate('click');
+	expect(submitButton.contains('Submit'));
+});
