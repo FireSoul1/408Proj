@@ -48,7 +48,7 @@ class StressFormPage extends React.Component {
   renderForms() {
     const { unratedEvents } = this.props
 
-    const options = map(unratedEvents, event => {
+    return map(unratedEvents, event => {
       return (
         <form key={event.id}>
           <FormGroup
@@ -67,8 +67,6 @@ class StressFormPage extends React.Component {
         </form>
       )
     })
-
-    return options
   }
 
   render() {
