@@ -4,6 +4,13 @@
 @import "~react-big-calendar/lib/css/react-big-calendar.css";
 @import "events.less";
 
+@material-light-blue:   #03A9F4;
+
+// Override today highlight
+.rbc-today {
+  background-color: fadeout(@material-light-blue, 90%);
+}
+
 body {
   padding-top: 80px;
 }
