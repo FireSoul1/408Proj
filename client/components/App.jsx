@@ -140,6 +140,29 @@ class App extends React.Component {
     })
   }
 
+  postCalendarEvent(calEvent, stressValue) {
+    const data = {
+      calEvent,
+      stressValue,
+      userName: this.state.user.name
+    }
+
+    ajax({
+      url: '/calendar/event',
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: () => {
+        // TODO give feedback to user
+        console.log(`Added stressValue ${stressValue} to event with id ${calEvent}`)
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   // App Methods
 
   isActiveView(view) {
@@ -166,6 +189,7 @@ class App extends React.Component {
         getCalendars={() => this.getCalendars()}
         getLogout={() => this.getLogout()}
         postCalendarAdd={calId => this.postCalendarAdd(calId)}
+        postCalendarEvent={(calEvent, stressValue) => this.postCalendarEvent(calEvent, stressValue)}
         unratedEvents={this.unratedEvents()}
         user={this.state.user}
         setActiveView={activeView => this.setActiveView(activeView)}
