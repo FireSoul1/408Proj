@@ -24,15 +24,13 @@ class UserPage extends React.Component {
       return { className: `event-unrated${selected}` }
     } else if (event.stressValue === 0) {
       return { className: `event-no-stress${selected}` }
-    } else {
-      if (event.stressValue > 0 && event.stressValue <= 10) {
-        return { className: `event-stress-${event.stressValue}${selected}` }
-      } else if (event.stressValue < 0 && event.stressValue >= -10) {
-        return { className: `event-destress-${Math.abs(event.stressValue)}${selected}`}
-      }
-
-      return null
+    } else if (event.stressValue > 0 && event.stressValue <= 10) {
+      return { className: `event-stress-${event.stressValue}${selected}` }
+    } else if (event.stressValue < 0 && event.stressValue >= -10) {
+      return { className: `event-destress-${Math.abs(event.stressValue)}${selected}`}
     }
+
+    return { className: `event-unrated${selected}` }
   }
 
   render() {
