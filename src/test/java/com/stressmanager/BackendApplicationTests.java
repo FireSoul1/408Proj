@@ -73,53 +73,53 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 
     }
 
-    // @Test
-	// public void homeNotNullTest() {
-    //     System.out.println("\nRunnning test case 1: Checking that maincontroller is working.");
-    //     Assert.assertNotNull(controller);
-	// }
-    // @Test
-	// public void checkHomePageTest() throws Exception{
-    //     System.out.println("\nRunnning test case 2: Checking that HomePage loads up.");
-    //     this.mvc.perform(get("/"))
-    //             .andExpect(status().isOk());
-    //
-    // }
-    // @Test
-    // public void RedirectTest() throws Exception{
-    //     System.out.println("\nRunnning test case 3: Redirect Test.");
-    //     HttpStatus stats = new TestRestTemplate("30354291750-bs651utajfcpf0a5outo8nqnmd8thm86.apps.googleusercontent.com", "8BrM4VbRR5dgYlinrySTKNU5")
-    //         .getForEntity("http://localhost:"+port+"/login/google", String.class).getStatusCode();
-    //     System.out.println("\n\n   The Status:"+stats);
-    //     Assert.assertEquals(
-	// 			HttpStatus.FOUND == stats,
-    //             true);
-    //
-    //
-    // }
-    // @Test
-    // @WithMockUser
-    // public void PingTestUnauthorized() throws Exception{
-    //     System.out.println("\n\nRunnning test case 4: Ping Test(Unauth)\n");
-    //     mvc.perform(get("/ping"))
-    //         .andExpect(status().isMovedTemporarily())
-    //         .andExpect(redirectedUrl("http://localhost/"));
-    //
-    // }
-    // @Test
-    // @WithMockUser
-    // public void PingTestAuthorized() throws Exception{
-    //     System.out.println("\n\nRunnning test case 5: Ping Test(Auth)\n");
-    //     // mvc.perform(formLogin("/login/google"))
-    //     //     .andExpect(status().isMovedTemporarily())
-    //     //     .andExpect(redirectedUrl("http://localhost/"));
-    //
-    // }
-    // @Test
-	// public void DBSetUpLocalTest() throws Exception{
-    //     System.out.println("\nRunnning test case 3: Checking that the Local DB is setup.");
-    //     DBSetup.localDB();
-	// }
+    @Test
+	public void homeNotNullTest() {
+        System.out.println("\nRunnning test case 1: Checking that maincontroller is working.");
+        Assert.assertNotNull(controller);
+	}
+    @Test
+	public void checkHomePageTest() throws Exception{
+        System.out.println("\nRunnning test case 2: Checking that HomePage loads up.");
+        this.mvc.perform(get("/"))
+                .andExpect(status().isOk());
+
+    }
+    @Test
+    public void RedirectTest() throws Exception{
+        System.out.println("\nRunnning test case 3: Redirect Test.");
+        HttpStatus stats = new TestRestTemplate("30354291750-bs651utajfcpf0a5outo8nqnmd8thm86.apps.googleusercontent.com", "8BrM4VbRR5dgYlinrySTKNU5")
+            .getForEntity("http://localhost:"+port+"/login/google", String.class).getStatusCode();
+        System.out.println("\n\n   The Status:"+stats);
+        Assert.assertEquals(
+				HttpStatus.FOUND == stats,
+                true);
+
+
+    }
+    @Test
+    @WithMockUser
+    public void PingTestUnauthorized() throws Exception{
+        System.out.println("\n\nRunnning test case 4: Ping Test(Unauth)\n");
+        mvc.perform(get("/ping"))
+            .andExpect(status().isMovedTemporarily())
+            .andExpect(redirectedUrl("http://localhost/"));
+
+    }
+    @Test
+    @WithMockUser
+    public void PingTestAuthorized() throws Exception{
+        System.out.println("\n\nRunnning test case 5: Ping Test(Auth)\n");
+        // mvc.perform(formLogin("/login/google"))
+        //     .andExpect(status().isMovedTemporarily())
+        //     .andExpect(redirectedUrl("http://localhost/"));
+
+    }
+    @Test
+	public void DBSetUpLocalTest() throws Exception{
+        System.out.println("\nRunnning test case 3: Checking that the Local DB is setup.");
+        DBSetup.localDB();
+	}
     @Test
 	public void DBSetUpRemoteTest() throws Exception{
         System.out.println("\nRunnning test case 4: Checking that the Remote DB is setup.");
