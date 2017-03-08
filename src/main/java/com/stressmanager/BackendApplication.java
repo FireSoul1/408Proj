@@ -38,6 +38,7 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -112,7 +113,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				System.out.printf("%s (%s)\n", event.getSummary(), start);
 			}
 		}
-
+		DBSetup.remoteDB();
 		return map;///list.get(1).getColorId();
 	}
 
@@ -264,8 +265,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//Deploy the Server
 	public static void main(String[] args) {
-		//TODO: setup the DB
-		DBSetup.remoteDB();
+
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
