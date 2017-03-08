@@ -17,6 +17,22 @@ class UserPage extends React.Component {
     }
   }
 
+  eventPropGetter(event, start, end, isSelected) {
+    const selected = isSelected ? '-selected' : ''
+
+    if (event.stressValue === null || event.stressValue === undefined) {
+      return { className: `event-unrated${selected}` }
+    } else if (event.stressValue === 0) {
+      return { className: `event-no-stress${selected}` }
+    } else if (event.stressValue > 0 && event.stressValue <= 10) {
+      return { className: `event-stress-${event.stressValue}${selected}` }
+    } else if (event.stressValue < 0 && event.stressValue >= -10) {
+      return { className: `event-destress-${Math.abs(event.stressValue)}${selected}`}
+    }
+
+    return { className: `event-unrated${selected}` }
+  }
+
   render() {
     return (
       <div className='container'>
@@ -24,6 +40,7 @@ class UserPage extends React.Component {
           defaultView='week'
           views={['week']}
           events={this.props.eventList}
+          eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
           startAccessor={event => this.accessor('start', event)}
           endAccessor={event => this.accessor('end', event)}
           allDayAccessor={event => has(event, 'start.date') && has(event, 'end.date')}
