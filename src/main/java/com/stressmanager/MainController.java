@@ -28,6 +28,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.model.*;
 
 
 @RestController
@@ -73,15 +75,17 @@ public class MainController {
         //String stress = (String)request.get("stressValue");
         String calID = (String)request.get("calID");
         String userName = (String)request.get("userName");
-        System.out.println("  "+calID + "  "+userName);
+        System.out.println("  "+calID + "  "+userName+"  "+DBSetup.currentDB.toString());
 
         //add the CalID to the user in the DB
-        Table tab = DBSetup.getUsersTable();
-        
+        Table users = DBSetup.getUsersTable();
+        Item item = new Item();
+        item.withString("userID", userName);
+        item.withString("calID", calID);
+        users.putItem(item);
 
-        System.out.println(tab.toString());
-
-
+        //make a table for the UserID that will be store eventIDs and stress values
+        int ok = DBSetup.createTable(userName);
 
 
         //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
@@ -100,16 +104,44 @@ public class MainController {
         //get the eventID
         System.out.println("URL: "+request.toPrettyString());
         String stress = (String)request.get("stressValue");
-        String calID = (String)request.get("calEvent");
+        String eventID = (String)request.get("calEvent");
         String userName = (String)request.get("userName");
-        System.out.println(stress+"  "+calID + "  "+userName);
+        System.out.println(stress+"  "+eventID + "  "+userName);
 
         //get the event from the API
-        //or get it from the DB
+        int slvl= 0;
+        try {
+            slvl = Integer.parseInt(stress);
+        } catch (Exception e) {
+            System.out.println("This is not a valid stress Level from "+ userName);
+            return "Level";
+        }
+
+        //add the stresslvl the user's table for events
+
+        //cheanges the username to something usable
+        userName = userName.replaceAll(" ", "_");
+        try{
+            Table table = DBSetup.getTable(userName);
+            Item new1 = new Item();
+            new1.withString("eventID", eventID);
+            new1.withInt("stresslvl", slvl);
+            table.putItem(new1);
+            System.out.println("Table Does exist!!!");
+            return "OK";
+        } catch(ResourceNotFoundException e) {
+            System.out.println("Table Does NOT exist!!!");
+            int err = DBSetup.createTable(userName);
+            if(err == 200)
+                return "OK";
+            return "{\"error\":\"couldn't make table \"}";
+
+        }
 
         //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
-        return "OK";
+
     }
+
 
     //A route for setting an event by eventID
     @RequestMapping(value = "/calendar/event/details", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -126,6 +158,7 @@ public class MainController {
         //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
         return "OK";
     }
+
 
     //A route for getting events for a particular calendar
     @RequestMapping(value = "/calendar/cal/events", consumes = MediaType.APPLICATION_JSON_VALUE)
