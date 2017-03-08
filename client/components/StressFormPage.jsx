@@ -1,100 +1,112 @@
 import React from 'react'
-import { extend, map } from 'lodash'
+import { each, extend, keys, map } from 'lodash'
 import {
+  Button,
+  ControlLabel,
   FormControl,
   FormGroup,
-  ControlLabel,
   HelpBlock,
   Panel
 } from 'react-bootstrap'
 
-
-
 class StressFormPage extends React.Component {
+  constructor(props) {
+    super(props)
 
-	constructor(props) {
-	    super(props)
+    this.state = {
+      value: {}
+    }
+  }
 
-	    this.state = {
-	      value: {}
-	    }
+  getValidationState(id) {
+    if (this.state.value[id]) {
+      const val = this.state.value[id]
+      const num = this.filterInt(val)
+
+      if (Number.isNaN(num)) { return 'error' }
+      if (num > 10 || num < -10) {return 'error'}
+
+      return 'success'
     }
 
-	getValidationState(id) {
+    return null
+  }
 
-		if (this.state.value[id]) {
-		    const val = this.state.value[id]
-		    const num = this.filterInt(val)
+  filterInt(value) {
+    if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)) { return Number(value) }
 
-		    if (Number.isNaN(num)) { return 'error' }
-		    if (num > 10 || num < -10) {return 'error'}
+    return NaN
+  }
 
-		    return 'success'
-		}
-		
-		return null
-  	}
+  handleChange(e, id) {
+    let newVal = {}
+    newVal[id] = e.target.value
 
-  	filterInt(value) {
+    const value = extend(this.state.value, newVal)
+    this.setState({ value })
+  }
 
-  		if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)) { return Number(value); }
+  submitRatings() {
+    const { postCalendarEvent } = this.props
+    const { value } = this.state
+    const ids = keys(value)
 
-  		return NaN;
-  	}
+    each(ids, id => {
+      if (this.getValidationState(id) === 'success') {
+        const stressValue = value[id]
 
-  	handleChange(e, id) {
-  		let newVal = {}
-  		newVal[id] = e.target.value
-  		const value = extend(this.state.value, newVal)
-   		this.setState({ value });
-  	}
+        postCalendarEvent(id, stressValue)
+      }
+    })
+  }
 
-	renderForms() {
+  renderForms() {
+    const { unratedEvents } = this.props
 
-		const { unratedEvents } = this.props
-		const options = map(unratedEvents, event => {
-		  	return (
-			  <form key={event.id}>
-		        <FormGroup
-		          controlId="formBasicText"
-		          validationState={this.getValidationState(event.id)}
-		        >
-		          <ControlLabel>{event.summary}</ControlLabel>
-		          <FormControl
-		            type="text"
-		            value={this.state.value[event.id] || ''}
-		            placeholder="Enter Text"
-		            onChange={e => this.handleChange(e, event.id)}
-		          />
-		          <HelpBlock>Validation is based integers between -10 and 10.</HelpBlock>
-		        </FormGroup>
-		      </form>
-			)
-		})
+    return map(unratedEvents, event => {
+      return (
+        <FormGroup
+          controlId='formBasicText'
+          key={event.id}
+          validationState={this.getValidationState(event.id)}
+        >
+          <ControlLabel>{event.summary}</ControlLabel>
+          <FormControl
+            type='text'
+            value={this.state.value[event.id] || ''}
+            placeholder='Enter Text'
+            onChange={e => this.handleChange(e, event.id)}
+          />
+          <HelpBlock>Validation is based integers between -10 and 10.</HelpBlock>
+        </FormGroup>
+      )
+    })
+  }
 
-		return options
-  	}
+  render() {
+    const title = (<h3>How to DESTRESS your week!!</h3>)
 
-	render() {
+    return (
+      <div className='container'>
+        <Panel header={title}>
+          <p>For each event rate how stressed you feel about it on a scale of -10 to 10.</p>
+          <p>Any event that stresses you out should have a positive value, and any event that destresses you should have a negative value. </p>
+          <p>10 means you are the most stressed about this event.</p>
+          <p>-10 means this event is most destressing for you.</p>
+        </Panel>
 
-		const title = (<h3>How to DESTRESS your week!!</h3>)
+        {this.renderForms()}
 
-	    return (
-
-	      <div className='container'>
-	      	
-	      	<Panel header={title}>	      	  
-	      		<p>For each event rate how stressed you feel about it on a scale of -10 to 10.</p>
-	      		<p>Any event that stresses you out should have a positive value, and any event that destresses you should have a negative value. </p>	      	  
-	      		<p>10 means you are the most stressed about this event.</p>
-	      		<p>-10 means this event is most destressing for you.</p>
-	      	</Panel>
-
-	      	{this.renderForms()}
-	        
-	      </div>
-	    )
- 	}
+        <Button
+          bsStyle='primary'
+          className='submit-button-right'
+          onClick={() => this.submitRatings()}
+        >
+          Submit
+        </Button>
+      </div>
+    )
+  }
 }
 
 export default StressFormPage

@@ -10,8 +10,9 @@
 
 [Sprint 1 Design Inspection, Code Inspection, Unit Testing](https://docs.google.com/document/d/1286QKHC_SKXjvaOQllOBXlMAwIpHeSg2QAVMARqN_hA/edit?usp=sharing)
 
-
 [Incremental and Regression Testing](https://docs.google.com/document/d/1vN7wMspZt-SuaZ3SMEV28CeFf54eZ4NnjWjsXfhb9bg/edit?usp=sharing)
+
+[Sprint 2 Design Inspection, Code Inspection, Unit Testing](https://docs.google.com/document/d/18--iv3bl29AJA4VfDhIz6OvPok1PliRPg5Q1kbM6FsI/edit?usp=sharing)
 
 See the docs folder for PDF copies of these documents.
 
@@ -56,8 +57,5 @@ Then, have one terminal session running `npm run dev`, which will automatically 
 the frontend whenever you make changes. When you make changes to the backend
 (or frontend, for that matter), kill the server if you have one running and
 run `mvn -Pdev package && java -jar target/backend-0.0.1-SNAPSHOT.jar` <--- **without** npm
-or 
-run `mvn package && java -jar target/backend-0.0.1-SNAPSHOT.jar` <--- **with** npm 
-
-
-
+or
+run `mvn package && java -jar target/backend-0.0.1-SNAPSHOT.jar` <--- **with** npm
