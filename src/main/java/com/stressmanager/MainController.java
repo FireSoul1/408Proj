@@ -2,7 +2,6 @@
 package com.stressmanager;
 
 import java.util.*;
-
 import javax.servlet.http.*;
 
 import com.google.api.client.http.HttpTransport;
@@ -30,6 +29,11 @@ import org.springframework.http.MediaType;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.model.*;
+import com.amazonaws.services.dynamodbv2.document.spec.*;
+
+import com.google.gson.*;
+import com.google.gson.reflect.*;
+
 
 
 @RestController
@@ -55,7 +59,7 @@ public class MainController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         List<CalendarListEntry> list = callist.getItems();
         for (CalendarListEntry event : list) {
-            System.out.printf("%s (%s)\n", event.getSummary(), event.getColorId());
+            System.out.printf(Colors.ANSI_PURPLE+"%s (%s)\n", event.getSummary(), event.getColorId());
         }
 
         return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
@@ -85,7 +89,7 @@ public class MainController {
         users.putItem(item);
 
         //make a table for the UserID that will be store eventIDs and stress values
-        int ok = DBSetup.createTable(userName);
+        int ok = DBSetup.createTable(userName.replaceAll(" ","_"));
 
 
         //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
@@ -95,7 +99,7 @@ public class MainController {
     //A route for setting an event's stress by eventID
     @RequestMapping(value = "/calendar/event", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String addCalendarEvent(@RequestBody GenericJson request) throws Exception{
+    public String addCalendarEventStress(@RequestBody GenericJson request) throws Exception{
 
         //set up the HTTP Headers
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -121,17 +125,21 @@ public class MainController {
 
         //cheanges the username to something usable
         userName = userName.replaceAll(" ", "_");
+        Item new1 = new Item();
+        new1.withString("eventID", eventID);
+        new1.withInt("stresslvl", slvl);
         try{
             Table table = DBSetup.getTable(userName);
-            Item new1 = new Item();
-            new1.withString("eventID", eventID);
-            new1.withInt("stresslvl", slvl);
             table.putItem(new1);
             System.out.println("Table Does exist!!!");
             return "OK";
         } catch(ResourceNotFoundException e) {
-            System.out.println("Table Does NOT exist!!!");
+            System.out.println(Colors.ANSI_RED+"Table Does NOT exist!!!");
+            //create the Table
             int err = DBSetup.createTable(userName);
+            //add to the table
+            Table table = DBSetup.getTable(userName);
+            table.putItem(new1);
             if(err == 200)
                 return "OK";
             return "{\"error\":\"couldn't make table \"}";
@@ -160,22 +168,34 @@ public class MainController {
     }
 
 
-    //A route for getting events for a particular calendar
-    @RequestMapping(value = "/calendar/cal/events", consumes = MediaType.APPLICATION_JSON_VALUE)
+
+    @RequestMapping(value = "/calendar/event/stress", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String calendarEvents(@RequestBody GenericJson request) throws Exception{
+    public ResponseEntity<String> calendarEvents(@RequestBody GenericJson request) throws Exception{
 
         //set up the HTTP Headers
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        //get the eventID
+        String eventID = (String)request.get("eventID");
+        String username = (String)request.get("userName");
+        //get the Table
+        Table tab = DBSetup.getTable(username.replaceAll(" ","_"));
 
-        //get the event from the API
-        //or get it from the DB
+        //get the stress value with that eventID
+        GetItemSpec spec = new GetItemSpec()
+               .withPrimaryKey("eventID", eventID);
+        Item got = tab.getItem(spec);
+        System.out.println(Colors.ANSI_YELLOW+"Data got is: "+got.toString());
 
-        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
-        return "OK";
+        //make the data a Json using Gson (looks messy but is simple)
+        TypeToken listType = new TypeToken<Map<String, Object>>() {};
+        Map<String, Object> add = got.asMap();
+        Gson gson = new Gson();
+        String resp = gson.toJson(add, listType.getType());
+
+        //Send response to client
+        return new ResponseEntity<String>(resp, httpHeaders, HttpStatus.OK);
     }
 
 

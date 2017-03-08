@@ -20,6 +20,7 @@ import java.util.*;
 
 
 public class DBSetup {
+
     //used for Localtesting
     static AmazonDynamoDBClient localtest = new AmazonDynamoDBClient()
         .withEndpoint("http://localhost:8080");
@@ -53,12 +54,10 @@ public class DBSetup {
         try{
             CreateTableRequest request = new CreateTableRequest(
                 Arrays.asList(//parameter 1
-                    new AttributeDefinition("eventID", ScalarAttributeType.S),
-                    new AttributeDefinition("stresslvl", ScalarAttributeType.N)),
+                    new AttributeDefinition("eventID", ScalarAttributeType.S)),
                 username,//parameter 2
                 Arrays.asList(///parameter 3
-                    new KeySchemaElement("eventID", KeyType.HASH),
-                    new KeySchemaElement("stresslvl", KeyType.RANGE)),
+                    new KeySchemaElement("eventID", KeyType.HASH)),
                 new ProvisionedThroughput(10L, 10L));//parameter 4
 
             currentDB.createTable(request)
