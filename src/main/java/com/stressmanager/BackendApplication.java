@@ -53,6 +53,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;		
+import com.amazonaws.services.dynamodbv2.document.Item;		
+import com.amazonaws.services.dynamodbv2.document.Table;		
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+
 
 
 @RestController
@@ -65,6 +70,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
+
+	DBHelper db = new DBHelper();
 
 	//static Credentials credz;
 
@@ -206,6 +213,43 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
+	}
+
+	@RequestMapping(value = "/me/find")
+	public ResponseEntity<String> findUser(Principal principal) throws Exception {
+		String username = principal.getName();
+		String token = oauth2ClientContext.getAccessToken().toString();
+		db.accessDB();
+
+		Table table = db.setup.getUsersTable();
+
+		try { // If user exists, send calendar data.
+			GetItemSpec spec = new GetItemSpec()
+				.withPrimaryKey("userID", username);
+			table.getItem(spec);
+
+			return events();
+		} catch (Exception e) { // If not, add them to the DB
+			table.putItem(new Item()
+				.withPrimaryKey("userID", username)
+			);
+
+			return new ResponseEntity<String>("New user created", HttpStatus.OK);
+		}
+	}
+
+	// Display the information for a single event in the user's calendar
+	@RequestMapping(value = "/event/detail")
+	public ResponseEntity<String> eventDetails(String calID, String eventID) throws Exception {
+		db.accessDB();
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		service = getCalendarService();
+
+		Event event = service.events().get(calID, eventID).execute();
+
+		return new ResponseEntity<String>(event.toPrettyString(), HttpStatus.OK);
 	}
 
 
