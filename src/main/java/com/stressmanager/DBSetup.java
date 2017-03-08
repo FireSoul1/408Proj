@@ -35,4 +35,7 @@ public class DBSetup {
         return currentDB.getTable("Users");
     }
 
+    public Table getTableForUser(String username) {
+        return currentDB.getTable(username);
+    }
 }
