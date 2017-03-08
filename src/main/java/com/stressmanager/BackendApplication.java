@@ -113,6 +113,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				System.out.printf("%s (%s)\n", event.getId(), start);
 			}
 		}
+
+		//set-up the DB
 		DBSetup.remoteDB();
 		return map;///list.get(1).getColorId();
 	}
@@ -197,7 +199,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
-
 	}
 	/*
 	* Spring Security Set up
@@ -265,7 +266,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//Deploy the Server
 	public static void main(String[] args) {
-
 		SpringApplication.run(BackendApplication.class, args);
 	}
 

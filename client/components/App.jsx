@@ -4,23 +4,28 @@ import { ajax } from 'jquery'
 import { isEmpty, filter } from 'lodash'
 
 import 'style/bootswatch'
-
+///import Alerting from './Load'
 import ImportPage from './ImportPage'
 import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
+import SweetAlert from 'react-bootstrap-sweetalert';
+import { Button, Alert } from 'react-bootstrap'
+
+
 
 class App extends React.Component {
   constructor(props) {
     super(props)
-
     this.state = {
       activeView: LoginPage,
       authorized: false,
       calendarList: [],
       eventList: [],
-      user: {}
+      user: {},
+      alert: false
+
     }
   }
 
@@ -57,6 +62,7 @@ class App extends React.Component {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
           this.setActiveView(UserPage)
+          this.handleAlertShow()
           return
         }
 
@@ -179,8 +185,20 @@ class App extends React.Component {
     })
   }
 
+  getAdvice() {
+    //TODO: Get Advice from backend
+  }
+
+  // handleAlertDismiss() {
+  //     this.setState({alert: false});
+  // }
+  // handleAlertShow() {
+  //     this.setState({alert: true});
+  // }
+
   render() {
     return (
+    <div className="container">
       <MainLayout
         authorized={this.state.authorized}
         activeView={this.state.activeView}
@@ -188,14 +206,17 @@ class App extends React.Component {
         eventList={this.state.eventList}
         getCalendars={() => this.getCalendars()}
         getLogout={() => this.getLogout()}
+        getAdvice={() => this.getAdvice()}
         postCalendarAdd={calId => this.postCalendarAdd(calId)}
         postCalendarEvent={(calEvent, stressValue) => this.postCalendarEvent(calEvent, stressValue)}
         unratedEvents={this.unratedEvents()}
         user={this.state.user}
         setActiveView={activeView => this.setActiveView(activeView)}
       />
+      </div>
     )
   }
 }
+
 
 render(<App/>, document.getElementById('app'))
