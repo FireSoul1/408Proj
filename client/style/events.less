@@ -1,0 +1,33 @@
+@material-green:        #4CAF50;
+@material-red:          #F44336;
+@material-deep-orange:  #FF5722;
+@base-destress:         mix(@material-green, @brand-primary, 30%);
+@base-stress:           mix(@material-red, @brand-primary, 30%);
+
+.destress-variation(@index) when (@index > 0) {
+  .destress-variation(@index - 1);
+
+  .event-destress-@{index} {
+    background-color: mix(@material-green, @base-destress, percentage(@index / 10));
+  }
+}
+
+.stress-variation(@index) when (@index > 0) {
+  .stress-variation(@index - 1);
+
+  .event-stress-@{index} {
+    background-color: mix(@material-red, @base-stress, percentage(@index / 10));
+  }
+}
+
+.destress-variation(10);
+
+.event-no-stress {
+  background-color: @brand-primary;
+}
+
+.event-unrated {
+  background-color: @material-deep-orange;
+}
+
+.stress-variation(10);
