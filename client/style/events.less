@@ -1,0 +1,63 @@
+@material-green:        #4CAF50;
+@material-red:          #F44336;
+@material-deep-orange:  #FF5722;
+@base-destress:         mix(@material-green, @brand-primary, 30%);
+@base-stress:           mix(@material-red, @brand-primary, 30%);
+
+.destress-variation(@index) when (@index > 0) {
+  .destress-variation(@index - 1);
+
+  @loop-color: mix(@material-green, @base-destress, percentage(@index / 10));
+  @dark-loop-color: darken(@loop-color, 10%);
+
+  .event-destress-@{index} {
+    background-color: @loop-color !important;
+    border: 1px solid @loop-color !important;
+  }
+
+  .event-destress-@{index}-selected {
+    background-color: @dark-loop-color !important;
+    border: 1px solid @dark-loop-color !important;
+  }
+}
+
+.stress-variation(@index) when (@index > 0) {
+  .stress-variation(@index - 1);
+
+  @loop-color: mix(@material-red, @base-stress, percentage(@index / 10));
+  @dark-loop-color: darken(@loop-color, 10%);
+
+  .event-stress-@{index} {
+    background-color: @loop-color !important;
+    border: 1px solid @loop-color !important;
+  }
+
+  .event-stress-@{index}-selected {
+    background-color: @dark-loop-color !important;
+    border: 1px solid @dark-loop-color !important;
+  }
+}
+
+.destress-variation(10);
+
+.event-no-stress {
+  background-color: @brand-primary !important;
+  border: 1px solid @brand-primary !important;
+}
+
+.event-no-stress-selected {
+  background-color: darken(@brand-primary, 10%) !important;
+  border: 1px solid darken(@brand-primary, 10%) !important;
+}
+
+.event-unrated {
+  background-color: @material-deep-orange !important;
+  border: 1px solid @material-deep-orange !important;
+}
+
+.event-unrated-selected {
+  background-color: darken(@material-deep-orange, 10%) !important;
+  border: 1px solid darken(@material-deep-orange, 10%) !important;
+}
+
+.stress-variation(10);
