@@ -8,6 +8,7 @@ import {
 
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
+import UserPage from './UserPage'
 
 class Navigation extends React.Component {
   renderDropdown() {
@@ -38,7 +39,7 @@ class Navigation extends React.Component {
       <Navbar fixedTop>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="/">Stress Manager</a>
+            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>Stress Manager</a>
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}
