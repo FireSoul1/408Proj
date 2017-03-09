@@ -9,6 +9,8 @@ import {
   Panel
 } from 'react-bootstrap'
 
+import UserPage from './UserPage'
+
 class StressFormPage extends React.Component {
   constructor(props) {
     super(props)
@@ -51,11 +53,15 @@ class StressFormPage extends React.Component {
     const { value } = this.state
     const ids = keys(value)
 
-    each(ids, id => {
+    each(ids, (id, index) => {
       if (this.getValidationState(id) === 'success') {
         const stressValue = value[id]
 
-        postCalendarEvent(id, stressValue)
+        if (index === ids.length - 1) {
+          postCalendarEvent(id, stressValue, UserPage)
+        } else {
+          postCalendarEvent(id, stressValue)
+        }
       }
     })
   }
