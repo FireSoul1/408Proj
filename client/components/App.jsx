@@ -28,7 +28,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getAuthorized()
-    this.getEventList()
+    //this.getEventList()
   }
 
   componentDidUpdate() {
@@ -60,8 +60,8 @@ class App extends React.Component {
           this.getEventList()
           return
         }
-
-        this.setState({ user: {}, authorized: false })
+        //this.setState({ user: {}, authorized: false })
+         this.setState({ user, authorized: true })
       },
       error: response => {
         this.setState({ user: {}, authorized: false })
@@ -86,6 +86,7 @@ class App extends React.Component {
     })
   }
   getEventList() {
+<<<<<<< HEAD
 // <<<<<<< Updated upstream
 //     ajax({
 //       url: '/me/calendar/events',
@@ -95,18 +96,19 @@ class App extends React.Component {
 //         if (this.responseIsJson(xhr)) {
 //           this.setState({ eventList: data.items })
 //         }
-// =======
+
     const data = {
         userName: this.state.user.name
     }
-    alert("User: "+this.state.user.name)
+    
     ajax({
       url: '/me/calendar/events',
       type: 'post',
       contentType: 'application/json',
       data: JSON.stringify(data),
-      success: () => {
-         this.setState({ eventList: data.items })
+
+      success: (data) => {
+        this.setState({ eventList: data.items })
       },
       error: response => {
         // TODO give feedback to user
