@@ -127,11 +127,20 @@ public class MainController {
         userName = userName.replaceAll(" ", "_");
         Item new1 = new Item();
         new1.withString("eventID", eventID);
-        new1.withInt("stresslvl", slvl);
+        new1.withInt("stressValue", slvl);
         try{
             Table table = DBSetup.getTable(userName);
             table.putItem(new1);
             System.out.println("Table Does exist!!!");
+
+            //check if it has '_'
+            if(eventID.indexOf('_') != -1) {
+                //add the substring without the '_'
+                Item new2 = new Item();
+                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
+                new1.withInt("stressValue", slvl);
+            }
+
             return "OK";
         } catch(ResourceNotFoundException e) {
             System.out.println(Colors.ANSI_RED+"Table Does NOT exist!!!");
@@ -140,6 +149,15 @@ public class MainController {
             //add to the table
             Table table = DBSetup.getTable(userName);
             table.putItem(new1);
+
+            //check if it has '_'
+            if(eventID.indexOf('_') != -1) {
+                //add the substring without the '_'
+                Item new2 = new Item();
+                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
+                new1.withInt("stressValue", slvl);
+            }
+
             if(err == 200)
                 return "OK";
             return "{\"error\":\"couldn't make table \"}";
@@ -167,8 +185,6 @@ public class MainController {
         return "OK";
     }
 
-
-
     @RequestMapping(value = "/calendar/event/stress", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> calendarEvents(@RequestBody GenericJson request) throws Exception{
@@ -185,9 +201,14 @@ public class MainController {
         //get the stress value with that eventID
         GetItemSpec spec = new GetItemSpec()
                .withPrimaryKey("eventID", eventID);
-        Item got = tab.getItem(spec);
-        System.out.println(Colors.ANSI_YELLOW+"Data got is: "+got.toString());
 
+        Item got = tab.getItem(spec);
+        //check if you get null
+        if(got == null)
+            return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
+
+
+        System.out.println(Colors.ANSI_YELLOW+"Data got is: "+got.toString());
         //make the data a Json using Gson (looks messy but is simple)
         TypeToken listType = new TypeToken<Map<String, Object>>() {};
         Map<String, Object> add = got.asMap();
