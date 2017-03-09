@@ -75,6 +75,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//set up the access token and check that is works
 	@RequestMapping({ "/user", "/me" })
+	@ResponseBody
 	public Map<String, String> user(Principal principal) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("name", principal.getName());
@@ -111,9 +112,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				}
 				System.out.printf("%s (%s)\n", event.getSummary(), start);
 			}
+			System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
 		}
 
-		return map;///list.get(1).getColorId();
+		DBSetup.remoteDB();
+		return map;
 	}
 
 	//get the Credz for the new User
@@ -192,7 +195,16 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					start = event.getStart().getDate();
 				}
 				System.out.printf("%s: ==> (%s)\n", event.getSummary(), DateTime.parseRfc3339(start.toStringRfc3339()).toString());
+				GenericJson new1 = (GenericJson)event.set("stressValue",val);
+				target.add(new1);
 			}
+
+			TypeToken listType = new TypeToken<List<GenericJson>>() {};
+			//List<GenericJson> add = target;
+			Gson gson = new Gson();
+			String resp = gson.toJson(target, listType.getType());
+
+			return new ResponseEntity<String>(resp.substring(1, resp.length()-1), httpHeaders, HttpStatus.OK);
 		}
 
 		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);

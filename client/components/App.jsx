@@ -57,6 +57,7 @@ class App extends React.Component {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
           this.setActiveView(UserPage)
+          this.getEventList()
           return
         }
 
@@ -67,7 +68,6 @@ class App extends React.Component {
       }
     })
   }
-
   getCalendars() {
     ajax({
       url: '/calendar/list',
@@ -85,16 +85,28 @@ class App extends React.Component {
       }
     })
   }
-
   getEventList() {
+// <<<<<<< Updated upstream
+//     ajax({
+//       url: '/me/calendar/events',
+//       type: 'get',
+//       success: (data, status, xhr) => {
+//         alert(this.state.user.name)
+//         if (this.responseIsJson(xhr)) {
+//           this.setState({ eventList: data.items })
+//         }
+// =======
+    const data = {
+        userName: this.state.user.name
+    }
+    alert("User: "+this.state.user.name)
     ajax({
       url: '/me/calendar/events',
-      type: 'get',
-      success: (data, status, xhr) => {
-        alert(this.state.user.name)
-        if (this.responseIsJson(xhr)) {
-          this.setState({ eventList: data.items })
-        }
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: () => {
+         this.setState({ eventList: data.items })
       },
       error: response => {
         // TODO give feedback to user
@@ -102,7 +114,6 @@ class App extends React.Component {
       }
     })
   }
-
   getLogout() {
     ajax({
       url: '/logout',
@@ -116,7 +127,6 @@ class App extends React.Component {
       }
     })
   }
-
   postCalendarAdd(calID) {
     const data = {
       calID,
@@ -140,7 +150,6 @@ class App extends React.Component {
       }
     })
   }
-
   postCalendarEvent(calEvent, stressValue) {
     const data = {
       calEvent,
