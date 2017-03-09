@@ -8,24 +8,37 @@ import {
 
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
-import SweetAlert from 'react-bootstrap-sweetalert';
+import SweetAlert from 'react-bootstrap-sweetalert'
 import UserPage from './UserPage'
 
-
 class Navigation extends React.Component {
+  constructor(props) {
+    super(props)
 
-    handleAlertDismiss() {
-        this.setState({alert: false});
+    this.state = {
+      alertVisible: false
     }
-    handleAlertShow() {
-        this.setState({alert: true});
+  }
+
+  renderAlert() {
+    const { alertVisible } = this.state
+
+    if (alertVisible) {
+      return (
+        <SweetAlert
+          bsStyle="success"
+          title="Advice"
+          onConfirm={() => this.setState({ alertVisible: false })}>
+          <p>{this.props.advice}</p>
+        </SweetAlert>
+      )
     }
-    componentDidMount() {
-      this.getAdvice()
-    }
+
+    return null
+  }
 
   renderDropdown() {
-    const { authorized, getCalendars, getLogout, setActiveView, getAdvice} = this.props
+    const { advice, authorized, getCalendars, getLogout, setActiveView } = this.props
 
     if (authorized) {
       return (
@@ -37,7 +50,9 @@ class Navigation extends React.Component {
             <MenuItem onClick={() => setActiveView(StressFormPage)}>
               Rate Events
             </MenuItem>
-            <Alerting2 />
+            <MenuItem onClick={() => this.setState({ alertVisible: true })}>
+              Advice
+            </MenuItem>
             <MenuItem divider/>
             <MenuItem onClick={() => getLogout()}>
               Logout
@@ -57,40 +72,10 @@ class Navigation extends React.Component {
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}
+        {this.renderAlert()}
       </Navbar>
     )
   }
 }
-const Alerting2 = React.createClass({
-    getInitialState() {
-        return {
-            alertVisible: false
-        };
-    },
-    render() {
-        if (this.state.alertVisible) {
-            return (
-                <SweetAlert
-                    bsStyle="success"
-                    title="Advice"
-                    onConfirm={this.handleAlertDismiss}>
-                    <p>{this.props.advice}</p>
-                </SweetAlert>
-            );
-        }
-        return (
-            <MenuItem onClick={this.handleAlertShow}>
-                Advice
-            </MenuItem>
-        );
-    },
-
-    handleAlertDismiss() {
-        this.setState({alertVisible: false});
-    },
-    handleAlertShow() {
-        this.setState({alertVisible: true});
-    }
-});
 
 export default Navigation
