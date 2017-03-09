@@ -91,7 +91,7 @@ class App extends React.Component {
     const data = {
         userName: this.state.user.name
     }
-    
+
     ajax({
       url: '/me/calendar/events',
       type: 'post',
