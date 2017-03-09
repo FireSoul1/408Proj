@@ -195,8 +195,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		//get the Table
 		boolean exists = true;
 		Table table = DBSetup.getTable(userName);
-
-
 		GetItemSpec spec12 = new GetItemSpec()
 			.withPrimaryKey("eventID", "123213213fwqefefw");
 		//the event is in the DB!
