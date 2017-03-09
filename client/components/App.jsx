@@ -86,7 +86,7 @@ class App extends React.Component {
     })
   }
   getEventList() {
-<<<<<<< HEAD
+
 // <<<<<<< Updated upstream
 //     ajax({
 //       url: '/me/calendar/events',
@@ -100,7 +100,7 @@ class App extends React.Component {
     const data = {
         userName: this.state.user.name
     }
-    
+
     ajax({
       url: '/me/calendar/events',
       type: 'post',

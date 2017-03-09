@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
+
 
 import javax.servlet.Filter;
 
@@ -22,6 +24,7 @@ import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.security.test.context.support.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,12 +46,10 @@ import static org.hamcrest.Matchers.*;
 
 
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @ContextConfiguration
 public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
-
-
 
     @LocalServerPort
 	private int port;
@@ -69,6 +70,7 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
         System.out.println("TESTS ARE ACTUALLY RUNNING!!");
         mvc = webAppContextSetup(wac)
                 .addFilters(springSecurityFilterChain)
+                .apply(springSecurity())
                 .build();
 
     }
