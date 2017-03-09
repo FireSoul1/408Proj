@@ -152,11 +152,19 @@
 			<artifactId>spring-test</artifactId>
 			<version>4.3.6.RELEASE</version>
 		</dependency>
+		<!-- TestNG -->
 		<dependency>
  			<groupId>org.testng</groupId>
   			<artifactId>testng</artifactId>
   			<version>6.8</version>
   			<scope>test</scope>
+		</dependency>
+		<!-- Selenium -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.1.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
