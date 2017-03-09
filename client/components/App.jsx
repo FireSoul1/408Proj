@@ -91,6 +91,7 @@ class App extends React.Component {
       url: '/me/calendar/events',
       type: 'get',
       success: (data, status, xhr) => {
+        alert(this.state.user.name)
         if (this.responseIsJson(xhr)) {
           this.setState({ eventList: data.items })
         }
