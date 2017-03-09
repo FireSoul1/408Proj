@@ -15,7 +15,7 @@ import com.google.api.client.auth.oauth2.*;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.*;
-
+import com.google.api.client.json.*;
 import org.springframework.security.core.*;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.autoconfigure.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -37,15 +38,19 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.CompositeFilter;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.http.HttpHeaders;
@@ -58,6 +63,11 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;		
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 
+import com.amazonaws.services.dynamodbv2.document.*;
+import com.amazonaws.services.dynamodbv2.document.spec.*;
+
+import com.google.gson.*;
+import com.google.gson.reflect.*;
 
 
 @RestController
@@ -76,10 +86,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//static Credentials credz;
 
 	static com.google.api.services.calendar.Calendar service;
-//	static OAuth2AccessToken token;
 
-	//static Credentials credz;
-
+	//set up the access token and check that is works
 	@RequestMapping({ "/user", "/me" })
 	public Map<String, String> user(Principal principal) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
@@ -109,19 +117,21 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			System.out.println("No upcoming events found.");
 		}
 		else {
-			System.out.println("Upcoming events");
+			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
 			for (Event event : items) {
 				DateTime start = event.getStart().getDateTime();
 				if (start == null) {
 					start = event.getStart().getDate();
 				}
-				System.out.printf("%s (%s)\n", event.getSummary(), start);
+				String str = event.getId();
+				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
 		}
-
+		DBSetup.remoteDB();
 		return map;///list.get(1).getColorId();
 	}
 
+	//get the Credz for the new User
 	public Credential authorize() throws Exception {
 		final List<String> SCOPES =
         	Arrays.asList(CalendarScopes.CALENDAR);
@@ -136,59 +146,62 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	}
 
+	//get and instance of Google Calendar API services
 	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		Credential credz = authorize();
-
 		return new com.google.api.services.calendar.Calendar.Builder(
 			HTTP_TRANSPORT, JSON_FACTORY, credz)
 			.setApplicationName("Stressmanager")
 			.build();
 	}
-	
-	
-	//TODO: Possible custom Error Codes and pages. This Bean will be needed
-	// @Bean
-    // public RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter(
-    //         final AuthenticationManager authenticationManager) {
-    //     RequestHeaderAuthenticationFilter filter = new MyRequestHeaderAuthenticationFilter();
-    //     filter.setAuthenticationManager(authenticationManager);
-    //     filter.setExceptionIfHeaderMissing(false);
-    //     filter.setInvalidateSessionOnPrincipalChange(true);
-    //     filter.setCheckForPrincipalChanges(true);
-    //     filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
-    //     return filter;
-    // }
 
-	///temp call to Google Calendar API
-	@RequestMapping(value="/calendar")
-	public String calendar(String str) throws Exception{
 
-		return "This is where the cal go";
-
+	///Logout a user using the Servlet Context
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	if (auth != null){
+        	new SecurityContextLogoutHandler().logout(request, response, auth);
+    	}
+    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
+	//get a month worth of events from the First day of the month to the first of the next month
 	@RequestMapping(value = "/me/calendar/events")
-	public ResponseEntity<String> events() throws Exception {
+	@ResponseBody
+	public ResponseEntity<String> events(@RequestBody GenericJson request) throws Exception {
 		//HTTP Headers
+
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Returns all events in the current month
 		service = getCalendarService();
 
+		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//get the Username and eventID
+		String userName = (String)request.get("userName");
+		userName = userName.replaceAll(" ","_");
+		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
+		//String eventID = (String)request.get("eventID");
+
+		//get the Table
+		//TODO: check that the table exists
+		Table table = DBSetup.getTable(userName);
+
+		//Set up Calendar request
 		java.util.Calendar currentDate = java.util.Calendar.getInstance();
 		currentDate.set(java.util.Calendar.DATE, 1);
-
 		// The first day of the month
 		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
 		System.out.println(beginningOfMonth.toString());
-
 		// The last day of the month
 		currentDate.roll(java.util.Calendar.MONTH, 1);
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
-		System.out.println(endOfMonth.toString());
+
+		//System.out.println(endOfMonth.toString());
 
 		Events events = service.events().list("primary") // Get events from primary calendar...
 			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
@@ -199,44 +212,79 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		List<Event> items = events.getItems();
 		if (items.size() == 0) {
 			System.out.println("No upcoming events found.");
+ 			return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
 		}
-		else {
+		else
+		{
+			//make a list of GenericJson
+			 List<Event> target = new LinkedList<>();
+
 			System.out.println("Upcoming events");
 			for (Event event : items) {
+
 				DateTime start = event.getStart().getDateTime();
 				if (start == null) {
 					start = event.getStart().getDate();
 				}
-				System.out.printf("%s: ==> (%s)\n", event.getSummary(), DateTime.parseRfc3339(start.toStringRfc3339()).toString());
+				//get the stresslvl from the DB if possible
+				String eventID = event.getId();
+
+				System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+
+				GetItemSpec spec = new GetItemSpec()
+					.withPrimaryKey("eventID", eventID);
+				//the event is in the DB!
+				Item it = table.getItem(spec);
+				if(it != null)
+					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+
+				//get the stresslvl
+				Integer val = null;
+				if(it != null){
+					try{
+						val = it.getInt("stressValue");
+					} catch (Exception e) {
+						val = null;
+					}
+				}
+
+				//add to the Event class and add to list
+				GenericJson new1 = (GenericJson)event.set("stressValue",val);
+				target.add((Event)new1);
+
+				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
 			}
-		}
 
-		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
-	}
+			//set the 'items' to the new List
+			events = events.setItems(target);
 
-	@RequestMapping(value = "/me/find")
-	public ResponseEntity<String> findUser(Principal principal) throws Exception {
-		String username = principal.getName();
-		String token = oauth2ClientContext.getAccessToken().toString();
-		db.accessDB();
-
-		Table table = db.setup.getUsersTable();
-
-		try { // If user exists, send calendar data.
-			GetItemSpec spec = new GetItemSpec()
-				.withPrimaryKey("userID", username);
-			table.getItem(spec);
-
-			return events();
-		} catch (Exception e) { // If not, add them to the DB
-			table.putItem(new Item()
-				.withPrimaryKey("userID", username)
-			);
-
-			return new ResponseEntity<String>("New user created", HttpStatus.OK);
+			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 		}
 	}
+
+	// @RequestMapping(value = "/me/find")
+	// public ResponseEntity<String> findUser(Principal principal) throws Exception {
+	// 	String username = principal.getName();
+	// 	String token = oauth2ClientContext.getAccessToken().toString();
+	// 	db.accessDB();
+
+	// 	Table table = db.setup.getUsersTable();
+
+	// 	try { // If user exists, send calendar data.
+	// 		GetItemSpec spec = new GetItemSpec()
+	// 			.withPrimaryKey("userID", username);
+	// 		table.getItem(spec);
+
+	// 		//return events();
+	// 	} catch (Exception e) { // If not, add them to the DB
+	// 		table.putItem(new Item()
+	// 			.withPrimaryKey("userID", username)
+	// 		);
+
+	// 		return new ResponseEntity<String>("New user created", HttpStatus.OK);
+	// 	}
+	// }
 
 	// Display the information for a single event in the user's calendar
 	@RequestMapping(value = "/event/detail")
@@ -251,16 +299,19 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		return new ResponseEntity<String>(event.toPrettyString(), HttpStatus.OK);
 	}
-
-
+	
+	/*
+	* Spring Security Set up
+	*/
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		//temp = http;
 		// @formatter:off
 		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
-				.logoutSuccessUrl("/").permitAll().and().csrf()
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+				.logoutSuccessUrl("/").permitAll().and().csrf().disable()
+				///disabled the CSRF Tokens
 				.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
 		// @formatter:on
 	}
@@ -276,11 +327,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	public static void main(String[] args) {
-		//TODO: GENERATE YML FILE AND CLIENT ID
-		SpringApplication.run(BackendApplication.class, args);
-	}
-
 	@Bean
 	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -291,12 +337,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@ConfigurationProperties("google")
+	@ConfigurationProperties("google")//Google Login setup
 	public ClientResources google() {
 		System.out.println("RESOURCE BEING MADE");
 		return new ClientResources();
 	}
-
 	private Filter ssoFilter() {
 		CompositeFilter filter = new CompositeFilter();
 		List<Filter> filters = new ArrayList<>();
@@ -307,7 +352,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		System.out.println("RESOURCE BEING MADE");
 		return filter;
 	}
-
 	private Filter ssoFilter(ClientResources client, String path) {
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 				path);
@@ -319,6 +363,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		filter.setTokenServices(tokenServices);
 		return filter;
 	}
+
+	//Deploy the Server
+	public static void main(String[] args) {
+		SpringApplication.run(BackendApplication.class, args);
+	}
+
 
 }
 
@@ -372,4 +422,3 @@ class ClientResourcesTest {
 		return resource;
 	}
 }
-
