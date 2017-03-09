@@ -10,8 +10,6 @@ import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
-import SweetAlert from 'react-bootstrap-sweetalert';
-import { Button, Alert } from 'react-bootstrap'
 
 class App extends React.Component {
   constructor(props) {
