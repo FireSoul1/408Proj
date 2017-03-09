@@ -209,7 +209,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		else
 		{
 			//make a list of GenericJson
-			 List<GenericJson> target = new LinkedList<GenericJson>();
+			 List<Event> target = new LinkedList<>();
 
 			System.out.println("Upcoming events");
 			for (Event event : items) {
@@ -242,20 +242,18 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 				//add to the Event class and add to list
 				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add(new1);
+				target.add((Event)new1);
 
 				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
 			}
 
-			TypeToken listType = new TypeToken<List<GenericJson>>() {};
-			//List<GenericJson> add = target;
-			Gson gson = new Gson();
-			String resp = gson.toJson(target, listType.getType());
 
-			return new ResponseEntity<String>(resp, httpHeaders, HttpStatus.OK);
+			//set the 'items' to the new List
+			events = events.setItems(target);
+
+
+			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 		}
-
-
 
 	}
 	/*
