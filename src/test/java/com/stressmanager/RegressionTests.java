@@ -67,6 +67,3 @@ public class RegressionTests {
 		assertTrue("client secret and id are not retrieved from env", !nclientId.equals(clientId));
 	}
 }
-
-
-
