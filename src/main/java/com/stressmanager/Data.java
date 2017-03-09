@@ -8,7 +8,7 @@ import java.util.*;
 public class Data {
 
     //An array of stress relief advice
-    static String[] advice = {
+    static String[] adviceArray = {
     "Treat yourself to something today. You have had a hard week.",//SAT
     "Don't give up! You are almost there!!",//WEDNES
     "Don't let the week get you down. There is always the weekend!",//TUES
@@ -22,13 +22,13 @@ public class Data {
          int day = rightNow.get(Calendar.DAY_OF_WEEK);
          //RETURN ADVICE based on the day
          switch(day) {
-             case Calendar.MONDAY: return advice[6];
-             case Calendar.TUESDAY: return advice[2];
-             case Calendar.WEDNESDAY: return advice[1];
-             case Calendar.THURSDAY: return advice[5];
-             case Calendar.FRIDAY: return advice[3];
-             case Calendar.SATURDAY: return advice[0];
-             case Calendar.SUNDAY: return advice[4];
+             case Calendar.MONDAY: return adviceArray[6];
+             case Calendar.TUESDAY: return adviceArray[2];
+             case Calendar.WEDNESDAY: return adviceArray[1];
+             case Calendar.THURSDAY: return adviceArray[5];
+             case Calendar.FRIDAY: return adviceArray[3];
+             case Calendar.SATURDAY: return adviceArray[0];
+             case Calendar.SUNDAY: return adviceArray[4];
              default: return "There is nothing I can say that can make things better";
          }
 
@@ -36,15 +36,15 @@ public class Data {
     }
 
 
-    String advise;
+    String advice;
     Data(String html) {
-        this.advise = html;
+        this.advice = html;
     }
     public void setAdvice(String in) {
-        this.advise = in;
+        this.advice = in;
     }
 
     public String getAdvice() {
-        return this.advise;
+        return this.advice;
     }
 }

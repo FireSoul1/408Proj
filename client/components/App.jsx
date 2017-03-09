@@ -14,14 +14,14 @@ import StressFormPage from './StressFormPage'
 class App extends React.Component {
   constructor(props) {
     super(props)
+
     this.state = {
+      advice: 'Got nothing',
       activeView: LoginPage,
       authorized: false,
       calendarList: [],
       eventList: [],
-      user: {},
-      alert: false,
-      advice: "Got nothing"
+      user: {}
     }
   }
 

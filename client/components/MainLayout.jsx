@@ -12,7 +12,6 @@ class MainLayout extends React.Component {
           getCalendars={() => this.props.getCalendars()}
           getLogout={() => this.props.getLogout()}
           setActiveView={activeView => this.props.setActiveView(activeView)}
-          advice={this.props.advice}
           user={this.props.user}
         />
         <this.props.activeView

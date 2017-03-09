@@ -21,6 +21,7 @@ class Navigation extends React.Component {
   }
 
   renderAlert() {
+    const { advice } = this.props
     const { alertVisible } = this.state
 
     if (alertVisible) {
@@ -29,7 +30,7 @@ class Navigation extends React.Component {
           bsStyle="success"
           title="Advice"
           onConfirm={() => this.setState({ alertVisible: false })}>
-          <p>{this.props.advice}</p>
+          <p>{advice}</p>
         </SweetAlert>
       )
     }
