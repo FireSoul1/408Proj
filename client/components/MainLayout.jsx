@@ -12,6 +12,7 @@ class MainLayout extends React.Component {
           getLogout={() => this.props.getLogout()}
           getAdvice={() => this.props.getAdvice()}
           setActiveView={activeView => this.props.setActiveView(activeView)}
+          advice={this.props.advice}
           user={this.props.user}
         />
         <this.props.activeView

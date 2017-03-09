@@ -20,6 +20,9 @@ class Navigation extends React.Component {
     handleAlertShow() {
         this.setState({alert: true});
     }
+    componentDidMount() {
+      this.getAdvice()
+    }
 
   renderDropdown() {
     const { authorized, getCalendars, getLogout, setActiveView, getAdvice} = this.props
@@ -71,7 +74,7 @@ const Alerting2 = React.createClass({
                     bsStyle="success"
                     title="Advice"
                     onConfirm={this.handleAlertDismiss}>
-                    <p>Here is some advice</p>
+                    <p>{this.props.advice}</p>
                 </SweetAlert>
             );
         }

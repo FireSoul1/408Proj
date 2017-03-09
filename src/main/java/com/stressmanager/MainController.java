@@ -55,12 +55,18 @@ public class MainController {
     //A route to just test out the Spring Framework
     @RequestMapping(value = "/advice")
     @ResponseBody
-    public ResponseEntity<String> advice() {
+    public ResponseEntity<String> advice() throws Exception{
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        //prepping the JSON
+        GenericJson json = new GenericJson();
+        String val = "Nuttin\'";
+        val = Data.getSomeWisdom();
+        json.set("advice", val);
+        json.set("extra",1);
 
-
-
-
-        return null;
+        //sending the JSON with the Advice
+        return new ResponseEntity<String>(json.toPrettyString(), httpHeaders, HttpStatus.OK);
     }
 
     //A route to get the calendarList
