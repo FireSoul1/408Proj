@@ -13,8 +13,6 @@ import StressFormPage from './StressFormPage'
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Button, Alert } from 'react-bootstrap'
 
-
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -34,8 +32,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getAuthorized()
-    getAdvice()
-
+    this.getAdvice()
   }
 
   componentDidUpdate() {
@@ -75,41 +72,43 @@ class App extends React.Component {
       }
     })
   }
-  getAdvice() {
-      ajax({
-          url: '/advice',
-          type: 'get',
-          success: (data, status, xhr) => {
-              this.setState({advice: data.advice})
-              return
-          },
-          error: response => {
-              // TODO give feedback to user
-              console.log(response)
-          }
-      })
-  }
-  getCalendars() {
-      ajax({
-          url: '/calendar/list',
-          type: 'get',
-          success: (data, status, xhr) => {
-              if (this.responseIsJson(xhr)) {
-                  this.setState({ calendarList: data.items })
-              }
 
-              this.setActiveView(ImportPage)
-          },
-          error: response => {
-              // TODO give feedback to user
-              console.log(response)
-          }
-      })
+  getAdvice() {
+    ajax({
+      url: '/advice',
+      type: 'get',
+      success: (data, status, xhr) => {
+        this.setState({advice: data.advice})
+        return
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
+  getCalendars() {
+    ajax({
+      url: '/calendar/list',
+      type: 'get',
+      success: (data, status, xhr) => {
+        if (this.responseIsJson(xhr)) {
+          this.setState({ calendarList: data.items })
+        }
+
+        this.setActiveView(ImportPage)
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
   }
 
   getEventList() {
     const data = {
-        userName: this.state.user.name
+      userName: this.state.user.name
     }
 
     ajax({
@@ -208,22 +207,22 @@ class App extends React.Component {
   }
   render() {
     return (
-    <div className="container">
-      <MainLayout
-        authorized={this.state.authorized}
-        activeView={this.state.activeView}
-        advice={this.state.advice}
-        calendarList={this.state.calendarList}
-        eventList={this.state.eventList}
-        getCalendars={() => this.getCalendars()}
-        getLogout={() => this.getLogout()}
-        getAdvice={() => this.getAdvice()}
-        postCalendarAdd={calId => this.postCalendarAdd(calId)}
-        postCalendarEvent={(calEvent, stressValue, navigateTo) => this.postCalendarEvent(calEvent, stressValue, navigateTo)}
-        unratedEvents={this.unratedEvents()}
-        user={this.state.user}
-        setActiveView={activeView => this.setActiveView(activeView)}
-      />
+      <div className="container">
+        <MainLayout
+          authorized={this.state.authorized}
+          activeView={this.state.activeView}
+          advice={this.state.advice}
+          calendarList={this.state.calendarList}
+          eventList={this.state.eventList}
+          getCalendars={() => this.getCalendars()}
+          getLogout={() => this.getLogout()}
+          getAdvice={() => this.getAdvice()}
+          postCalendarAdd={calId => this.postCalendarAdd(calId)}
+          postCalendarEvent={(calEvent, stressValue, navigateTo) => this.postCalendarEvent(calEvent, stressValue, navigateTo)}
+          unratedEvents={this.unratedEvents()}
+          user={this.state.user}
+          setActiveView={activeView => this.setActiveView(activeView)}
+        />
       </div>
     )
   }
