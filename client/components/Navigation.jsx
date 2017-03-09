@@ -5,10 +5,10 @@ import {
   Navbar,
   NavDropdown
 } from 'react-bootstrap'
+import SweetAlert from 'react-bootstrap-sweetalert'
 
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
-import SweetAlert from 'react-bootstrap-sweetalert'
 import UserPage from './UserPage'
 
 class Navigation extends React.Component {
