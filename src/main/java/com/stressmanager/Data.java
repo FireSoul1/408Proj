@@ -36,8 +36,15 @@ public class Data {
     }
 
 
-    String html;
+    String advise;
     Data(String html) {
-        this.html = html;
+        this.advise = html;
+    }
+    public void setAdvice(String in) {
+        this.advise = in;
+    }
+
+    public String getAdvice() {
+        return this.advise;
     }
 }
