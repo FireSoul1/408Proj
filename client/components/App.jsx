@@ -87,10 +87,16 @@ class App extends React.Component {
   }
 
   getEventList() {
+    const data = {
+        userName: this.state.user.name
+    }
+    alert(this.state.user+" "+this.state.user.name)
     ajax({
       url: '/me/calendar/events',
-      type: 'get',
-      success: (data, status, xhr) => {
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: () => {
         if (this.responseIsJson(xhr)) {
           this.setState({ eventList: data.items })
         }
