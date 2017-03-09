@@ -24,7 +24,8 @@ class App extends React.Component {
       calendarList: [],
       eventList: [],
       user: {},
-      alert: false
+      alert: false,
+      advice: "Got nothing"
 
     }
   }
@@ -33,6 +34,8 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getAuthorized()
+    getAdvice()
+
   }
 
   componentDidUpdate() {
@@ -62,7 +65,6 @@ class App extends React.Component {
           this.setState({ user, authorized: true })
           this.setActiveView(UserPage)
           this.getEventList()
-
           return
         }
 
@@ -73,23 +75,36 @@ class App extends React.Component {
       }
     })
   }
-
+  getAdvice() {
+      ajax({
+          url: '/advice',
+          type: 'get',
+          success: (data, status, xhr) => {
+              this.setState({advice: data.advice})
+              return
+          },
+          error: response => {
+              // TODO give feedback to user
+              console.log(response)
+          }
+      })
+  }
   getCalendars() {
-    ajax({
-      url: '/calendar/list',
-      type: 'get',
-      success: (data, status, xhr) => {
-        if (this.responseIsJson(xhr)) {
-          this.setState({ calendarList: data.items })
-        }
+      ajax({
+          url: '/calendar/list',
+          type: 'get',
+          success: (data, status, xhr) => {
+              if (this.responseIsJson(xhr)) {
+                  this.setState({ calendarList: data.items })
+              }
 
-        this.setActiveView(ImportPage)
-      },
-      error: response => {
-        // TODO give feedback to user
-        console.log(response)
-      }
-    })
+              this.setActiveView(ImportPage)
+          },
+          error: response => {
+              // TODO give feedback to user
+              console.log(response)
+          }
+      })
   }
 
   getEventList() {
@@ -191,24 +206,13 @@ class App extends React.Component {
       return event.stressValue === null || event.stressValue === undefined
     })
   }
-
-  getAdvice() {
-    //TODO: Get Advice from backend
-  }
-
-  // handleAlertDismiss() {
-  //     this.setState({alert: false});
-  // }
-  // handleAlertShow() {
-  //     this.setState({alert: true});
-  // }
-
   render() {
     return (
     <div className="container">
       <MainLayout
         authorized={this.state.authorized}
         activeView={this.state.activeView}
+        advice={this.state.advice}
         calendarList={this.state.calendarList}
         eventList={this.state.eventList}
         getCalendars={() => this.getCalendars()}
