@@ -4,7 +4,7 @@ import { ajax } from 'jquery'
 import { isEmpty, filter } from 'lodash'
 
 import 'style/bootswatch'
-///import Alerting from './Load'
+
 import ImportPage from './ImportPage'
 import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
@@ -24,7 +24,6 @@ class App extends React.Component {
       user: {},
       alert: false,
       advice: "Got nothing"
-
     }
   }
 
@@ -53,6 +52,20 @@ class App extends React.Component {
 
   // API Methods
 
+  getAdvice() {
+    ajax({
+      url: '/advice',
+      type: 'get',
+      success: (data, status, xhr) => {
+        this.setState({ advice: data.advice })
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   getAuthorized() {
     ajax({
       url: '/me',
@@ -69,21 +82,6 @@ class App extends React.Component {
       },
       error: response => {
         this.setState({ user: {}, authorized: false })
-      }
-    })
-  }
-
-  getAdvice() {
-    ajax({
-      url: '/advice',
-      type: 'get',
-      success: (data, status, xhr) => {
-        this.setState({advice: data.advice})
-        return
-      },
-      error: response => {
-        // TODO give feedback to user
-        console.log(response)
       }
     })
   }
@@ -205,18 +203,18 @@ class App extends React.Component {
       return event.stressValue === null || event.stressValue === undefined
     })
   }
+
   render() {
     return (
       <div className="container">
         <MainLayout
-          authorized={this.state.authorized}
           activeView={this.state.activeView}
           advice={this.state.advice}
+          authorized={this.state.authorized}
           calendarList={this.state.calendarList}
           eventList={this.state.eventList}
           getCalendars={() => this.getCalendars()}
           getLogout={() => this.getLogout()}
-          getAdvice={() => this.getAdvice()}
           postCalendarAdd={calId => this.postCalendarAdd(calId)}
           postCalendarEvent={(calEvent, stressValue, navigateTo) => this.postCalendarEvent(calEvent, stressValue, navigateTo)}
           unratedEvents={this.unratedEvents()}
