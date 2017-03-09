@@ -38,6 +38,7 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -58,6 +59,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 
 import com.amazonaws.services.dynamodbv2.document.*;
+import com.amazonaws.services.dynamodbv2.document.spec.*;
+
+import com.google.gson.*;
+import com.google.gson.reflect.*;
+
 
 
 @RestController
@@ -103,16 +109,17 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			System.out.println("No upcoming events found.");
 		}
 		else {
-			System.out.println("Upcoming events");
+			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
 			for (Event event : items) {
 				DateTime start = event.getStart().getDateTime();
 				if (start == null) {
 					start = event.getStart().getDate();
 				}
-				System.out.printf("%s (%s)\n", event.getSummary(), start);
+				String str = event.getId();
+				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
 		}
-
+		DBSetup.remoteDB();
 		return map;///list.get(1).getColorId();
 	}
 
@@ -155,47 +162,98 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//get a month worth of events from the First day of the month to the first of the next month
 	@RequestMapping(value = "/me/calendar/events")
-	public ResponseEntity<String> events() throws Exception {
+	@ResponseBody
+	public ResponseEntity<String> events(@RequestBody GenericJson request) throws Exception {
 		//HTTP Headers
+
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		// Returns all events in the current month
 		service = getCalendarService();
 
+		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//get the Username and eventID
+		String userName = (String)request.get("userName");
+		userName = userName.replaceAll(" ","_");
+		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
+		//String eventID = (String)request.get("eventID");
+
+		//get the Table
+		//TODO: check that the table exists
+		Table table = DBSetup.getTable(userName);
+
+		//Set up Calendar request
 		java.util.Calendar currentDate = java.util.Calendar.getInstance();
 		currentDate.set(java.util.Calendar.DATE, 1);
-
 		// The first day of the month
 		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
 		System.out.println(beginningOfMonth.toString());
-
 		// The last day of the month
 		currentDate.roll(java.util.Calendar.MONTH, 1);
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
-		System.out.println(endOfMonth.toString());
+
+		//System.out.println(endOfMonth.toString());
 
 		Events events = service.events().list("primary") // Get events from primary calendar...
 			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
 			.setTimeMax(endOfMonth) // and ending at the last day of the month
 			.execute();
+
 		//get the data from the HttpServletRequest
 		List<Event> items = events.getItems();
 		if (items.size() == 0) {
 			System.out.println("No upcoming events found.");
+ 			return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
 		}
-		else {
+		else
+		{
+			//make a list of GenericJson
+			 List<Event> target = new LinkedList<>();
+
 			System.out.println("Upcoming events");
 			for (Event event : items) {
+
 				DateTime start = event.getStart().getDateTime();
 				if (start == null) {
 					start = event.getStart().getDate();
 				}
-				System.out.printf("%s: ==> (%s)\n", event.getSummary(), DateTime.parseRfc3339(start.toStringRfc3339()).toString());
-			}
-		}
+				//get the stresslvl from the DB if possible
+				String eventID = event.getId();
 
-		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+				System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+
+				GetItemSpec spec = new GetItemSpec()
+					.withPrimaryKey("eventID", eventID);
+				//the event is in the DB!
+				Item it = table.getItem(spec);
+				if(it != null)
+					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+
+				//get the stresslvl
+				Integer val = null;
+				if(it != null){
+					try{
+						val = it.getInt("stressValue");
+					} catch (Exception e) {
+						val = null;
+					}
+				}
+
+				//add to the Event class and add to list
+				GenericJson new1 = (GenericJson)event.set("stressValue",val);
+				target.add((Event)new1);
+
+				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
+			}
+
+
+			//set the 'items' to the new List
+			events = events.setItems(target);
+
+
+			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+		}
 
 	}
 	/*
@@ -264,8 +322,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//Deploy the Server
 	public static void main(String[] args) {
-		//TODO: setup the DB
-
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
