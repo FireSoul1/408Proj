@@ -59,14 +59,18 @@ public class MainController {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         //prepping the JSON
-        GenericJson json = new GenericJson();
+    //    GenericJson json = new GenericJson();
         String val = "Nuttin\'";
         val = Data.getSomeWisdom();
-        json.set("advice", val);
-        json.set("extra",1);
+    //    json.set("advice", val);
+    //    json.set("extra",1);
+
+        Gson convert = new Gson();
+        Data new1 = new Data(val);
+
 
         //sending the JSON with the Advice
-        return new ResponseEntity<String>(json.toPrettyString(), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(convert.toJson(new1), httpHeaders, HttpStatus.OK);
     }
 
     //A route to get the calendarList
