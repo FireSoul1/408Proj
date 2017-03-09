@@ -28,7 +28,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getAuthorized()
-    //this.getEventList()
   }
 
   componentDidUpdate() {
@@ -60,8 +59,8 @@ class App extends React.Component {
           this.getEventList()
           return
         }
-        //this.setState({ user: {}, authorized: false })
-         this.setState({ user, authorized: true })
+
+        this.setState({ user: {}, authorized: false })
       },
       error: response => {
         this.setState({ user: {}, authorized: false })
