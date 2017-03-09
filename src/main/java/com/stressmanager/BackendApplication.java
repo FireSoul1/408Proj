@@ -231,12 +231,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
 
 				//get the stresslvl
-				Integer val = 100;
+				Integer val = null;
 				if(it != null){
 					try{
 						val = it.getInt("stressValue");
 					} catch (Exception e) {
-						val = 100;
+						val = null;
 					}
 				}
 
