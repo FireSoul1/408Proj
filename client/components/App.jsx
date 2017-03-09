@@ -150,7 +150,7 @@ class App extends React.Component {
     })
   }
 
-  postCalendarEvent(calEvent, stressValue) {
+  postCalendarEvent(calEvent, stressValue, navigateTo) {
     const data = {
       calEvent,
       stressValue,
@@ -163,8 +163,11 @@ class App extends React.Component {
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: () => {
-        // TODO give feedback to user
         console.log(`Added stressValue ${stressValue} to event with id ${calEvent}`)
+
+        if (navigateTo) {
+          this.setActiveView(navigateTo)
+        }
       },
       error: response => {
         // TODO give feedback to user
@@ -212,7 +215,7 @@ class App extends React.Component {
         getLogout={() => this.getLogout()}
         getAdvice={() => this.getAdvice()}
         postCalendarAdd={calId => this.postCalendarAdd(calId)}
-        postCalendarEvent={(calEvent, stressValue) => this.postCalendarEvent(calEvent, stressValue)}
+        postCalendarEvent={(calEvent, stressValue, navigateTo) => this.postCalendarEvent(calEvent, stressValue, navigateTo)}
         unratedEvents={this.unratedEvents()}
         user={this.state.user}
         setActiveView={activeView => this.setActiveView(activeView)}
