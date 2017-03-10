@@ -112,10 +112,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		else {
 			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
 			for (Event event : items) {
-				DateTime start = event.getStart().getDateTime();
-				if (start == null) {
-					start = event.getStart().getDate();
-				}
 				String str = event.getId();
 				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
@@ -241,11 +237,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 			System.out.println("Upcoming events");
 			for (Event event : items) {
-
-				DateTime start = event.getStart().getDateTime();
-				if (start == null) {
-					start = event.getStart().getDate();
-				}
 				//get the stresslvl from the DB if possible
 				String eventID = event.getId();
 				Integer val = null;
