@@ -7,6 +7,7 @@ class MainLayout extends React.Component {
     return (
       <div>
         <Navigation
+          advice={this.props.advice}
           authorized={this.props.authorized}
           getCalendars={() => this.props.getCalendars()}
           getLogout={() => this.props.getLogout()}

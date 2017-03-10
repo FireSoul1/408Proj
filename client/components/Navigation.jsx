@@ -5,14 +5,41 @@ import {
   Navbar,
   NavDropdown
 } from 'react-bootstrap'
+import SweetAlert from 'react-bootstrap-sweetalert'
 
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
 import UserPage from './UserPage'
 
 class Navigation extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      alertVisible: false
+    }
+  }
+
+  renderAlert() {
+    const { advice } = this.props
+    const { alertVisible } = this.state
+
+    if (alertVisible) {
+      return (
+        <SweetAlert
+          bsStyle="success"
+          title="Advice"
+          onConfirm={() => this.setState({ alertVisible: false })}>
+          <p>{advice}</p>
+        </SweetAlert>
+      )
+    }
+
+    return null
+  }
+
   renderDropdown() {
-    const { authorized, getCalendars, getLogout, setActiveView } = this.props
+    const { advice, authorized, getCalendars, getLogout, setActiveView } = this.props
 
     if (authorized) {
       return (
@@ -23,6 +50,9 @@ class Navigation extends React.Component {
             </MenuItem>
             <MenuItem onClick={() => setActiveView(StressFormPage)}>
               Rate Events
+            </MenuItem>
+            <MenuItem onClick={() => this.setState({ alertVisible: true })}>
+              Advice
             </MenuItem>
             <MenuItem divider/>
             <MenuItem onClick={() => getLogout()}>
@@ -43,6 +73,7 @@ class Navigation extends React.Component {
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}
+        {this.renderAlert()}
       </Navbar>
     )
   }
