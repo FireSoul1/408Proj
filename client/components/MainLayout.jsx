@@ -7,6 +7,7 @@ class MainLayout extends React.Component {
     return (
       <div>
         <Navigation
+          advice={this.props.advice}
           authorized={this.props.authorized}
           getCalendars={() => this.props.getCalendars()}
           getLogout={() => this.props.getLogout()}
@@ -17,7 +18,7 @@ class MainLayout extends React.Component {
           calendarList={this.props.calendarList}
           eventList={this.props.eventList}
           postCalendarAdd={calID => this.props.postCalendarAdd(calID)}
-          postCalendarEvent={(calEvent, stressValue) => this.props.postCalendarEvent(calEvent, stressValue)}
+          postCalendarEvent={(calEvent, stressValue, navigateTo) => this.props.postCalendarEvent(calEvent, stressValue, navigateTo)}
           unratedEvents={this.props.unratedEvents}
         />
       </div>

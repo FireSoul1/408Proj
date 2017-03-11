@@ -50,6 +50,29 @@ public class MainController {
     public String ping() {
         return "Pong";
     }
+
+
+    //A route to just test out the Spring Framework
+    @RequestMapping(value = "/advice")
+    @ResponseBody
+    public ResponseEntity<String> advice() throws Exception{
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        //prepping the JSON
+    //    GenericJson json = new GenericJson();
+        String val = "Nuttin\'";
+        val = Data.getSomeWisdom();
+    //    json.set("advice", val);
+    //    json.set("extra",1);
+
+        Gson convert = new Gson();
+        Data new1 = new Data(val);
+
+
+        //sending the JSON with the Advice
+        return new ResponseEntity<String>(convert.toJson(new1), httpHeaders, HttpStatus.OK);
+    }
+
     //A route to get the calendarList
     @RequestMapping(value = "/calendar/list")
     @ResponseBody
@@ -99,7 +122,7 @@ public class MainController {
     //A route for setting an event's stress by eventID
     @RequestMapping(value = "/calendar/event", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String addCalendarEventStress(@RequestBody GenericJson request) throws Exception{
+    public String addCalendarEvent(@RequestBody GenericJson request) throws Exception{
 
         //set up the HTTP Headers
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -122,7 +145,6 @@ public class MainController {
         }
 
         //add the stresslvl the user's table for events
-
         //cheanges the username to something usable
         userName = userName.replaceAll(" ", "_");
         Item new1 = new Item();
@@ -185,9 +207,10 @@ public class MainController {
         return "OK";
     }
 
+    //Route for getting an Event's Stress Level
     @RequestMapping(value = "/calendar/event/stress", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> calendarEvents(@RequestBody GenericJson request) throws Exception{
+    public ResponseEntity<String> calendarEventsStress(@RequestBody GenericJson request) throws Exception{
 
         //set up the HTTP Headers
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -219,5 +242,32 @@ public class MainController {
         return new ResponseEntity<String>(resp, httpHeaders, HttpStatus.OK);
     }
 
+    //Route that gets the CalendarID under that user
+    @RequestMapping(value = "/me/calendarid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> getUserCalendarId(@RequestBody GenericJson request) throws Exception {
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        String calID = (String)request.get("calID");
+        String username = (String)request.get("userName");
+
+        //get User table
+        Table table = DBSetup.getUsersTable();
+        //get the User Info
+        GetItemSpec spec = new GetItemSpec()
+               .withPrimaryKey("userID", username);
+        Item got = table.getItem(spec);
+
+        //turn into JSON
+        TypeToken listType = new TypeToken<Map<String, Object>>() {};
+        Map<String, Object> add = got.asMap();
+        Gson gson = new Gson();
+        String resp = gson.toJson(add, listType.getType());
+
+
+        //Send response to client
+        return new ResponseEntity<String>(resp, httpHeaders, HttpStatus.OK);
+    }
 
 }

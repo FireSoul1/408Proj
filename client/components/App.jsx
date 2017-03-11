@@ -16,6 +16,7 @@ class App extends React.Component {
     super(props)
 
     this.state = {
+      advice: 'Got nothing',
       activeView: LoginPage,
       authorized: false,
       calendarList: [],
@@ -28,6 +29,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getAuthorized()
+    this.getAdvice()
   }
 
   componentDidUpdate() {
@@ -47,6 +49,20 @@ class App extends React.Component {
   }
 
   // API Methods
+
+  getAdvice() {
+    ajax({
+      url: '/advice',
+      type: 'get',
+      success: (data, status, xhr) => {
+        this.setState({ advice: data.advice })
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
 
   getAuthorized() {
     ajax({
@@ -97,7 +113,7 @@ class App extends React.Component {
 //         }
 
     const data = {
-        userName: this.state.user.name
+      userName: this.state.user.name
     }
 
     ajax({
@@ -151,7 +167,8 @@ class App extends React.Component {
       }
     })
   }
-  postCalendarEvent(calEvent, stressValue) {
+
+  postCalendarEvent(calEvent, stressValue, navigateTo) {
     const data = {
       calEvent,
       stressValue,
@@ -164,8 +181,11 @@ class App extends React.Component {
       contentType: 'application/json',
       data: JSON.stringify(data),
       success: () => {
-        // TODO give feedback to user
         console.log(`Added stressValue ${stressValue} to event with id ${calEvent}`)
+
+        if (navigateTo) {
+          this.setActiveView(navigateTo)
+        }
       },
       error: response => {
         // TODO give feedback to user
@@ -192,21 +212,25 @@ class App extends React.Component {
 
   render() {
     return (
-      <MainLayout
-        authorized={this.state.authorized}
-        activeView={this.state.activeView}
-        calendarList={this.state.calendarList}
-        eventList={this.state.eventList}
-        getCalendars={() => this.getCalendars()}
-        getLogout={() => this.getLogout()}
-        postCalendarAdd={calId => this.postCalendarAdd(calId)}
-        postCalendarEvent={(calEvent, stressValue) => this.postCalendarEvent(calEvent, stressValue)}
-        unratedEvents={this.unratedEvents()}
-        user={this.state.user}
-        setActiveView={activeView => this.setActiveView(activeView)}
-      />
+      <div className="container">
+        <MainLayout
+          activeView={this.state.activeView}
+          advice={this.state.advice}
+          authorized={this.state.authorized}
+          calendarList={this.state.calendarList}
+          eventList={this.state.eventList}
+          getCalendars={() => this.getCalendars()}
+          getLogout={() => this.getLogout()}
+          postCalendarAdd={calId => this.postCalendarAdd(calId)}
+          postCalendarEvent={(calEvent, stressValue, navigateTo) => this.postCalendarEvent(calEvent, stressValue, navigateTo)}
+          unratedEvents={this.unratedEvents()}
+          user={this.state.user}
+          setActiveView={activeView => this.setActiveView(activeView)}
+        />
+      </div>
     )
   }
 }
+
 
 render(<App/>, document.getElementById('app'))

@@ -126,6 +126,7 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 	public void DBSetUpRemoteTest() throws Exception{
         System.out.println("\nRunnning test case 4: Checking that the Remote DB is setup.");
         DBSetup.remoteDB();
+        System.out.println("access_token: "+Colors.ANSI_YELLOW+getAccessToken())
 	}
 
     // @Configuration
