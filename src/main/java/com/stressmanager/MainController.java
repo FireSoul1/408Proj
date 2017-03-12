@@ -252,6 +252,9 @@ public class MainController {
         String adds = got.getString("calID");
         adds = adds+"split"+calID;
         Item update = new Item();
+        update.withString("userID", username);
+        update.withString("calID", adds);
+        table.putItem(update);
 
         //turn into JSON
         TypeToken listType = new TypeToken<Map<String, Object>>() {};

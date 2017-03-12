@@ -12,8 +12,6 @@ import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
 
 
-
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -147,7 +145,6 @@ class App extends React.Component {
       calID,
       userName: this.state.user.name
     }
-
     ajax({
       url: '/calendar/add',
       type: 'post',
