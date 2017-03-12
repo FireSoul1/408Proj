@@ -98,12 +98,13 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		service = getCalendarService();
 
 		DateTime now = new DateTime(System.currentTimeMillis());
+		//now.set(java.util.Calendar.DATE, 1);
+
 
 		Events events = service.events().list("primary")
-			.setMaxResults(10)
+			.setMaxResults(50)
 			.setTimeMin(now)
-			.setOrderBy("startTime")
-			.setSingleEvents(true)
+			.setSingleEvents(false)
 			.execute();
 
 		List<Event> items = events.getItems();
@@ -130,6 +131,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
 		}
 
+		tab = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("userID", principal.getName());
+		Item got = tab.getItem(spec);
+		if(got == null)
+			tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
 
 		return map;///list.get(1).getColorId();
 	}
@@ -221,6 +228,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		Events events = service.events().list("primary") // Get events from primary calendar...
 			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
 			.setTimeMax(endOfMonth) // and ending at the last day of the month
+			.setMaxResults(50)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
 			.execute();
 
 		//get the data from the HttpServletRequest
@@ -231,9 +241,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 		else
 		{
-
-
-
 			//make a list of GenericJson
 			 List<Event> target = new LinkedList<>();
 
@@ -242,10 +249,14 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				//get the stresslvl from the DB if possible
 				String eventID = event.getId();
 				Integer val = null;
-
-				System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
 				if(exists) {
-					GetItemSpec spec = new GetItemSpec()
+					GetItemSpec spec;
+					if(eventID.indexOf("_") != -1)
+					{
+						eventID = eventID.substring(0, eventID.indexOf("_"));
+						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+					}
+					spec = new GetItemSpec()
 						.withPrimaryKey("eventID", eventID);
 					//the event is in the DB!
 					Item it = null;

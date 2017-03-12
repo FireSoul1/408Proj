@@ -242,7 +242,7 @@ public class MainController {
         return new ResponseEntity<String>(resp, httpHeaders, HttpStatus.OK);
     }
 
-    //Route that gets the CalendarID under that user
+    //Route that adds the CalendarID under that user
     @RequestMapping(value = "/me/calendarid", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getUserCalendarId(@RequestBody GenericJson request) throws Exception {
@@ -251,13 +251,22 @@ public class MainController {
 
         String calID = (String)request.get("calID");
         String username = (String)request.get("userName");
+        //username = username.replaceAll(" ","_");
 
         //get User table
         Table table = DBSetup.getUsersTable();
+
         //get the User Info
         GetItemSpec spec = new GetItemSpec()
                .withPrimaryKey("userID", username);
         Item got = table.getItem(spec);
+
+        //add the calendar ID to the current User's CalendarID list
+        String adds = got.getString("calID");
+        adds = adds+"||||"+calID;
+        Item update = new Item();
+
+
 
         //turn into JSON
         TypeToken listType = new TypeToken<Map<String, Object>>() {};
