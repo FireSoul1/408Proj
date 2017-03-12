@@ -11,6 +11,10 @@ import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
 
+const isBrowser = typeof window !== 'undefined';
+const swal = isBrowser ? require('sweetalert') : undefined;
+
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -72,7 +76,6 @@ class App extends React.Component {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
           this.setActiveView(UserPage)
-          this.getEventList()
           return
         }
 
@@ -100,40 +103,20 @@ class App extends React.Component {
       }
     })
   }
-  getEventList() {
-
-
-    const data = {
-      userName: this.state.user.name
-    }
-
-    ajax({
-      url: '/api/calendar/events',
-      type: 'post',
-      contentType: 'application/json',
-      data: JSON.stringify(data),
-
-      success: (data) => {
-        this.setState({ eventList: data.items })
-      },
-      error: response => {
-        // TODO give feedback to user
-        console.log(response)
-      }
-    })
-  }
   getLogout() {
-    ajax({
-      url: '/logout',
-      type: 'get',
-      success: (data, status, xhr) => {
-        this.setState({ authorized: false })
-      },
-      error: response => {
-        // TODO give feedback to user
-        console.log(response)
-      }
-    })
+
+
+      ajax({
+          url: '/logout',
+          type: 'get',
+          success: (data, status, xhr) => {
+              this.setState({ authorized: false })
+          },
+          error: response => {
+              // TODO give feedback to user
+              console.log(response)
+          }
+      })
   }
   postCalendarAdd(calID) {
     const data = {

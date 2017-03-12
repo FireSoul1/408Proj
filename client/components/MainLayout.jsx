@@ -20,6 +20,7 @@ class MainLayout extends React.Component {
           postCalendarAdd={calID => this.props.postCalendarAdd(calID)}
           postCalendarEvent={(calEvent, stressValue, navigateTo) => this.props.postCalendarEvent(calEvent, stressValue, navigateTo)}
           unratedEvents={this.props.unratedEvents}
+          user={this.props.user}
         />
       </div>
     )
