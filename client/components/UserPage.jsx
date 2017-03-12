@@ -55,8 +55,7 @@ class UserPage extends React.Component {
                 // TODO give feedback to user
                 console.log(response)
             }
-        })
-        ;
+        });
 
     }
     renderAlert() {

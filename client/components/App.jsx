@@ -24,7 +24,8 @@ class App extends React.Component {
       authorized: false,
       calendarList: [],
       eventList: [],
-      user: {}
+      user: {},
+      alert: true
     }
   }
 
@@ -75,6 +76,7 @@ class App extends React.Component {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
           this.setActiveView(UserPage)
+          this.getEventList()
           return
         }
 
@@ -85,6 +87,28 @@ class App extends React.Component {
       }
     })
   }
+  getEventList() {
+      const data = {
+          userName: this.state.user.name
+      }
+
+      ajax({
+          url: '/api/calendar/events',
+          type: 'post',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: (data) => {
+              this.setState({ eventList: data.items })
+              this.setState({alert: false})
+
+          },
+          error: response => {
+              // TODO give feedback to user
+              console.log(response)
+          }
+      });
+  }
+
   getCalendars() {
     ajax({
       url: '/calendar/list',
