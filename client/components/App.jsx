@@ -116,6 +116,7 @@ class App extends React.Component {
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ calendarList: data.items })
+
         }
 
         this.setActiveView(ImportPage)
@@ -213,9 +214,11 @@ class App extends React.Component {
         <MainLayout
           activeView={this.state.activeView}
           advice={this.state.advice}
+          alert={this.state.alert}
           authorized={this.state.authorized}
           calendarList={this.state.calendarList}
           eventList={this.state.eventList}
+          getEventList={() => this.getEventList()}
           getCalendars={() => this.getCalendars()}
           getLogout={() => this.getLogout()}
           postCalendarAdd={calId => this.postCalendarAdd(calId)}

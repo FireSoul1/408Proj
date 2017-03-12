@@ -89,7 +89,7 @@ public class MainController {
     }
 
     //A route for setting an the calendar that is added
-    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/calendar/addEx", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String calendarAdd(@RequestBody GenericJson request) throws Exception{
 
@@ -230,7 +230,7 @@ public class MainController {
     }
 
     //Route that adds the CalendarID under that user
-    @RequestMapping(value = "/me/calendarid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getUserCalendarId(@RequestBody GenericJson request) throws Exception {
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -252,8 +252,6 @@ public class MainController {
         String adds = got.getString("calID");
         adds = adds+"split"+calID;
         Item update = new Item();
-
-
 
         //turn into JSON
         TypeToken listType = new TypeToken<Map<String, Object>>() {};
