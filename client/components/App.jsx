@@ -177,7 +177,7 @@ class App extends React.Component {
       data: JSON.stringify(data),
       success: () => {
         console.log(`Added stressValue ${stressValue} to event with id ${calEvent}`)
-
+        this.getEventList()
         if (navigateTo) {
           this.setActiveView(navigateTo)
         }

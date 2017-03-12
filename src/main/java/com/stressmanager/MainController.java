@@ -159,8 +159,8 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
-                new1.withInt("stressValue", slvl);
+                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+                new2.withInt("stressValue", slvl);
                 table.putItem(new2);
 
             }
@@ -178,7 +178,7 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new2.withString("eventID", eventID.substring(eventID.indexOf('_')));
+                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
                 new2.withInt("stressValue", slvl);
                 table.putItem(new2);
             }
