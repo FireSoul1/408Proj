@@ -153,7 +153,7 @@ class App extends React.Component {
       success: () => {
         // TODO give feedback to user
         console.log("Added Calendar Successfully")
-
+        this.getEventList()
         this.setActiveView(UserPage)
       },
       error: response => {

@@ -27,13 +27,14 @@ class ImportPage extends React.Component {
     })
   }
   postTheCalID(calID) {
-      const { postCalendarAdd } = this.props
+      const { postCalendarAdd, getEventList } = this.props
 
       if(calID =="") {
           this.setState({alertVisible: true})
           return
       }
       postCalendarAdd(calID)
+      
   }
   renderAlert() {
       const { alertVisible } = this.state

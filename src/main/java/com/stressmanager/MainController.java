@@ -238,6 +238,7 @@ public class MainController {
 
         String calID = (String)request.get("calID");
         String username = (String)request.get("userName");
+        String resp = "{\"Error\":\"Calendar Already exists\"}";
         //username = username.replaceAll(" ","_");
 
         //get User table
@@ -250,6 +251,10 @@ public class MainController {
 
         //add the calendar ID to the current User's CalendarID list
         String adds = got.getString("calID");
+        if(adds.contains(calID)) {
+            return new ResponseEntity<String>(resp , httpHeaders, HttpStatus.OK);
+        }
+
         adds = adds+"split"+calID;
         Item update = new Item();
         update.withString("userID", username);
@@ -260,7 +265,7 @@ public class MainController {
         TypeToken listType = new TypeToken<Map<String, Object>>() {};
         Map<String, Object> add = got.asMap();
         Gson gson = new Gson();
-        String resp = gson.toJson(add, listType.getType());
+        resp = gson.toJson(add, listType.getType());
 
 
         //Send response to client
