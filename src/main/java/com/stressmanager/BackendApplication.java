@@ -58,13 +58,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.*;
 import com.amazonaws.services.dynamodbv2.model.*;
 
 import com.google.gson.*;
 import com.google.gson.reflect.*;
-
 
 
 @RestController
@@ -77,6 +81,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
+
+	DBHelper db = new DBHelper();
+
+	//static Credentials credz;
 
 	static com.google.api.services.calendar.Calendar service;
 
@@ -280,12 +288,27 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			//set the 'items' to the new List
 			events = events.setItems(target);
 
-
 			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 		}
+	}
 
+	// Display the information for a single event in the user's calendar
+	@RequestMapping(value = "/event/detail")
+	@ResponseBody
+	public ResponseEntity<String> eventDetails(@RequestBody GenericJson request) throws Exception {
+		db.accessDB();
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		service = getCalendarService();
+		String calID = (String)request.get("calID");
+		String eventID = (String)request.get("eventID");
+
+		Event event = service.events().get(calID, eventID).execute();
+		return new ResponseEntity<String>(event.toPrettyString(), httpHeaders, HttpStatus.OK);
 
 	}
+
 	/*
 	* Spring Security Set up
 	*/
