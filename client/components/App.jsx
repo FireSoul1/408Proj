@@ -11,8 +11,7 @@ import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
 
-const isBrowser = typeof window !== 'undefined';
-const swal = isBrowser ? require('sweetalert') : undefined;
+
 
 
 class App extends React.Component {
