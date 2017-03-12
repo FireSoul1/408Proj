@@ -102,22 +102,13 @@ class App extends React.Component {
   }
   getEventList() {
 
-// <<<<<<< Updated upstream
-//     ajax({
-//       url: '/me/calendar/events',
-//       type: 'get',
-//       success: (data, status, xhr) => {
-//         alert(this.state.user.name)
-//         if (this.responseIsJson(xhr)) {
-//           this.setState({ eventList: data.items })
-//         }
 
     const data = {
       userName: this.state.user.name
     }
 
     ajax({
-      url: '/me/calendar/events',
+      url: '/api/calendar/events',
       type: 'post',
       contentType: 'application/json',
       data: JSON.stringify(data),

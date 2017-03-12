@@ -161,6 +161,8 @@ public class MainController {
                 Item new2 = new Item();
                 new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
                 new1.withInt("stressValue", slvl);
+                table.putItem(new2);
+
             }
 
             return "OK";
@@ -176,8 +178,9 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
-                new1.withInt("stressValue", slvl);
+                new2.withString("eventID", eventID.substring(eventID.indexOf('_')));
+                new2.withInt("stressValue", slvl);
+                table.putItem(new2);
             }
 
             if(err == 200)
@@ -190,22 +193,6 @@ public class MainController {
 
     }
 
-
-    //A route for setting an event by eventID
-    @RequestMapping(value = "/calendar/event/details", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String calendarEventsMonth(@RequestBody GenericJson request) throws Exception{
-
-        //set up the HTTP Headers
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        //get calendar service
-
-
-
-        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
-        return "OK";
-    }
 
     //Route for getting an Event's Stress Level
     @RequestMapping(value = "/calendar/event/stress", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -263,7 +250,7 @@ public class MainController {
 
         //add the calendar ID to the current User's CalendarID list
         String adds = got.getString("calID");
-        adds = adds+"||||"+calID;
+        adds = adds+"split"+calID;
         Item update = new Item();
 
 

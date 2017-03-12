@@ -48,6 +48,7 @@ public class DBSetup {
         return currentDB.getTable("Users");
     }
     public static Table getTable(String name) {
+        name = name.replaceAll(" ","_");
         return currentDB.getTable(name);
     }
     public static int createTable(String username) {
