@@ -51,6 +51,7 @@ public class DBSetup {
         return currentDB.getTable(name);
     }
     public static int createTable(String username) {
+
         try{
             CreateTableRequest request = new CreateTableRequest(
                 Arrays.asList(//parameter 1
