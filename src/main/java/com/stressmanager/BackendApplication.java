@@ -65,6 +65,7 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.*;
+import com.amazonaws.services.dynamodbv2.model.*;
 
 import com.google.gson.*;
 import com.google.gson.reflect.*;
@@ -123,7 +124,19 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
 		}
+
+		//set-up the DB
 		DBSetup.remoteDB();
+
+		//check if the Table for that UserName exists
+		Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
+		if(tab == null) { //the Table doesn't Exist!!!
+			System.out.println("Creating a table for "+principal.getName()+"\'s events");
+			//make the table! :D
+			DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
+		}
+
+
 		return map;///list.get(1).getColorId();
 	}
 
@@ -184,8 +197,20 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		//String eventID = (String)request.get("eventID");
 
 		//get the Table
-		//TODO: check that the table exists
+		boolean exists = true;
 		Table table = DBSetup.getTable(userName);
+		GetItemSpec spec12 = new GetItemSpec()
+			.withPrimaryKey("eventID", "123213213fwqefefw");
+		//the event is in the DB!
+		Item it1 = null;
+		try {
+			it1 = table.getItem(spec12);
+		} catch (ResourceNotFoundException e) {
+			System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: "+e.getMessage());
+			//maybe if we make the table?
+			DBSetup.createTable(userName.replaceAll(" ", "_"));
+			exists = false;
+		}
 
 		//Set up Calendar request
 		java.util.Calendar currentDate = java.util.Calendar.getInstance();
@@ -212,6 +237,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 		else
 		{
+
+
+
 			//make a list of GenericJson
 			 List<Event> target = new LinkedList<>();
 
@@ -219,34 +247,44 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			for (Event event : items) {
 				//get the stresslvl from the DB if possible
 				String eventID = event.getId();
+				Integer val = null;
 
 				System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+				if(exists) {
+					GetItemSpec spec = new GetItemSpec()
+						.withPrimaryKey("eventID", eventID);
+					//the event is in the DB!
+					Item it = null;
+					try {
+						it = table.getItem(spec);
+					} catch (ResourceNotFoundException e) {
+						System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: "+e.getMessage());
+						//maybe if we make the table?
+						DBSetup.createTable(userName.replaceAll(" ", "_"));
+						return null;
+					}
+					if(it != null)
+						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+					//get the stresslvl
 
-				GetItemSpec spec = new GetItemSpec()
-					.withPrimaryKey("eventID", eventID);
-				//the event is in the DB!
-				Item it = table.getItem(spec);
-				if(it != null)
-					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
-
-				//get the stresslvl
-				Integer val = null;
-				if(it != null){
-					try{
-						val = it.getInt("stressValue");
-					} catch (Exception e) {
-						val = null;
+					if(it != null){
+						try{
+							val = it.getInt("stressValue");
+						} catch (Exception e) {
+							val = null;
+						}
 					}
 				}
+				else
+					val = null;
 
 				//add to the Event class and add to list
 				GenericJson new1 = (GenericJson)event.set("stressValue",val);
 				target.add((Event)new1);
 
+
 				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
 			}
-
-
 			//set the 'items' to the new List
 			events = events.setItems(target);
 
@@ -289,6 +327,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		Event event = service.events().get(calID, eventID).execute();
 
 		return new ResponseEntity<String>(event.toPrettyString(), HttpStatus.OK);
+
 	}
 	
 	/*

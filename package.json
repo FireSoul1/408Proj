@@ -47,6 +47,7 @@
     "react-addons-test-utils": "^15.4.2",
     "react-big-calendar": "^0.12.3",
     "react-bootstrap": "^0.30.7",
+    "react-bootstrap-sweetalert": "^3.0.0",
     "react-dom": "^15.4.2",
     "react-native": "^0.41.2",
     "react-test-renderer": "^15.4.2",
