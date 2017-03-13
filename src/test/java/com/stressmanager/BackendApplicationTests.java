@@ -7,6 +7,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.*;
 
 
 import javax.servlet.Filter;
@@ -75,7 +77,6 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
                 .addFilters(springSecurityFilterChain)
                 .apply(springSecurity())
                 .build();
-
     }
 
     @Test
@@ -122,15 +123,50 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
     }
     @Test
 	public void DBSetUpLocalTest() throws Exception{
-        System.out.println("\nRunnning test case 3: Checking that the Local DB is setup.");
+        System.out.println("\nRunnning test case 7: Checking that the Local DB is setup.");
         DBSetup.localDB();
 	}
     @Test
 	public void DBSetUpRemoteTest() throws Exception{
-        System.out.println("\nRunnning test case 4: Checking that the Remote DB is setup.");
+        System.out.println("\nRunnning test case 8: Checking that the Remote DB is setup.");
         DBSetup.remoteDB();
-        //System.out.println("access_token: "+Colors.ANSI_YELLOW+getAccessToken("otesting69@gmail.com","otesting"));
 	}
+    @Test
+	public void DBSetUpRemoteTestCreateTable() throws Exception{
+        System.out.println("\nRunnning test case 9: Checking that the Remote DB can make table.");
+        DBSetup.remoteDB();
+        int err = DBSetup.createTable("Test_Table");
+        Assert.assertEquals(err == 200,true);
+        Table re = DBSetup.getTable("Test_Table");
+        re.delete();
+
+	}
+    @Test
+	public void DBSetUpRemoteTestUserTableGet() throws Exception{
+        System.out.println("\nRunnning test case 10: Checking that the Remote DB can Get.");
+        DBSetup.remoteDB();
+        Table re = DBSetup.getUsersTable();
+        Assert.assertEquals(re != null,true);
+
+	}
+    @Test
+	public void TestMeRoute() throws Exception{
+        System.out.println("\nRunnning test case 12: Checking that the /me route worked.");
+        mvc.perform(get("/me"))
+            .andExpect(status().isMovedTemporarily())
+            .andExpect(redirectedUrl("http://localhost/"));
+	}
+    @Test
+	public void TestAdviceRoute() throws Exception{
+        System.out.println("\nRunnning test case 13: Checking that the route /advice works.");
+        mvc.perform(get("/advice"))
+            .andExpect(status().isMovedTemporarily())
+            .andExpect(redirectedUrl("http://localhost/"));
+
+	}
+
+
+
     private String getAccessToken(String username, String password) throws Exception {
 		String authorization = "Basic "
 				+ new String(Base64Utils.encode("clientapp:123456".getBytes()));
@@ -150,41 +186,18 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 								.param("client_id", "clientapp")
 								.param("client_secret", "123456"))
 				.andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-				// .andExpect(content().contentType(contentType))
-				// .andExpect(jsonPath("$.access_token", is(notNullValue())))
-				// .andExpect(jsonPath("$.token_type", is(equalTo("bearer"))))
-				// .andExpect(jsonPath("$.refresh_token", is(notNullValue())))
-				// .andExpect(jsonPath("$.expires_in", is(greaterThan(4000))))
-				// .andExpect(jsonPath("$.scope", is(equalTo("read write"))))
-				// .andReturn().getResponse().getContentAsString();
+				.andExpect(content().contentType(contentType))
+				.andExpect(jsonPath("$.access_token", is(notNullValue())))
+				.andExpect(jsonPath("$.token_type", is(equalTo("bearer"))))
+				.andExpect(jsonPath("$.refresh_token", is(notNullValue())))
+				.andExpect(jsonPath("$.expires_in", is(greaterThan(4000))))
+				.andExpect(jsonPath("$.scope", is(equalTo("read write"))))
+				.andReturn().getResponse().getContentAsString();
 
 		// @formatter:on
 
 		return content.substring(17, 53);
 	}
 
-    // @Configuration
-    // @EnableWebMvcSecurity
-    // @EnableWebMvc
-    // static class Config extends WebSecurityConfigurerAdapter {
-    //
-    //     @Override
-    //     protected void configure(HttpSecurity http) throws Exception {
-    //         http
-    //         .authorizeRequests()
-    //         .antMatchers("/admin/**").hasRole("ADMIN")
-    //         .anyRequest().authenticated()
-    //         .and()
-    //         .formLogin();
-    //     }
-    //
-    //     @Autowired
-    //     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    //         auth
-    //         .inMemoryAuthentication()
-    //         .withUser("user").password("password").roles("USER");
-    //     }
-    // }
+
 }

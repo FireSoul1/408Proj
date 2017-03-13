@@ -11,7 +11,6 @@ import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
 
-
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -126,7 +125,6 @@ class App extends React.Component {
     })
   }
   getLogout() {
-
       ajax({
           url: '/logout',
           type: 'get',

@@ -125,7 +125,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				String str = event.getId();
 				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
+
 			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
+
 		}
 
 		//set-up the DB
@@ -329,6 +331,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					try {
 						it = table.getItem(spec);
 					} catch (ResourceNotFoundException e) {
+
 						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 3"+e.getMessage());
 						//maybe if we make the table?
 						//DBSetup.createTable(userName.replaceAll(" ", "_"));
