@@ -150,17 +150,6 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 
 	}
     @Test
-	public void DBSetUpRemoteTestUserTableAdd() throws Exception{
-        System.out.println("\nRunnning test case 11: Checking that the Remote DB can Put item");
-        DBSetup.remoteDB();
-        Table re = DBSetup.getUsersTable();
-        Item im = new Item();
-        im.withString("userID","Test_User");
-        im.withString("calID","Test_cal");
-        re.putItem(im);
-
-	}
-    @Test
 	public void TestMeRoute() throws Exception{
         System.out.println("\nRunnning test case 12: Checking that the /me route worked.");
         mvc.perform(get("/me"))
@@ -197,7 +186,6 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 								.param("client_id", "clientapp")
 								.param("client_secret", "123456"))
 				.andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
 				.andExpect(content().contentType(contentType))
 				.andExpect(jsonPath("$.access_token", is(notNullValue())))
 				.andExpect(jsonPath("$.token_type", is(equalTo("bearer"))))
