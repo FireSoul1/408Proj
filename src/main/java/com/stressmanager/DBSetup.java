@@ -72,4 +72,7 @@ public class DBSetup {
     }
 
 
+    public Table getTableForUser(String username) {
+        return currentDB.getTable(username);
+    }
 }
