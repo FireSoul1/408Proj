@@ -89,7 +89,7 @@ public class MainController {
     }
 
     //A route for setting an the calendar that is added
-    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/calendar/addEx", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String calendarAdd(@RequestBody GenericJson request) throws Exception{
 
@@ -159,8 +159,8 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
-                new1.withInt("stressValue", slvl);
+                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+                new2.withInt("stressValue", slvl);
                 table.putItem(new2);
 
             }
@@ -178,7 +178,7 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new2.withString("eventID", eventID.substring(eventID.indexOf('_')));
+                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
                 new2.withInt("stressValue", slvl);
                 table.putItem(new2);
             }
@@ -230,7 +230,7 @@ public class MainController {
     }
 
     //Route that adds the CalendarID under that user
-    @RequestMapping(value = "/me/calendarid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getUserCalendarId(@RequestBody GenericJson request) throws Exception {
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -238,6 +238,7 @@ public class MainController {
 
         String calID = (String)request.get("calID");
         String username = (String)request.get("userName");
+        String resp = "{\"Error\":\"Calendar Already exists\"}";
         //username = username.replaceAll(" ","_");
 
         //get User table
@@ -250,16 +251,21 @@ public class MainController {
 
         //add the calendar ID to the current User's CalendarID list
         String adds = got.getString("calID");
+        if(adds.contains(calID)) {
+            return new ResponseEntity<String>(resp , httpHeaders, HttpStatus.OK);
+        }
+
         adds = adds+"split"+calID;
         Item update = new Item();
-
-
+        update.withString("userID", username);
+        update.withString("calID", adds);
+        table.putItem(update);
 
         //turn into JSON
         TypeToken listType = new TypeToken<Map<String, Object>>() {};
         Map<String, Object> add = got.asMap();
         Gson gson = new Gson();
-        String resp = gson.toJson(add, listType.getType());
+        resp = gson.toJson(add, listType.getType());
 
 
         //Send response to client

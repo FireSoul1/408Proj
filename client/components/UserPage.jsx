@@ -6,9 +6,6 @@ import moment from 'moment'
 import SweetAlert from 'react-bootstrap-sweetalert'
 
 
-import 'style/bootswatch'
-
-
 BigCalendar.momentLocalizer(moment)
 
 class UserPage extends React.Component {
@@ -16,9 +13,7 @@ class UserPage extends React.Component {
         super(props)
 
         this.state = {
-            calID: '',
-            alert: true,
-            eventList: []
+            calID: ''
         }
     }
 
@@ -33,33 +28,9 @@ class UserPage extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.getEventList()
-    }
-    getEventList() {
-        const data = {
-            userName: this.props.user.name
-        }
 
-        ajax({
-            url: '/api/calendar/events',
-            type: 'post',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: (data) => {
-                this.setState({ eventList: data.items })
-                this.setState({alert: false})
-
-            },
-            error: response => {
-                // TODO give feedback to user
-                console.log(response)
-            }
-        });
-
-    }
     renderAlert() {
-        const { alert } = this.state
+        const { alert } = this.props
         if (alert) {
             return (
                 <SweetAlert
@@ -75,14 +46,13 @@ class UserPage extends React.Component {
         )
     }
     renderCalendar() {
-        const { alert } = this.state
-
+        const { alert } = this.props
         if (!alert) {
             return (
                 <BigCalendar
                     defaultView='week'
                     views={['week']}
-                    events={this.state.eventList}
+                    events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
                     endAccessor={event => this.accessor('end', event)}
@@ -92,8 +62,8 @@ class UserPage extends React.Component {
             )
         }
         return (
-            <div></div>
-        )
+             <div></div>
+         )
     }
     eventPropGetter(event, start, end, isSelected) {
         const selected = isSelected ? '-selected' : ''
@@ -110,7 +80,7 @@ class UserPage extends React.Component {
 
         return { className: `event-unrated${selected}` }
     }
-
+//{this.renderAlert()}
     render() {
         return (
             <div className='container'>
