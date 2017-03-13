@@ -14,6 +14,8 @@
 
 [Sprint 2 Design Inspection, Code Inspection, Unit Testing](https://docs.google.com/document/d/18--iv3bl29AJA4VfDhIz6OvPok1PliRPg5Q1kbM6FsI/edit?usp=sharing)
 
+[Sprint 2 Incremental and Regression Testing](https://docs.google.com/document/d/1ekI-c1abnCWxQ46uQR4lzS_mg0avY1JT6NAeuaB4chg/edit?usp=sharing)
+
 See the docs folder for PDF copies of these documents.
 
 ## Project Setup
