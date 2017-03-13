@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/" />
-<title>ImportPageTest</title>
+<title>StressFormTest</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">ImportPageTest</td></tr>
+<tr><td rowspan="1" colspan="3">StressFormTest</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -23,17 +23,17 @@
 </tr>
 <tr>
 	<td>pause</td>
-	<td>200</td>
+	<td>4000</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertTextPresent</td>
-	<td>Calendar placeholder</td>
+	<td>Test3</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertTextPresent</td>
-	<td>Tools</td>
+	<td>Test2</td>
 	<td></td>
 </tr>
 <tr>
@@ -43,7 +43,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>link=Import Calendar</td>
+	<td>link=Rate Events</td>
 	<td></td>
 </tr>
 <tr>
@@ -53,7 +53,77 @@
 </tr>
 <tr>
 	<td>assertTextPresent</td>
-	<td>Please select a calendar to import from the dropdown below</td>
+	<td>How to DESTRESS your week!!</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=formBasicText</td>
+	<td>3</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=formBasicText</td>
+	<td>-3</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//button[@type='button']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>3000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=basic-nav-dropdown</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Rate Events</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>200</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Test1</td>
 	<td></td>
 </tr>
 <tr>
@@ -61,22 +131,6 @@
 	<td>link=Stress Manager</td>
 	<td></td>
 </tr>
-<tr>
-	<td>pause</td>
-	<td>200</td>
-	<td></td>
-</tr>
-<tr>
-	<td>assertTextPresent</td>
-	<td>Calendar placeholder</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-
 </tbody></table>
 </body>
 </html>
