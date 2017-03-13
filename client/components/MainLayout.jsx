@@ -17,9 +17,12 @@ class MainLayout extends React.Component {
         <this.props.activeView
           calendarList={this.props.calendarList}
           eventList={this.props.eventList}
+          alert={this.props.alert}
+          getEventList={() => this.props.getEventList}
           postCalendarAdd={calID => this.props.postCalendarAdd(calID)}
           postCalendarEvent={(calEvent, stressValue, navigateTo) => this.props.postCalendarEvent(calEvent, stressValue, navigateTo)}
           unratedEvents={this.props.unratedEvents}
+          user={this.props.user}
         />
       </div>
     )

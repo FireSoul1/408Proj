@@ -90,6 +90,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//set up the access token and check that is works
 	@RequestMapping({ "/user", "/me" })
+	@ResponseBody
 	public Map<String, String> user(Principal principal) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
 		map.put("name", principal.getName());
@@ -105,12 +106,13 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		service = getCalendarService();
 
 		DateTime now = new DateTime(System.currentTimeMillis());
+		//now.set(java.util.Calendar.DATE, 1);
+
 
 		Events events = service.events().list("primary")
-			.setMaxResults(10)
+			.setMaxResults(50)
 			.setTimeMin(now)
-			.setOrderBy("startTime")
-			.setSingleEvents(true)
+			.setSingleEvents(false)
 			.execute();
 
 		List<Event> items = events.getItems();
@@ -123,6 +125,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				String str = event.getId();
 				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
+			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
 		}
 
 		//set-up the DB
@@ -136,6 +139,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
 		}
 
+		tab = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("userID", principal.getName());
+		Item got = tab.getItem(spec);
+		if(got == null)
+			tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
 
 		return map;///list.get(1).getColorId();
 	}
@@ -167,50 +176,97 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 
-	///Logout a user using the Servlet Context
-	@RequestMapping(value="/logout", method = RequestMethod.GET)
-	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	if (auth != null){
-        	new SecurityContextLogoutHandler().logout(request, response, auth);
-    	}
-    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
-	}
+	//get events from @calID Calendar
+	public List<Event> getEventsMultiCal(String calID, DateTime start, DateTime end, boolean tableExists, String user) throws Exception {
 
-	//get a month worth of events from the First day of the month to the first of the next month
-	@RequestMapping(value = "/me/calendar/events")
+		Events events = service.events().list(calID) // Get events from calendar calID...
+			.setTimeMin(start) // Starting at the beginning of the month
+			.setTimeMax(end) // and ending at the last day of the month
+			.setMaxResults(100)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
+			.execute();
+		//get the data from the HttpServletRequest
+		List<Event> items = events.getItems();
+		Table table = DBSetup.getTable(user.replaceAll(" ","_"));
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+			return null;
+		}
+		else
+		{
+			//make a list of GenericJson
+			List<Event> target = new LinkedList<>();
+			System.out.println("Upcoming events for "+calID);
+			for (Event event : items) {
+				//get the stresslvl from the DB if possible
+				String eventID = event.getId();
+				Integer val = null;
+				if(tableExists) {
+					GetItemSpec spec;
+					if(eventID.indexOf("_") != -1)
+					{
+						eventID = eventID.substring(0, eventID.indexOf("_"));
+						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+					}
+					spec = new GetItemSpec()
+						.withPrimaryKey("eventID", eventID);
+					//the event is in the DB!
+					Item it = null;
+					try {
+						it = table.getItem(spec);
+					} catch (ResourceNotFoundException e) {
+						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 2"+e.getMessage());
+						//maybe if we make the table?
+						//DBSetup.createTable(user.replaceAll(" ", "_"));
+						//return null;
+					}
+					if(it != null)
+					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+					//get the stresslvl
+
+					if(it != null){
+						try{
+							val = it.getInt("stressValue");
+						} catch (Exception e) {
+							val = null;
+						}
+					}
+				}
+				else
+					val = null;
+
+				//add to the Event class and add to list
+				GenericJson new1 = (GenericJson)event.set("stressValue",val);
+				target.add((Event)new1);
+			}
+
+			//set the 'items' to the new List
+			events = events.setItems(target);
+
+			return target;
+
+		}
+
+	}
+	//Get events for SPECIFIC CALENDARID
+	@RequestMapping(value = "/api/calendar/events/calId")
 	@ResponseBody
-	public ResponseEntity<String> events(@RequestBody GenericJson request) throws Exception {
-		//HTTP Headers
+	public ResponseEntity<String> gettingEventsSpecfic(@RequestBody GenericJson request) throws Exception {
 
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Returns all events in the current month
 		service = getCalendarService();
 
 		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
 		//get the Username and eventID
 		String userName = (String)request.get("userName");
-		userName = userName.replaceAll(" ","_");
+		String callID = (String)request.get("calID");
 		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
 		//String eventID = (String)request.get("eventID");
 
 		//get the Table
-		boolean exists = true;
-		Table table = DBSetup.getTable(userName);
-		GetItemSpec spec12 = new GetItemSpec()
-			.withPrimaryKey("eventID", "123213213fwqefefw");
-		//the event is in the DB!
-		Item it1 = null;
-		try {
-			it1 = table.getItem(spec12);
-		} catch (ResourceNotFoundException e) {
-			System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: "+e.getMessage());
-			//maybe if we make the table?
-			DBSetup.createTable(userName.replaceAll(" ", "_"));
-			exists = false;
-		}
+		boolean exists = tableCheck(userName);
 
 		//Set up Calendar request
 		java.util.Calendar currentDate = java.util.Calendar.getInstance();
@@ -222,11 +278,25 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		currentDate.roll(java.util.Calendar.MONTH, 1);
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
 
-		//System.out.println(endOfMonth.toString());
+		//get the User Table and user's data from there
+		Table t = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("userID", userName);
+		Item got = t.getItem(spec);
 
-		Events events = service.events().list("primary") // Get events from primary calendar...
+
+		//get a list of Calendar IDs
+		String str = got.getString("calID");
+		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
+		String[] calIDs = str.split("split");
+
+
+		Events events = service.events().list(callID) // Get events from primary calendar...
 			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
 			.setTimeMax(endOfMonth) // and ending at the last day of the month
+			.setMaxResults(100)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
 			.execute();
 
 		//get the data from the HttpServletRequest
@@ -237,31 +307,32 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 		else
 		{
-
-
-
 			//make a list of GenericJson
-			 List<Event> target = new LinkedList<>();
+			List<Event> target = new LinkedList<>();
+			Table table = DBSetup.getTable(userName);
 
 			System.out.println("Upcoming events");
 			for (Event event : items) {
 				//get the stresslvl from the DB if possible
 				String eventID = event.getId();
 				Integer val = null;
-
-				System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
 				if(exists) {
-					GetItemSpec spec = new GetItemSpec()
+					if(eventID.indexOf("_") != -1)
+					{
+						eventID = eventID.substring(0, eventID.indexOf("_"));
+						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+					}
+					spec = new GetItemSpec()
 						.withPrimaryKey("eventID", eventID);
 					//the event is in the DB!
 					Item it = null;
 					try {
 						it = table.getItem(spec);
 					} catch (ResourceNotFoundException e) {
-						System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: "+e.getMessage());
+						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 3"+e.getMessage());
 						//maybe if we make the table?
-						DBSetup.createTable(userName.replaceAll(" ", "_"));
-						return null;
+						//DBSetup.createTable(userName.replaceAll(" ", "_"));
+						//return null;
 					}
 					if(it != null)
 						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
@@ -281,10 +352,191 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				//add to the Event class and add to list
 				GenericJson new1 = (GenericJson)event.set("stressValue",val);
 				target.add((Event)new1);
-
-
 				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
 			}
+
+			//set the 'items' to the new List
+			events = events.setItems(target);
+
+			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+		}
+
+
+
+	}
+
+	//Get events for ALL OF THE USERS CALENDARIDs
+	@RequestMapping(value = "/api/calendar/events")
+	@ResponseBody
+	public ResponseEntity<String> gettingEvents(@RequestBody GenericJson request) throws Exception {
+
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		service = getCalendarService();
+
+		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//get the Username and eventID
+		String userName = (String)request.get("userName");
+
+		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
+		//String eventID = (String)request.get("eventID");
+
+		//get the Table
+		boolean exists = tableCheck(userName);
+
+		//Set up Calendar request
+		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+		currentDate.set(java.util.Calendar.DATE, 1);
+		// The first day of the month
+		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+		System.out.println(beginningOfMonth.toString());
+		// The last day of the month
+		currentDate.roll(java.util.Calendar.MONTH, 1);
+		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+		//get the User Table and user's data from there
+		Table t = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+               .withPrimaryKey("userID", userName);
+        Item got = t.getItem(spec);
+
+
+		//get a list of Calendar IDs
+		String str = got.getString("calID");
+		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
+		String[] calIDs = str.split("split");
+
+		List<Event> target = new LinkedList<>();
+		Table table = DBSetup.getTable(userName);
+		for(String val: calIDs) {
+			System.out.println(Colors.ANSI_CYAN+"The calid now is: "+val);
+			//get the events for each of these
+			List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
+			//add it to a list of all the events retrieved
+			if(addThis != null)
+				target.addAll(addThis);
+		}
+		Events events = service.events().list("primary") // Get events from primary calendar...
+			.setMaxResults(1)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
+			.execute();
+		events.setItems(target);
+
+		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+
+
+	}
+
+	///Logout a user using the Servlet Context
+	@RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	if (auth != null){
+        	new SecurityContextLogoutHandler().logout(request, response, auth);
+    	}
+    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+	}
+
+	//get a month worth of events from the First day of the month to the first of the next month
+	//TODO: Fix the frontend's event cap
+	@RequestMapping(value = "/me/calendar/events")
+	@ResponseBody
+	public ResponseEntity<String> events(@RequestBody GenericJson request) throws Exception {
+		//HTTP Headers
+
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		// Returns all events in the current month
+		service = getCalendarService();
+
+		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//get the Username and eventID
+		String userName = (String)request.get("userName");
+
+		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
+		//String eventID = (String)request.get("eventID");
+
+		//get the Table
+		boolean exists = tableCheck(userName);
+
+
+		//Set up Calendar request
+		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+		currentDate.set(java.util.Calendar.DATE, 1);
+		// The first day of the month
+		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+		System.out.println(beginningOfMonth.toString());
+		// The last day of the month
+		currentDate.roll(java.util.Calendar.MONTH, 1);
+		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+		Events events = service.events().list("primary") // Get events from primary calendar...
+			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+			.setTimeMax(endOfMonth) // and ending at the last day of the month
+			.setMaxResults(150)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
+			.execute();
+
+		//get the data from the HttpServletRequest
+		List<Event> items = events.getItems();
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+ 			return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
+		}
+		else
+		{
+			//make a list of GenericJson
+			List<Event> target = new LinkedList<>();
+			Table table = DBSetup.getTable(userName);
+
+			System.out.println("Upcoming events");
+			for (Event event : items) {
+				//get the stresslvl from the DB if possible
+				String eventID = event.getId();
+				Integer val = null;
+				if(exists) {
+					GetItemSpec spec;
+					if(eventID.indexOf("_") != -1)
+					{
+						eventID = eventID.substring(0, eventID.indexOf("_"));
+						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+					}
+					spec = new GetItemSpec()
+						.withPrimaryKey("eventID", eventID);
+					//the event is in the DB!
+					Item it = null;
+					try {
+						it = table.getItem(spec);
+					} catch (ResourceNotFoundException e) {
+						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 4"+e.getMessage());
+						//maybe if we make the table?
+						//DBSetup.createTable(userName.replaceAll(" ", "_"));
+						//return null;
+					}
+					if(it != null)
+						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+					//get the stresslvl
+
+					if(it != null){
+						try{
+							val = it.getInt("stressValue");
+						} catch (Exception e) {
+							val = null;
+						}
+					}
+				}
+				else
+					val = null;
+
+				//add to the Event class and add to list
+				GenericJson new1 = (GenericJson)event.set("stressValue",val);
+				target.add((Event)new1);
+				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
+			}
+
 			//set the 'items' to the new List
 			events = events.setItems(target);
 
@@ -378,8 +630,29 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
-
+	/*
+	** Helper Methods
+	** to keep the code clean
+	*/
+	public boolean tableCheck(String userName) {
+		boolean exists = true;
+		Table table = DBSetup.getTable(userName);
+		GetItemSpec spec12 = new GetItemSpec()
+			.withPrimaryKey("eventID", "123213213fwqefefw");
+		//the event is in the DB!
+		Item it1 = null;
+		try {
+			it1 = table.getItem(spec12);
+			return true;
+		} catch (ResourceNotFoundException e) {
+			//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 1"+e.getMessage());
+			//maybe if we make the table?
+			DBSetup.createTable(userName.replaceAll(" ", "_"));
+			return false;
+		}
+	}
 }
+
 
 class ClientResources {
 
