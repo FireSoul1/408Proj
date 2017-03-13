@@ -89,7 +89,7 @@ public class MainController {
     }
 
     //A route for setting an the calendar that is added
-    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/calendar/addEx", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String calendarAdd(@RequestBody GenericJson request) throws Exception{
 
@@ -159,8 +159,10 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
-                new1.withInt("stressValue", slvl);
+                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+                new2.withInt("stressValue", slvl);
+                table.putItem(new2);
+
             }
 
             return "OK";
@@ -176,8 +178,9 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new1.withString("eventID", eventID.substring(eventID.indexOf('_')));
-                new1.withInt("stressValue", slvl);
+                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+                new2.withInt("stressValue", slvl);
+                table.putItem(new2);
             }
 
             if(err == 200)
@@ -190,22 +193,6 @@ public class MainController {
 
     }
 
-
-    //A route for setting an event by eventID
-    @RequestMapping(value = "/calendar/event/details", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String calendarEventsMonth(@RequestBody GenericJson request) throws Exception{
-
-        //set up the HTTP Headers
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        //get calendar service
-
-
-
-        //return new ResponseEntity<String>(callist.toPrettyString(), httpHeaders, HttpStatus.OK);
-        return "OK";
-    }
 
     //Route for getting an Event's Stress Level
     @RequestMapping(value = "/calendar/event/stress", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -242,8 +229,8 @@ public class MainController {
         return new ResponseEntity<String>(resp, httpHeaders, HttpStatus.OK);
     }
 
-    //Route that gets the CalendarID under that user
-    @RequestMapping(value = "/me/calendarid", consumes = MediaType.APPLICATION_JSON_VALUE)
+    //Route that adds the CalendarID under that user
+    @RequestMapping(value = "/calendar/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> getUserCalendarId(@RequestBody GenericJson request) throws Exception {
         final HttpHeaders httpHeaders = new HttpHeaders();
@@ -251,19 +238,34 @@ public class MainController {
 
         String calID = (String)request.get("calID");
         String username = (String)request.get("userName");
+        String resp = "{\"Error\":\"Calendar Already exists\"}";
+        //username = username.replaceAll(" ","_");
 
         //get User table
         Table table = DBSetup.getUsersTable();
+
         //get the User Info
         GetItemSpec spec = new GetItemSpec()
                .withPrimaryKey("userID", username);
         Item got = table.getItem(spec);
 
+        //add the calendar ID to the current User's CalendarID list
+        String adds = got.getString("calID");
+        if(adds.contains(calID)) {
+            return new ResponseEntity<String>(resp , httpHeaders, HttpStatus.OK);
+        }
+
+        adds = adds+"split"+calID;
+        Item update = new Item();
+        update.withString("userID", username);
+        update.withString("calID", adds);
+        table.putItem(update);
+
         //turn into JSON
         TypeToken listType = new TypeToken<Map<String, Object>>() {};
         Map<String, Object> add = got.asMap();
         Gson gson = new Gson();
-        String resp = gson.toJson(add, listType.getType());
+        resp = gson.toJson(add, listType.getType());
 
 
         //Send response to client

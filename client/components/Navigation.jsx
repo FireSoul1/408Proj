@@ -27,10 +27,9 @@ class Navigation extends React.Component {
     if (alertVisible) {
       return (
         <SweetAlert
-          bsStyle="success"
           title="Advice"
           onConfirm={() => this.setState({ alertVisible: false })}>
-          <p>{advice}</p>
+          <h4>{advice}</h4>
         </SweetAlert>
       )
     }

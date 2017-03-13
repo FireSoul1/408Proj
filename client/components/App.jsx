@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { ajax } from 'jquery'
-import { isEmpty, filter } from 'lodash'
+import { isEmpty, filter, uniqBy, isEqual } from 'lodash'
 
 import 'style/bootswatch'
 
@@ -10,6 +10,7 @@ import LoginPage from './LoginPage'
 import MainLayout from './MainLayout'
 import UserPage from './UserPage'
 import StressFormPage from './StressFormPage'
+
 
 class App extends React.Component {
   constructor(props) {
@@ -21,7 +22,8 @@ class App extends React.Component {
       authorized: false,
       calendarList: [],
       eventList: [],
-      user: {}
+      user: {},
+      alert: true
     }
   }
 
@@ -83,6 +85,27 @@ class App extends React.Component {
       }
     })
   }
+  getEventList() {
+      const data = {
+          userName: this.state.user.name
+      }
+
+      ajax({
+          url: '/api/calendar/events',
+          type: 'post',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: (data) => {
+              this.setState({ eventList: data.items })
+              this.setState({alert: false})
+
+          },
+          error: response => {
+              // TODO give feedback to user
+              console.log(response)
+          }
+      });
+  }
 
   getCalendars() {
     ajax({
@@ -91,6 +114,7 @@ class App extends React.Component {
       success: (data, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ calendarList: data.items })
+
         }
 
         this.setActiveView(ImportPage)
@@ -101,47 +125,25 @@ class App extends React.Component {
       }
     })
   }
-
-  getEventList() {
-    const data = {
-      userName: this.state.user.name
-    }
-
-    ajax({
-      url: '/me/calendar/events',
-      type: 'post',
-      contentType: 'application/json',
-      data: JSON.stringify(data),
-      success: (data) => {
-        this.setState({ eventList: data.items })
-      },
-      error: response => {
-        // TODO give feedback to user
-        console.log(response)
-      }
-    })
-  }
-
   getLogout() {
-    ajax({
-      url: '/logout',
-      type: 'get',
-      success: (data, status, xhr) => {
-        this.setState({ authorized: false })
-      },
-      error: response => {
-        // TODO give feedback to user
-        console.log(response)
-      }
-    })
-  }
 
+      ajax({
+          url: '/logout',
+          type: 'get',
+          success: (data, status, xhr) => {
+              this.setState({ authorized: false })
+          },
+          error: response => {
+              // TODO give feedback to user
+              console.log(response)
+          }
+      })
+  }
   postCalendarAdd(calID) {
     const data = {
       calID,
       userName: this.state.user.name
     }
-
     ajax({
       url: '/calendar/add',
       type: 'post',
@@ -150,7 +152,7 @@ class App extends React.Component {
       success: () => {
         // TODO give feedback to user
         console.log("Added Calendar Successfully")
-
+        this.getEventList()
         this.setActiveView(UserPage)
       },
       error: response => {
@@ -174,10 +176,11 @@ class App extends React.Component {
       data: JSON.stringify(data),
       success: () => {
         console.log(`Added stressValue ${stressValue} to event with id ${calEvent}`)
-
+        this.setState({alert: true})
         if (navigateTo) {
           this.setActiveView(navigateTo)
         }
+        this.getEventList()
       },
       error: response => {
         // TODO give feedback to user
@@ -197,9 +200,12 @@ class App extends React.Component {
   }
 
   unratedEvents() {
-    return filter(this.state.eventList, event => {
-      return event.stressValue === null || event.stressValue === undefined
-    })
+    var temp = filter(this.state.eventList, event =>
+        {return event.stressValue === null || event.stressValue === undefined});
+    var fin = uniqBy(temp, "id");
+    fin = uniqBy(temp, "summary")
+    console.log(fin.length+"   "+temp.length);
+    return fin;
   }
 
   render() {
@@ -208,9 +214,11 @@ class App extends React.Component {
         <MainLayout
           activeView={this.state.activeView}
           advice={this.state.advice}
+          alert={this.state.alert}
           authorized={this.state.authorized}
           calendarList={this.state.calendarList}
           eventList={this.state.eventList}
+          getEventList={() => this.getEventList()}
           getCalendars={() => this.getCalendars()}
           getLogout={() => this.getLogout()}
           postCalendarAdd={calId => this.postCalendarAdd(calId)}
