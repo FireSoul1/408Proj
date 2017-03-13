@@ -46,10 +46,10 @@ public class RegressionTests {
     }
     @Test
 	public void signInRedirects() throws Exception {
-		// this.mockMvc.perform(get("/login/google/"))
-  //                   .andExpect(status().isOk())
-  //                   .andDo(print());
-		//TODO
+		 this.mockMvc.perform(get("/login/google/"))
+                     .andExpect(status().isMovedTemporarily())
+                     .andDo(print());
+
 	}
 
 	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
