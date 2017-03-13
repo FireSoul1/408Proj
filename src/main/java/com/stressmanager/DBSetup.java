@@ -48,6 +48,7 @@ public class DBSetup {
         return currentDB.getTable("Users");
     }
     public static Table getTable(String name) {
+        name = name.replaceAll(" ","_");
         return currentDB.getTable(name);
     }
     public static int createTable(String username) {
@@ -63,7 +64,7 @@ public class DBSetup {
 
             currentDB.createTable(request)
                 .waitForActive();//wait for the Table to be up before you send the okay
-            System.out.println("NEW TABLE WAS CREATED");
+            System.out.println(Colors.ANSI_YELLOW+"NEW TABLE WAS CREATED");
             return 200;
         } catch(Exception e) {
             System.out.println("Shit has hit the fan and this reason is: "+e.getMessage());
