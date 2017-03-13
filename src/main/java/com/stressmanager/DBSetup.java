@@ -64,7 +64,7 @@ public class DBSetup {
 
             currentDB.createTable(request)
                 .waitForActive();//wait for the Table to be up before you send the okay
-            System.out.println(Colors.ANSI_YELLOW+"NEW TABLE WAS CREATED");
+            System.out.println(Colors.ANSI_YELLOW+"NEW TABLE WAS CREATED"+Colors.ANSI_WHITE);
             return 200;
         } catch(Exception e) {
             System.out.println("Shit has hit the fan and this reason is: "+e.getMessage());
