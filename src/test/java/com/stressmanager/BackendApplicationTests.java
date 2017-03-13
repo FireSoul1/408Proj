@@ -129,7 +129,26 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 	public void DBSetUpRemoteTest() throws Exception{
         System.out.println("\nRunnning test case 4: Checking that the Remote DB is setup.");
         DBSetup.remoteDB();
-        //System.out.println("access_token: "+Colors.ANSI_YELLOW+getAccessToken("otesting69@gmail.com","otesting"));
+	}
+    @Test
+	public void DBSetUpRemoteTestCreateTable() throws Exception{
+        System.out.println("\nRunnning test case 9: Checking that the Remote DB can make table.");
+        DBSetup.remoteDB();
+
+        int err = DBSetup.createTable("Test_Table");
+        Assert.assertEquals(err == 200,true);
+        Table re = DBSetup.getTable("Test_Table");
+        re.delete();
+
+	}
+    @Test
+	public void DBSetUpRemoteTestUserTableGet() throws Exception{
+        System.out.println("\nRunnning test case 4: Checking that the Remote DB is setup.");
+        DBSetup.remoteDB();
+
+        Table re = DBSetup.getUsersTable();
+        Assert.assertEquals(re == null,true);
+
 	}
     private String getAccessToken(String username, String password) throws Exception {
 		String authorization = "Basic "
@@ -165,26 +184,5 @@ public class BackendApplicationTests extends AbstractTestNGSpringContextTests {
 		return content.substring(17, 53);
 	}
 
-    // @Configuration
-    // @EnableWebMvcSecurity
-    // @EnableWebMvc
-    // static class Config extends WebSecurityConfigurerAdapter {
-    //
-    //     @Override
-    //     protected void configure(HttpSecurity http) throws Exception {
-    //         http
-    //         .authorizeRequests()
-    //         .antMatchers("/admin/**").hasRole("ADMIN")
-    //         .anyRequest().authenticated()
-    //         .and()
-    //         .formLogin();
-    //     }
-    //
-    //     @Autowired
-    //     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    //         auth
-    //         .inMemoryAuthentication()
-    //         .withUser("user").password("password").roles("USER");
-    //     }
-    // }
+
 }
