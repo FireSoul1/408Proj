@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { ajax } from 'jquery'
-import { isEmpty, filter } from 'lodash'
+import { isEmpty, filter, uniqBy, isEqual } from 'lodash'
 
 import 'style/bootswatch'
 
@@ -127,7 +127,6 @@ class App extends React.Component {
   }
   getLogout() {
 
-
       ajax({
           url: '/logout',
           type: 'get',
@@ -177,10 +176,11 @@ class App extends React.Component {
       data: JSON.stringify(data),
       success: () => {
         console.log(`Added stressValue ${stressValue} to event with id ${calEvent}`)
-        this.getEventList()
+        this.setState({alert: true})
         if (navigateTo) {
           this.setActiveView(navigateTo)
         }
+        this.getEventList()
       },
       error: response => {
         // TODO give feedback to user
@@ -200,9 +200,12 @@ class App extends React.Component {
   }
 
   unratedEvents() {
-    return filter(this.state.eventList, event => {
-      return event.stressValue === null || event.stressValue === undefined
-    })
+    var temp = filter(this.state.eventList, event =>
+        {return event.stressValue === null || event.stressValue === undefined});
+    var fin = uniqBy(temp, "id");
+    fin = uniqBy(temp, "summary")
+    console.log(fin.length+"   "+temp.length);
+    return fin;
   }
 
   render() {

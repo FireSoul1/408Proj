@@ -11,7 +11,6 @@ BigCalendar.momentLocalizer(moment)
 class UserPage extends React.Component {
     constructor(props) {
         super(props)
-
         this.state = {
             calID: ''
         }
