@@ -52,17 +52,17 @@ public class RegressionTests {
                      .andDo(print());
 
 	}
-	@Test
-	public void DBSetUpRemoteTestUserTableAdd() throws Exception{
-		System.out.println("\nRunnning test case 11: Checking that the Remote DB can Put item"+Colors.ANSI_BLUE);
-		DBSetup.remoteDB();
-		Table re = DBSetup.getUsersTable();
-		Item im = new Item();
-		im.withString("userID","Test_User");
-		im.withString("calID","Test_cal");
-		re.putItem(im);
-
-	}
+	//@Test
+	// public void DBSetUpRemoteTestUserTableAdd() throws Exception{
+	// 	System.out.println("\nRunnning test case 11: Checking that the Remote DB can Put item"+Colors.ANSI_BLUE);
+	// 	DBSetup.remoteDB();
+	// 	Table re = DBSetup.getUsersTable();
+	// 	Item im = new Item();
+	// 	im.withString("userID","Test_User");
+	// 	im.withString("calID","Test_cal");
+	// 	re.putItem(im);
+	//
+	// }
 
 	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
 	@Bean

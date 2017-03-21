@@ -144,7 +144,13 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		tab = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
 			   .withPrimaryKey("userID", principal.getName());
-		Item got = tab.getItem(spec);
+		System.out.println(Colors.ANSI_CYAN+""+principal.getName());
+		Item got = null;
+		try{
+		 got = tab.getItem(spec);
+	 } catch(Exception e) {
+		 //tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
+	 }
 		if(got == null)
 			tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
 
@@ -218,13 +224,21 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					try {
 						it = table.getItem(spec);
 					} catch (ResourceNotFoundException e) {
-						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 2"+e.getMessage());
+
+						System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 2 "+e.getMessage());
 						//maybe if we make the table?
 						//DBSetup.createTable(user.replaceAll(" ", "_"));
 						//return null;
+
+					} catch (Exception e) {
+
+						System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 13 "+e.getMessage());
+						//maybe if we make the table?
+						//DBSetup.createTable(user.replaceAll(" ", "_"));
+						//return null;\
 					}
 					if(it != null)
-					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
 					//get the stresslvl
 
 					if(it != null){
