@@ -125,7 +125,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				String str = event.getId();
 				System.out.printf("%s (%s)\n", str, event.getSummary());
 			}
-
 			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
 
 		}
@@ -141,18 +140,21 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
 		}
 
+		//add User to the Table of User
 		tab = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("userID", principal.getName());
-		System.out.println(Colors.ANSI_CYAN+""+principal.getName());
-		Item got = null;
-		try{
-		 got = tab.getItem(spec);
-	 } catch(Exception e) {
-		 //tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
-	 }
-		if(got == null)
-			tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
+		tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
+
+		// GetItemSpec spec = new GetItemSpec()
+		// 	   .withPrimaryKey("userID", principal.getName());
+		// System.out.println(Colors.ANSI_CYAN+""+principal.getName());
+		// Item got = null;
+		// try{
+		//  got = tab.getItem(spec);
+		// 	} catch(Exception e) {
+		//  	//tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
+		// 	}
+		// if(got == null)
+		// 	tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
 
 		return map;///list.get(1).getColorId();
 	}
@@ -186,7 +188,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	//get events from @calID Calendar
 	public List<Event> getEventsMultiCal(String calID, DateTime start, DateTime end, boolean tableExists, String user) throws Exception {
-
 		Events events = service.events().list(calID) // Get events from calendar calID...
 			.setTimeMin(start) // Starting at the beginning of the month
 			.setTimeMax(end) // and ending at the last day of the month
@@ -416,7 +417,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		GetItemSpec spec = new GetItemSpec()
                .withPrimaryKey("userID", userName);
         Item got = t.getItem(spec);
-
 
 		//get a list of Calendar IDs
 		String str = got.getString("calID");
