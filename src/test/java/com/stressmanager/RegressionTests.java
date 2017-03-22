@@ -61,7 +61,7 @@ public class RegressionTests {
 		im.withString("userID","Test_User");
 		im.withString("calID","Test_cal");
 		re.putItem(im);
-
+		System.out.println(Colors.ANSI_WHITE);
 	}
 
 	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();

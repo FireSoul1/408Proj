@@ -20,8 +20,8 @@ class ImportPage extends React.Component {
   }
 
   renderOptions() {
-    const { calendarList } = this.props
-
+    //const { calendarList } = this.props
+    const calendarList = [{'id':' ','summary':' '}];
     return map(calendarList, calendar => {
       return (<option key={calendar.id} value={calendar.id}>{calendar.summary}</option>)
     })
@@ -34,7 +34,7 @@ class ImportPage extends React.Component {
           return
       }
       postCalendarAdd(calID)
-      
+
   }
   renderAlert() {
       const { alertVisible } = this.state
