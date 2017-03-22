@@ -157,11 +157,12 @@ public class MainController {
 
             //check if it has '_'
             if(eventID.indexOf('_') != -1) {
+                return "OK";
                 //add the substring without the '_'
-                Item new2 = new Item();
-                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
-                new2.withInt("stressValue", slvl);
-                table.putItem(new2);
+                // Item new2 = new Item();
+                // new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+                // new2.withInt("stressValue", slvl);
+                // table.putItem(new2);
 
             }
 
@@ -175,13 +176,13 @@ public class MainController {
             table.putItem(new1);
 
             //check if it has '_'
-            if(eventID.indexOf('_') != -1) {
-                //add the substring without the '_'
-                Item new2 = new Item();
-                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
-                new2.withInt("stressValue", slvl);
-                table.putItem(new2);
-            }
+            // if(eventID.indexOf('_') != -1) {
+            //     //add the substring without the '_'
+            //     Item new2 = new Item();
+            //     new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+            //     new2.withInt("stressValue", slvl);
+            //     table.putItem(new2);
+            // }
 
             if(err == 200)
                 return "OK";
