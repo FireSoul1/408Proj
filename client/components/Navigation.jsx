@@ -40,27 +40,25 @@ class Navigation extends React.Component {
   renderDropdown() {
     const { advice, authorized, getCalendars, getLogout, setActiveView } = this.props
 
-    if (authorized) {
-      return (
-        <Nav pullRight>
-          <NavDropdown title='Tools' id='basic-nav-dropdown'>
-            <MenuItem onClick={() => getCalendars()}>
-              Import Calendar
-            </MenuItem>
-            <MenuItem onClick={() => setActiveView(StressFormPage)}>
-              Rate Events
-            </MenuItem>
-            <MenuItem onClick={() => this.setState({ alertVisible: true })}>
-              Advice
-            </MenuItem>
-            <MenuItem divider/>
-            <MenuItem onClick={() => getLogout()}>
-              Logout
-            </MenuItem>
-          </NavDropdown>
-        </Nav>
-      )
-    }
+    return (
+      <Nav pullRight>
+        <NavDropdown title='Tools' id='basic-nav-dropdown'>
+          <MenuItem onClick={() => getCalendars()}>
+            Import Calendar
+          </MenuItem>
+          <MenuItem onClick={() => setActiveView(StressFormPage)}>
+            Rate Events
+          </MenuItem>
+          <MenuItem onClick={() => this.setState({ alertVisible: true })}>
+            Advice
+          </MenuItem>
+          <MenuItem divider/>
+          <MenuItem onClick={() => getLogout()}>
+            Logout
+          </MenuItem>
+        </NavDropdown>
+      </Nav>
+    )
   }
 
   render() {
