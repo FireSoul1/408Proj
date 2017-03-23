@@ -71,7 +71,7 @@ class UserPage extends React.Component {
         if (event.stressValue === null || event.stressValue === undefined) {
             return { className: `event-unrated${selected}` }
         } else if (event.stressValue === 0) {
-            return { className: `event-no-stress${selected}` }
+            return { className: `event-unrated${selected}` }
         } else if (event.stressValue > 0 && event.stressValue <= 10) {
             return { className: `event-stress-${event.stressValue}${selected}` }
         } else if (event.stressValue < 0 && event.stressValue >= -10) {
