@@ -15,26 +15,34 @@ class ImportPage extends React.Component {
 
     this.state = {
       calID: '',
-      alertVisible: false
+      alertVisible: false,
+      rickVisible: false
     }
   }
 
   renderOptions() {
     const { calendarList } = this.props
 
-    return map(calendarList, calendar => {
+    let options = map(calendarList, calendar => {
       return (<option key={calendar.id} value={calendar.id}>{calendar.summary}</option>)
     })
+
+    options.push(<option key='rick' value='rick'>Rick Astley</option>)
+
+    return options
   }
   postTheCalID(calID) {
       const { postCalendarAdd, getEventList } = this.props
 
-      if(calID =="") {
+      if (calID =="") {
           this.setState({alertVisible: true})
           return
+      } else if (calID == 'rick') {
+        this.setState({ rickVisible: true })
+        return
       }
       postCalendarAdd(calID)
-      
+
   }
   renderAlert() {
       const { alertVisible } = this.state
@@ -52,6 +60,21 @@ class ImportPage extends React.Component {
       return null
   }
 
+  renderRick() {
+    const { rickVisible } = this.state
+
+    if (rickVisible) {
+      return (
+        <SweetAlert
+          title="Rick Astley's Calendar"
+          onConfirm={() => this.setState({ rickVisible: false })}
+        >
+          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" frameBorder="0" allowFullScreen/>
+        </SweetAlert>
+      )
+    }
+  }
+
   render() {
     const { postCalendarAdd } = this.props
     const { calID } = this.state
@@ -59,6 +82,7 @@ class ImportPage extends React.Component {
     return (
       <div className='container'>
           {this.renderAlert()}
+          {this.renderRick()}
         <Jumbotron>
           <p>Please select a calendar to import from the dropdown below</p>
           <FormGroup controlId="formControlsSelect">
