@@ -6,6 +6,7 @@ import {
   NavDropdown
 } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
+import { shuffle } from 'lodash'
 
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
@@ -62,11 +63,14 @@ class Navigation extends React.Component {
   }
 
   render() {
+    // Garble that text
+    const title = shuffle('Stress Manager'.split('')).join('')
+
     return (
       <Navbar fixedTop>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>Stress Manager</a>
+            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>{title}</a>
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}
