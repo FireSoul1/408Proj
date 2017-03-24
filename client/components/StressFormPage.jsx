@@ -35,7 +35,7 @@ class StressFormPage extends React.Component {
   }
 
   filterInt(value) {
-    if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)) { return Number(value) }
+    if (/^(\-|\+)?([0-9]+|Infinity)?(\.)*?([0-9]+)$/.test(value)) { return Number(value) }
 
     return NaN
   }
