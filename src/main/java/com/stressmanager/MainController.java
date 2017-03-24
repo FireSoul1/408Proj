@@ -159,9 +159,19 @@ public class MainController {
             if(eventID.indexOf('_') != -1) {
                 //add the substring without the '_'
                 Item new2 = new Item();
-                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
-                new2.withInt("stressValue", slvl);
-                table.putItem(new2);
+                String temp = eventID.substring(0,eventID.indexOf('_'));
+                if(temp.length()==0) {
+                  new2.withString("eventID", eventID);
+                  new2.withInt("stressValue", slvl);
+                  System.out.println(Colors.ANSI_PURPLE+"  "+eventID);
+                  table.putItem(new2);
+                }
+                else {
+                  new2.withString("eventID", temp);
+                  new2.withInt("stressValue", slvl);
+                  System.out.println(Colors.ANSI_PURPLE+"  "+eventID);
+                  table.putItem(new2);
+                }
 
             }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { each, extend, keys, map } from 'lodash'
+import { each, extend, filter, keys, map } from 'lodash'
 import {
   Button,
   ControlLabel,
@@ -53,15 +53,15 @@ class StressFormPage extends React.Component {
     const { value } = this.state
     const ids = keys(value)
 
-    each(ids, (id, index) => {
-      if (this.getValidationState(id) === 'success') {
-        const stressValue = value[id]
+    const validIds = filter(ids, id => this.getValidationState(id) === 'success')
 
-        if (index === ids.length - 1) {
-          postCalendarEvent(id, stressValue, UserPage)
-        } else {
-          postCalendarEvent(id, stressValue)
-        }
+    each(validIds, (id, index) => {
+      const stressValue = value[id]
+
+      if (index === ids.length - 1) {
+        postCalendarEvent(id, stressValue, UserPage)
+      } else {
+        postCalendarEvent(id, stressValue)
       }
     })
   }
