@@ -22,13 +22,13 @@ public class Data {
          int day = rightNow.get(Calendar.DAY_OF_WEEK);
          //RETURN ADVICE based on the day
          switch(day) {
-             case Calendar.MONDAY: return adviceArray[6];
-             case Calendar.TUESDAY: return adviceArray[2];
-             case Calendar.WEDNESDAY: return adviceArray[1];
-             case Calendar.THURSDAY: return adviceArray[5];
-             case Calendar.FRIDAY: return adviceArray[3];
-             case Calendar.SATURDAY: return adviceArray[0];
-             case Calendar.SUNDAY: return adviceArray[4];
+             case Calendar.MONDAY: return adviceArray[0];
+             case Calendar.TUESDAY: return adviceArray[5];
+             case Calendar.WEDNESDAY: return adviceArray[4];
+             case Calendar.THURSDAY: return adviceArray[2];
+             case Calendar.FRIDAY: return adviceArray[6];
+             case Calendar.SATURDAY: return adviceArray[1];
+             case Calendar.SUNDAY: return adviceArray[3];
              default: return "There is nothing I can say that can make things better";
          }
 
