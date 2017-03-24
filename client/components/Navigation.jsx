@@ -6,6 +6,7 @@ import {
   NavDropdown
 } from 'react-bootstrap'
 import SweetAlert from 'react-bootstrap-sweetalert'
+import { shuffle } from 'lodash'
 
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
@@ -40,35 +41,36 @@ class Navigation extends React.Component {
   renderDropdown() {
     const { advice, authorized, getCalendars, getLogout, setActiveView } = this.props
 
-    if (authorized) {
-      return (
-        <Nav pullRight>
-          <NavDropdown title='Tools' id='basic-nav-dropdown'>
-            <MenuItem onClick={() => getCalendars()}>
-              Import Calendar
-            </MenuItem>
-            <MenuItem onClick={() => setActiveView(StressFormPage)}>
-              Rate Events
-            </MenuItem>
-            <MenuItem onClick={() => this.setState({ alertVisible: true })}>
-              Advice
-            </MenuItem>
-            <MenuItem divider/>
-            <MenuItem onClick={() => getLogout()}>
-              Logout
-            </MenuItem>
-          </NavDropdown>
-        </Nav>
-      )
-    }
+    return (
+      <Nav pullRight>
+        <NavDropdown title='Tools' id='basic-nav-dropdown'>
+          <MenuItem onClick={() => getCalendars()}>
+            Import Calendar
+          </MenuItem>
+          <MenuItem onClick={() => setActiveView(StressFormPage)}>
+            Rate Events
+          </MenuItem>
+          <MenuItem onClick={() => this.setState({ alertVisible: true })}>
+            Advice
+          </MenuItem>
+          <MenuItem divider/>
+          <MenuItem onClick={() => getLogout()}>
+            Logout
+          </MenuItem>
+        </NavDropdown>
+      </Nav>
+    )
   }
 
   render() {
+    // Garble that text
+    const title = shuffle('Stress Manager'.split('')).join('')
+
     return (
       <Navbar fixedTop>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>Stress Manager</a>
+            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>{title}</a>
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}
