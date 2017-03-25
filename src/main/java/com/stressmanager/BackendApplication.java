@@ -267,18 +267,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					val = null;
 
 				//add to the Event class and add to list
-<<<<<<< HEAD
-				if (event.getStart().getDateTime() != null) {
+				if (event.getStart().getDateTime() != null) {			
+					if(thurs) //BUG: MAKES THURSDAY Cactus
+						event = event.setSummary("Cactus");
 					GenericJson new1 = (GenericJson)event.set("stressValue",val);
 					target.add((Event)new1);
 				} 
-=======
-				//BUG: MAKES THURSDAY Cactus
-				if(thurs)
-					event = event.setSummary("Cactus");
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
->>>>>>> defects
 			}
 
 			//set the 'items' to the new List
