@@ -54,6 +54,7 @@ class UserPage extends React.Component {
             return (
                 <BigCalendar
                     defaultView='week'
+                    defaultDate={moment().add(1, 'weeks').toDate()}
                     views={['week']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
@@ -61,7 +62,7 @@ class UserPage extends React.Component {
                     endAccessor={event => this.accessor('end', event)}
                     allDayAccessor={event => has(event, 'start.date') && has(event, 'end.date')}
                     titleAccessor='summary'
-                    />
+                />
             )
         }
         return (
@@ -74,7 +75,7 @@ class UserPage extends React.Component {
         if (event.stressValue === null || event.stressValue === undefined) {
             return { className: `event-unrated${selected}` }
         } else if (event.stressValue === 0) {
-            return { className: `event-no-stress${selected}` }
+            return { className: `event-unrated${selected}` }
         } else if (event.stressValue > 0 && event.stressValue <= 10) {
             return { className: `event-stress-${event.stressValue}${selected}` }
         } else if (event.stressValue < 0 && event.stressValue >= -10) {
