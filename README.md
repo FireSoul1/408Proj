@@ -19,6 +19,7 @@
 ### Documentation for Testers
 
 [Testing Instructions](https://docs.google.com/document/d/1OP3PNdys2qFaEVocyeD2GRiiXlUAEgippZ2wx_ck74U/edit?usp=sharing)
+
 [Seeded Defect Log](https://docs.google.com/document/d/1NaIVMNFy4kzDNSqUm4DWCte9fOM6_3FKQYQ36l5AyMw/edit?usp=sharing)
 
 See the docs folder for PDF copies of these documents.
