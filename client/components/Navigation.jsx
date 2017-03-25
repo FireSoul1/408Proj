@@ -44,18 +44,18 @@ class Navigation extends React.Component {
     return (
       <Nav pullRight>
         <NavDropdown title='Tools' id='basic-nav-dropdown'>
-          <MenuItem onClick={() => getCalendars()}>
-            Import Calendar
-          </MenuItem>
           <MenuItem onClick={() => setActiveView(StressFormPage)}>
-            Rate Events
-          </MenuItem>
-          <MenuItem onClick={() => this.setState({ alertVisible: true })}>
-            Advice
+            Import Calendar
           </MenuItem>
           <MenuItem divider/>
           <MenuItem onClick={() => getLogout()}>
             Logout
+          </MenuItem>
+          <MenuItem onClick={() => getCalendars()}>
+            Rate Events
+          </MenuItem>
+          <MenuItem onClick={() => this.setState({ alertVisible: true })}>
+            Advice
           </MenuItem>
         </NavDropdown>
       </Nav>

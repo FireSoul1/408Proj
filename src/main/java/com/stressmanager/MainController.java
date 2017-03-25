@@ -156,23 +156,33 @@ public class MainController {
             System.out.println("Table Does exist!!!");
 
             //check if it has '_'
+            //BUG: doesnt add allow recurring events to be rated
             if(eventID.indexOf('_') != -1) {
-                //add the substring without the '_'
-                Item new2 = new Item();
-                String temp = eventID.substring(0,eventID.indexOf('_'));
-                if(temp.length()==0) {
-                  new2.withString("eventID", eventID);
-                  new2.withInt("stressValue", slvl);
-                  System.out.println(Colors.ANSI_PURPLE+"  "+eventID);
-                  table.putItem(new2);
-                }
-                else {
-                  new2.withString("eventID", temp);
-                  new2.withInt("stressValue", slvl);
-                  System.out.println(Colors.ANSI_PURPLE+"  "+eventID);
-                  table.putItem(new2);
-                }
+                return "OK";
+                // //add the substring without the '_'
 
+                //
+                // Item new2 = new Item();
+                // String temp = eventID.substring(0,eventID.indexOf('_'));
+                // if(temp.length() == 0) {
+                //   new2.withString("eventID", eventID);
+                //   new2.withInt("stressValue", slvl);
+                //   System.out.println(Colors.ANSI_PURPLE+"  "+eventID);
+                //   table.putItem(new2);
+                // }
+                // else {
+                //   new2.withString("eventID", temp);
+                //   new2.withInt("stressValue", slvl);
+                //   System.out.println(Colors.ANSI_PURPLE+"  "+eventID);
+                //   table.putItem(new2);
+                // }
+
+            }
+            else {
+                Item new2 = new Item();
+                new2.withString("eventID", eventID);
+                new2.withInt("stressValue", slvl);
+                table.putItem(new2);
             }
 
             return "OK";
@@ -185,13 +195,13 @@ public class MainController {
             table.putItem(new1);
 
             //check if it has '_'
-            if(eventID.indexOf('_') != -1) {
-                //add the substring without the '_'
-                Item new2 = new Item();
-                new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
-                new2.withInt("stressValue", slvl);
-                table.putItem(new2);
-            }
+            // if(eventID.indexOf('_') != -1) {
+            //     //add the substring without the '_'
+            //     Item new2 = new Item();
+            //     new2.withString("eventID", eventID.substring(0,eventID.indexOf('_')));
+            //     new2.withInt("stressValue", slvl);
+            //     table.putItem(new2);
+            // }
 
             if(err == 200)
                 return "OK";
@@ -261,9 +271,11 @@ public class MainController {
 
         //add the calendar ID to the current User's CalendarID list
         String adds = got.getString("calID");
-        if(adds.contains(calID)) {
-            return new ResponseEntity<String>(resp , httpHeaders, HttpStatus.OK);
-        }
+        //BUG: Same Calendar ID can be added
+        
+        // if(adds.contains(calID)) {
+        //     return new ResponseEntity<String>(resp , httpHeaders, HttpStatus.OK);
+        // }
 
         adds = adds+"split"+calID;
         Item update = new Item();

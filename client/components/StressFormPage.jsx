@@ -25,8 +25,8 @@ class StressFormPage extends React.Component {
       const val = this.state.value[id]
       const num = this.filterInt(val)
 
-      if (Number.isNaN(num)) { return 'error' }
-      if (num > 10 || num < -10) {return 'error'}
+      // if (Number.isNaN(num)) { return 'error' }
+      // if (num > 10 || num < -10) {return 'error'}
 
       return 'success'
     }
@@ -35,7 +35,7 @@ class StressFormPage extends React.Component {
   }
 
   filterInt(value) {
-    if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)) { return Number(value) }
+    if (/^(\-|\+)?([0-9]+|Infinity)?(\.)*?([0-9]+)$/.test(value)) { return Number(value) }
 
     return NaN
   }
