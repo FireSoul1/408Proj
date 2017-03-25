@@ -54,7 +54,7 @@ public class RegressionTests {
 	}
 	@Test
 	public void DBSetUpRemoteTestUserTableAdd() throws Exception{
-		System.out.println("\nRunnning test case 11: Checking that the Remote DB can Put item"+Colors.ANSI_BLUE);
+		System.out.println(Colors.ANSI_CYAN+"\nRunnning test case 11: Checking that the Remote DB can Put item"+Colors.ANSI_BLUE);
 		DBSetup.remoteDB();
 		Table re = DBSetup.getUsersTable();
 		Item im = new Item();
