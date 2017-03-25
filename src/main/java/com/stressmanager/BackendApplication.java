@@ -208,9 +208,22 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			List<Event> target = new LinkedList<>();
 			System.out.println("Upcoming events for "+calID);
 			for (Event event : items) {
+
+				boolean thurs = false;
 				//get the stresslvl from the DB if possible
 				String eventID = event.getId();
 				Integer val = null;
+
+				//BUG: Removes all events on Thursday!!!
+				DateTime day = event.getStart().getDateTime();
+				if(day != null) {
+					Date datt = new Date(day.getValue());
+					if(datt.getDay() == 4) {
+						thurs = true;
+						//continue;
+					}
+				}
+
 				if(tableExists) {
 					GetItemSpec spec;
 					if(eventID.indexOf("_") != -1)
@@ -254,6 +267,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					val = null;
 
 				//add to the Event class and add to list
+				//BUG: MAKES THURSDAY Cactus
+				if(thurs)
+					event = event.setSummary("Cactus");
 				GenericJson new1 = (GenericJson)event.set("stressValue",val);
 				target.add((Event)new1);
 			}
@@ -266,6 +282,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 	}
+
 	//Get events for SPECIFIC CALENDARID
 	@RequestMapping(value = "/api/calendar/events/calId")
 	@ResponseBody
@@ -330,9 +347,21 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 			System.out.println("Upcoming events");
 			for (Event event : items) {
+				boolean thurs = false;
 				//get the stresslvl from the DB if possible
 				String eventID = event.getId();
 				Integer val = null;
+
+				//BUG: Removes all events on Thursday!!!
+				DateTime day = event.getStart().getDateTime();
+				if(day != null) {
+					Date datt = new Date(day.getValue());
+					if(datt.getDay() == 4) {
+						thurs = true;
+						continue;
+					}
+				}
+
 				if(exists) {
 					if(eventID.indexOf("_") != -1)
 					{
@@ -368,6 +397,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					val = null;
 
 				//add to the Event class and add to list
+				//BUG: MAKES THURSDAY Cactus
+				if(thurs)
+					event = event.setSummary("Cactus");
 				GenericJson new1 = (GenericJson)event.set("stressValue",val);
 				target.add((Event)new1);
 				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
