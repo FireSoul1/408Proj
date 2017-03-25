@@ -20,9 +20,12 @@ class UserPage extends React.Component {
     accessor(time, event) {
         const dateTimeString = `${time}.dateTime`
         const dateString = `${time}.date`
+        var daty = moment(event[time]['dateTime']).toDate()
 
         if (has(event, dateTimeString)) {
-            return moment(event[time]['dateTime']).toDate()
+            var dat = moment(event[time]['dateTime']).toDate()
+            dat = moment(daty).set({ hour: parseInt((dat.getHours() + 1), 10)}).toDate()
+            return dat
         } else if (has(event, dateString)) {
             return moment(event[time]['date']).toDate()
         }
