@@ -267,11 +267,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					val = null;
 
 				//add to the Event class and add to list
-				//BUG: MAKES THURSDAY Cactus
-				if(thurs)
-					event = event.setSummary("Cactus");
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
+				if (event.getStart().getDateTime() != null) {			
+					if(thurs) //BUG: MAKES THURSDAY Cactus
+						event = event.setSummary("Cactus");
+					GenericJson new1 = (GenericJson)event.set("stressValue",val);
+					target.add((Event)new1);
+				} 
 			}
 
 			//set the 'items' to the new List
@@ -397,11 +398,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					val = null;
 
 				//add to the Event class and add to list
-				//BUG: MAKES THURSDAY Cactus
-				if(thurs)
-					event = event.setSummary("Cactus");
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
+				if (event.getStart().getDateTime() != null) {
+					if(thurs) //BUG: MAKES THURSDAY Cactus
+						event = event.setSummary("Cactus");
+					GenericJson new1 = (GenericJson)event.set("stressValue",val);
+					target.add((Event)new1);
+				} 
 				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
 			}
 
@@ -581,8 +583,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					val = null;
 
 				//add to the Event class and add to list
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
+				if (event.getStart().getDateTime() != null) {
+					GenericJson new1 = (GenericJson)event.set("stressValue",val);
+					target.add((Event)new1);
+				} 
 				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
 			}
 
