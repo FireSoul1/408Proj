@@ -200,10 +200,11 @@ class App extends React.Component {
   unratedEvents() {
     var temp = filter(this.state.eventList, event =>
         {return event.stressValue === null || event.stressValue === undefined});
-    var fin = uniqBy(temp, "id");
-    fin = uniqBy(temp, "summary")
-    console.log(fin.length+"   "+temp.length);
-    return fin;
+    return temp;
+    // var fin = uniqBy(temp, "id");
+    // fin = uniqBy(temp, "summary")
+    // console.log(fin.length+"   "+temp.length);
+    // return fin;
   }
 
   render() {

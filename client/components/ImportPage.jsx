@@ -35,12 +35,13 @@ class ImportPage extends React.Component {
       const { postCalendarAdd, getEventList } = this.props
 
       if (calID =="") {
-          this.setState({alertVisible: true})
-          return
+          //this.setState({alertVisible: true})
+          calID = "primary"
       } else if (calID == 'rick') {
         this.setState({ rickVisible: true })
         return
       }
+      console.log(calID)
       postCalendarAdd(calID)
 
   }
