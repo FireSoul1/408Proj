@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
+import com.amazonaws.services.dynamodbv2.document.*;
 
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.web.context.WebApplicationContext;
@@ -46,10 +47,21 @@ public class RegressionTests {
     }
     @Test
 	public void signInRedirects() throws Exception {
-		// this.mockMvc.perform(get("/login/google/"))
-  //                   .andExpect(status().isOk())
-  //                   .andDo(print());
-		//TODO
+		 this.mockMvc.perform(get("/login/google/"))
+                     .andExpect(status().isMovedTemporarily())
+                     .andDo(print());
+
+	}
+	@Test
+	public void DBSetUpRemoteTestUserTableAdd() throws Exception{
+		System.out.println("\nRunnning test case 11: Checking that the Remote DB can Put item"+Colors.ANSI_BLUE);
+		DBSetup.remoteDB();
+		Table re = DBSetup.getUsersTable();
+		Item im = new Item();
+		im.withString("userID","Test_User");
+		im.withString("calID","Test_cal");
+		re.putItem(im);
+
 	}
 
 	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();

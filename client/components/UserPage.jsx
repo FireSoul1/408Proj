@@ -11,6 +11,7 @@ BigCalendar.momentLocalizer(moment)
 class UserPage extends React.Component {
     constructor(props) {
         super(props)
+
         this.state = {
             calID: ''
         }
@@ -26,6 +27,7 @@ class UserPage extends React.Component {
             return moment(event[time]['date']).toDate()
         }
     }
+
 
     renderAlert() {
         const { alert } = this.props
@@ -45,7 +47,6 @@ class UserPage extends React.Component {
     }
     renderCalendar() {
         const { alert } = this.props
-
         if (!alert) {
             return (
                 <BigCalendar
