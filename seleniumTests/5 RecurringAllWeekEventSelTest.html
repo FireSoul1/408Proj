@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/" />
-<title>AdviceTest</title>
+<title>StressManagerTest</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">AdviceTest</td></tr>
+<tr><td rowspan="1" colspan="3">StressManagerTest</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -18,27 +18,27 @@
 </tr>
 <tr>
 	<td>pause</td>
-	<td>400</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>id=basic-nav-dropdown</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=Advice</td>
+	<td>5000</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertTextPresent</td>
-	<td>Advice</td>
+	<td>Stress Manager</td>
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//button[@type='button']</td>
+	<td>assertTextPresent</td>
+	<td>Tools</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>Mar 26 - Apr 01</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td>RE All Week</td>
 	<td></td>
 </tr>
 </tbody></table>
