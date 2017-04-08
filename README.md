@@ -22,6 +22,10 @@
 
 [Seeded Defect Log](https://docs.google.com/document/d/1NaIVMNFy4kzDNSqUm4DWCte9fOM6_3FKQYQ36l5AyMw/edit?usp=sharing)
 
+### Phase 2 Documentation
+
+[Phase 2 Test Plan](https://docs.google.com/document/d/1Lf3uTE7jB5VCVRbeWa7kcV0Oagcgd8oDX4mZ7hFf2vM/edit?usp=sharing)
+
 See the docs folder for PDF copies of these documents.
 
 ## Project Setup
