@@ -39,17 +39,21 @@ Download and install:
 
 ### Frontend
 
-* `npm install` will install all of the frontend dependencies.
-* `npm test` will run the frontend tests
-* `npm run dev` will watch all files in *client/* for changes, and recompile
+* In a terminal window, navigate to the directory named, 408Proj
+* To build the frontend, do the following:
+** `npm install` will install all of the frontend dependencies.
+** `npm run dev` will watch all files in *client/* for changes, and recompile
 *bundle.js* and all other assets.
+* Extra commands:
 * `npm run build` to produce a minified version of the bundle an all other assets.
 * `npm run cleanup` will clean up the snapshots of the frontend tests
+* `npm test` will run the frontend tests
 
 ### Backend
-
-* `mvn install` will install all of the backend dependencies.
-* `mvn package` will package up the app and put it in *target/*. This will also
+* In a different terminal window from the frontend (probably should use a new one...) do the following:
+** Navigate to the directory named 408Proj
+** `mvn install` will install all of the backend dependencies.
+** `mvn package` will package up the app and put it in *target/*. This will also
   run the backend tests.
 
 You can run the backend with `java -jar target/backend-0.0.1-SNAPSHOT.jar`

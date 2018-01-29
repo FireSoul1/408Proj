@@ -82,7 +82,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
-	DBHelper db = new DBHelper();
+	//DBHelper db = new DBHelper();
 
 	//static Credentials credz;
 
@@ -131,22 +131,22 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 		//set-up the DB
-		DBSetup.remoteDB();
+		//DBSetup.remoteDB();
 
 		//check if the Table for that UserName exists
-		Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
-		if(tab == null) { //the Table doesn't Exist!!!
-			System.out.println("Creating a table for "+principal.getName()+"\'s events");
-			//make the table! :D
-			DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
-		}
+		//Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
+		// if(tab == null) { //the Table doesn't Exist!!!
+		// 	System.out.println("Creating a table for "+principal.getName()+"\'s events");
+		// 	//make the table! :D
+		// 	//DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
+		// }
 
-		tab = DBSetup.getUsersTable();
+		//tab = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
 			   .withPrimaryKey("userID", principal.getName());
-		Item got = tab.getItem(spec);
-		if(got == null)
-			tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
+		//Item got = tab.getItem(spec);
+		// if(got == null)
+			//tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
 
 		return map;///list.get(1).getColorId();
 	}
@@ -190,7 +190,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.execute();
 		//get the data from the HttpServletRequest
 		List<Event> items = events.getItems();
-		Table table = DBSetup.getTable(user.replaceAll(" ","_"));
+		//Table table = DBSetup.getTable(user.replaceAll(" ","_"));
 		if (items.size() == 0) {
 			System.out.println("No upcoming events found.");
 			return null;
@@ -216,7 +216,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					//the event is in the DB!
 					Item it = null;
 					try {
-						it = table.getItem(spec);
+						//it = table.getItem(spec);
 					} catch (ResourceNotFoundException e) {
 						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 2"+e.getMessage());
 						//maybe if we make the table?
@@ -281,14 +281,15 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
 
 		//get the User Table and user's data from there
-		Table t = DBSetup.getUsersTable();
+		//Table t = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
 			   .withPrimaryKey("userID", userName);
-		Item got = t.getItem(spec);
+		//Item got = t.getItem(spec);
 
 
 		//get a list of Calendar IDs
-		String str = got.getString("calID");
+	    String str = "12345678";
+		//String str = got.getString("calID");
 		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
 		String[] calIDs = str.split("split");
 
@@ -311,7 +312,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		{
 			//make a list of GenericJson
 			List<Event> target = new LinkedList<>();
-			Table table = DBSetup.getTable(userName);
+			//Table table = DBSetup.getTable(userName);
 
 			System.out.println("Upcoming events");
 			for (Event event : items) {
@@ -329,7 +330,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					//the event is in the DB!
 					Item it = null;
 					try {
-						it = table.getItem(spec);
+						//it = table.getItem(spec);
 					} catch (ResourceNotFoundException e) {
 
 						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 3"+e.getMessage());
@@ -398,27 +399,28 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
 
 		//get the User Table and user's data from there
-		Table t = DBSetup.getUsersTable();
+		//Table t = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
                .withPrimaryKey("userID", userName);
-        Item got = t.getItem(spec);
+        //Item got = t.getItem(spec);
 
 
 		//get a list of Calendar IDs
-		String str = got.getString("calID");
+        String str = "12345678";
+		//String str = got.getString("calID");
 		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
 		String[] calIDs = str.split("split");
 
 		List<Event> target = new LinkedList<>();
-		Table table = DBSetup.getTable(userName);
-		for(String val: calIDs) {
-			System.out.println(Colors.ANSI_CYAN+"The calid now is: "+val);
-			//get the events for each of these
-			List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
-			//add it to a list of all the events retrieved
-			if(addThis != null)
-				target.addAll(addThis);
-		}
+		//Table table = DBSetup.getTable(userName);
+		// for(String val: calIDs) {
+		// 	System.out.println(Colors.ANSI_CYAN+"The calid now is: "+val);
+		// 	//get the events for each of these
+		// 	List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
+		// 	//add it to a list of all the events retrieved
+		// 	if(addThis != null)
+		// 		target.addAll(addThis);
+		// }
 		Events events = service.events().list("primary") // Get events from primary calendar...
 			.setMaxResults(1)
 			.setSingleEvents(true)
@@ -493,7 +495,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		{
 			//make a list of GenericJson
 			List<Event> target = new LinkedList<>();
-			Table table = DBSetup.getTable(userName);
+			//Table table = DBSetup.getTable(userName);
 
 			System.out.println("Upcoming events");
 			for (Event event : items) {
@@ -512,24 +514,24 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 					//the event is in the DB!
 					Item it = null;
 					try {
-						it = table.getItem(spec);
+						//it = table.getItem(spec);
 					} catch (ResourceNotFoundException e) {
 						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 4"+e.getMessage());
 						//maybe if we make the table?
 						//DBSetup.createTable(userName.replaceAll(" ", "_"));
 						//return null;
 					}
-					if(it != null)
-						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
-					//get the stresslvl
+					// if(it != null)
+					// 	System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+					// //get the stresslvl
 
-					if(it != null){
-						try{
-							val = it.getInt("stressValue");
-						} catch (Exception e) {
-							val = null;
-						}
-					}
+					// if(it != null){
+					// 	try{
+					// 		val = it.getInt("stressValue");
+					// 	} catch (Exception e) {
+					// 		val = null;
+					// 	}
+					// }
 				}
 				else
 					val = null;
@@ -551,7 +553,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@RequestMapping(value = "/event/detail")
 	@ResponseBody
 	public ResponseEntity<String> eventDetails(@RequestBody GenericJson request) throws Exception {
-		db.accessDB();
+		//db.accessDB();
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
@@ -639,18 +641,18 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	*/
 	public boolean tableCheck(String userName) {
 		boolean exists = true;
-		Table table = DBSetup.getTable(userName);
+		//Table table = DBSetup.getTable(userName);
 		GetItemSpec spec12 = new GetItemSpec()
 			.withPrimaryKey("eventID", "123213213fwqefefw");
 		//the event is in the DB!
 		Item it1 = null;
 		try {
-			it1 = table.getItem(spec12);
+			//it1 = table.getItem(spec12);
 			return true;
 		} catch (ResourceNotFoundException e) {
 			//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 1"+e.getMessage());
 			//maybe if we make the table?
-			DBSetup.createTable(userName.replaceAll(" ", "_"));
+			//DBSetup.createTable(userName.replaceAll(" ", "_"));
 			return false;
 		}
 	}
