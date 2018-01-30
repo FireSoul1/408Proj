@@ -564,6 +564,16 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	}
 
+	// Gets which type of calendar to import...google or outlook
+	@RequestMapping(value = "/calendar/import")
+	@ResponseBody
+	public ResponseEntity<String> calendarImport(@RequestBody GenericJson request) throws Exception {
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return new ResponseEntity<String>("meow", httpHeaders, HttpStatus.OK);
+
+	}
+
 	/*
 	* Spring Security Set up
 	*/
