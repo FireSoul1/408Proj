@@ -143,10 +143,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		tab = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("userID", principal.getName());
+			   .withPrimaryKey("username", principal.getName());
 		Item got = tab.getItem(spec);
 		if(got == null)
-			tab.putItem(new Item().withString("userID", principal.getName()).withString("calID","primary"));
+			tab.putItem(new Item().withString("username", principal.getName()).withString("calID","primary"));
 
 		return map;///list.get(1).getColorId();
 	}
@@ -400,7 +400,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		//get the User Table and user's data from there
 		Table t = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
-               .withPrimaryKey("userID", userName);
+               .withPrimaryKey("username", userName);
         Item got = t.getItem(spec);
 
 
