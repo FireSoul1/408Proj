@@ -118,7 +118,61 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		} else {
 		  System.out.println("Invalid ID token.");
 		}
-		return "";
+
+		return oauth2ClientContext.getAccessToken().toString();
+	}
+
+	//set up the access token and check that is works
+	@RequestMapping({ "/androiduser", "/androidme" })
+	@ResponseBody
+	public Map<String, String> user(String idToken) throws Exception{
+		Map<String, String> map = new LinkedHashMap<>();
+	// 	service = getCalendarService();
+
+	// 	DateTime now = new DateTime(System.currentTimeMillis());
+	// 	//now.set(java.util.Calendar.DATE, 1);
+
+
+	// 	Events events = service.events().list("primary")
+	// 		.setMaxResults(50)
+	// 		.setTimeMin(now)
+	// 		.setSingleEvents(false)
+	// 		.execute();
+
+	// 	List<Event> items = events.getItems();
+	// 	if (items.size() == 0) {
+	// 		System.out.println("No upcoming events found.");
+	// 	}
+	// 	else {
+	// 		System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
+	// 		for (Event event : items) {
+	// 			String str = event.getId();
+	// 			System.out.printf("%s (%s)\n", str, event.getSummary());
+	// 		}
+
+	// 		//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
+
+	// 	}
+
+	// 	//set-up the DB
+	// 	DBSetup.remoteDB();
+
+	// 	//check if the Table for that UserName exists
+	// 	Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
+	// 	if(tab == null) { //the Table doesn't Exist!!!
+	// 		System.out.println("Creating a table for "+principal.getName()+"\'s events");
+	// 		//make the table! :D
+	// 		DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
+	// 	}
+
+	// 	tab = DBSetup.getUsersTable();
+	// 	GetItemSpec spec = new GetItemSpec()
+	// 		   .withPrimaryKey("username", principal.getName());
+	// 	Item got = tab.getItem(spec);
+	// 	if(got == null)
+	// 		tab.putItem(new Item().withString("username", principal.getName()).withString("calID","primary"));
+
+		return map;
 	}
 
 	//set up the access token and check that is works
