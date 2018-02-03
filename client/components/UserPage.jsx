@@ -50,8 +50,8 @@ class UserPage extends React.Component {
         if (!alert) {
             return (
                 <BigCalendar
-                    defaultView='week'
-                    views={['week']}
+                    defaultView='month'
+                    views={['month']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
