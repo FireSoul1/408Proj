@@ -8,7 +8,7 @@ import SweetAlert from 'react-bootstrap-sweetalert'
 
 BigCalendar.momentLocalizer(moment)
 
-class UserPage extends React.Component {
+class dayViewCalendar extends React.Component {
     constructor(props) {
         super(props)
 
@@ -53,10 +53,10 @@ class UserPage extends React.Component {
                     defaultView='day'
                     views={['day']}
                     events={this.props.eventList}
-                    eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
+                    eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, start, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
-                    endAccessor={event => this.accessor('end', event)}
-                    allDayAccessor={event => has(event, 'start.date') && has(event, 'end.date')}
+                    endAccessor={event => this.accessor('start', event)}
+                    allDayAccessor={event => has(event, 'start.date')}
                     titleAccessor='summary'
                     />
             )
@@ -91,4 +91,4 @@ class UserPage extends React.Component {
     }
 }
 
-module.exports = UserPage
+module.exports = dayViewCalendar
