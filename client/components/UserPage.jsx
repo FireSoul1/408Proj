@@ -91,7 +91,7 @@ class UserPage extends React.Component {
             <div className='container'>
         <Jumbotron>
           <p>Testing Button</p>
-          <Button bsStyle='primary' className='DayTEst' >Day</Button>
+          <Button bsStyle='primary' className='DayTEst' href='/login/google'>Day View</Button>
         </Jumbotron>
 </div>
         )
