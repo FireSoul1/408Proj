@@ -90,7 +90,12 @@ class UserPage extends React.Component {
         
         <Jumbotron>
           <p>Testing Button</p>
-          <Button bsStyle='primary' className='DayTest'  position = 'absolute' top = 0; >Day View</Button>
+          <Button bsStyle='primary' className='DayTest' >Day View</Button>
+        </Jumbotron>
+        
+         <Jumbotron>
+          <p>Testing 2 Button</p>
+          <Button bsStyle='primary' className='MonthTest' >Month View</Button>
         </Jumbotron>
 </div>
         )
