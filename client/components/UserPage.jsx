@@ -8,7 +8,7 @@ import { Button, Jumbotron } from 'react-bootstrap'
 
 
 BigCalendar.momentLocalizer(moment)
-<li> viewValue: week </li>
+
 
 class UserPage extends React.Component {
     constructor(props) {
@@ -52,8 +52,8 @@ class UserPage extends React.Component {
         if (!alert) {
             return (
                 <BigCalendar
-                    defaultView= viewValue
-                    views={[viewValue]}
+                    defaultView= 'week'
+                    views={['week']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
@@ -91,7 +91,20 @@ class UserPage extends React.Component {
         
         <Jumbotron>
           <p>Testing Button</p>
-          <Button bsStyle='primary' className='DayTest' >Day View</Button>
+          <Button 
+          bsStyle='primary' 
+          className='DayTest' 
+          onClick={() =>  <BigCalendar
+                    defaultView= 'day'
+                    views={['day']}
+                    events={this.props.eventList}
+                    eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
+                    startAccessor={event => this.accessor('start', event)}
+                    endAccessor={event => this.accessor('end', event)}
+                    allDayAccessor={event => has(event, 'start.date') && has(event, 'end.date')}
+                    titleAccessor='summary'
+                    />}
+          >Day View</Button>
 
           <p>Testing 2 Button</p>
           <Button bsStyle='primary' className='MonthTest' >Month View</Button>
