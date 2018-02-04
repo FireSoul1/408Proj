@@ -6,7 +6,12 @@ import moment from 'moment'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { Button, Jumbotron } from 'react-bootstrap'
 
+
+
+
+
 BigCalendar.momentLocalizer(moment)
+
 
 class UserPage extends React.Component {
     constructor(props) {
@@ -47,10 +52,11 @@ class UserPage extends React.Component {
     }
     renderCalendar() {
         const { alert } = this.props
+
         if (!alert) {
             return (
                 <BigCalendar
-                    defaultView='month'
+                    defaultView= 'week'
                     views={['day', 'week', 'month']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
@@ -80,15 +86,13 @@ class UserPage extends React.Component {
 
         return { className: `event-unrated${selected}` }
     }
-
-    
-
 //{this.renderAlert()}
     render() {
         return (
             <div className='container'>
                 {this.renderAlert()}
                 {this.renderCalendar()}
+        
             </div>
         )
     }
