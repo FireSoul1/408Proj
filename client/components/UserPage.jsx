@@ -51,7 +51,7 @@ class UserPage extends React.Component {
             return (
                 <BigCalendar
                     defaultView='month'
-                    views={['month']}
+                    views={['day', 'week', 'month']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
@@ -80,20 +80,15 @@ class UserPage extends React.Component {
 
         return { className: `event-unrated${selected}` }
     }
+
+    
+
 //{this.renderAlert()}
     render() {
         return (
             <div className='container'>
                 {this.renderAlert()}
                 {this.renderCalendar()}
-                <Jumbotron>
-                <p>Testing Button</p>
-                <Button bsStyle='primary' className='DayTest' >Day View</Button>
-                <p>Testing Button</p>
-                <Button bsStyle='primary' className='WeekTest' >Week View</Button>
-                <p>Testing Button</p>
-                <Button bsStyle='primary' className='MonthTest' >Month View</Button>
-                </Jumbotron>
             </div>
         )
     }
