@@ -87,8 +87,7 @@ class UserPage extends React.Component {
             <div className='container'>
                 {this.renderAlert()}
                 {this.renderCalendar()}
-            </div>
-            <div className='container'>
+        
         <Jumbotron>
           <p>Testing Button</p>
           <Button bsStyle='primary' className='DayTEst' href='/login/google'>Day View</Button>
