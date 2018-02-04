@@ -90,17 +90,6 @@ class UserPage extends React.Component {
                 <p>Testing Button</p>
                 <Button bsStyle='primary' className='DayTest' >Day View</Button>
                 </Jumbotron>
-                /**
-                 <View style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-             }}>
-               <View style={{height: 50, backgroundColor: 'powderblue'}} />
-               <View style={{flex:1, backgroundColor: 'skyblue'}} />
-               <View style={{height: 50, backgroundColor: 'steelblue'}} />
-             </View>
-             **/
             </div>
         )
     }
