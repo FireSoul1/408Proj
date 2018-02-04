@@ -57,7 +57,7 @@ class UserPage extends React.Component {
             return (
                 <BigCalendar
                     defaultView= 'week'
-                    views={['month', 'day', 'week']}
+                    views={['day', 'week', 'month']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
@@ -93,18 +93,7 @@ class UserPage extends React.Component {
                 {this.renderAlert()}
                 {this.renderCalendar()}
         
-        <Jumbotron>
-          <p>Testing Button</p>
-          <Button 
-          bsStyle='primary' 
-          className='DayTest' 
-        
-          >Day View</Button>
-
-          <p>Testing 2 Button</p>
-          <Button bsStyle='primary' className='MonthTest' >Month View</Button>
-        </Jumbotron>
-</div>
+            </div>
         )
     }
 }
