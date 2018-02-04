@@ -94,7 +94,7 @@ class UserPage extends React.Component {
           <Button 
           bsStyle='primary' 
           className='DayTest' 
-          onClick={() =>  <}
+          
           >Day View</Button>
 
           <p>Testing 2 Button</p>
