@@ -53,7 +53,7 @@ class UserPage extends React.Component {
             return (
                 <BigCalendar
                     defaultView= 'week'
-                    views={['week']}
+                    views={['allViews']}
                     events={this.props.eventList}
                     eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
                     startAccessor={event => this.accessor('start', event)}
@@ -94,16 +94,7 @@ class UserPage extends React.Component {
           <Button 
           bsStyle='primary' 
           className='DayTest' 
-          onClick={() =>  <BigCalendar
-                    defaultView= 'day'
-                    views={['day']}
-                    events={this.props.eventList}
-                    eventPropGetter={(event, start, end, isSelected) => this.eventPropGetter(event, start, end, isSelected)}
-                    startAccessor={event => this.accessor('start', event)}
-                    endAccessor={event => this.accessor('end', event)}
-                    allDayAccessor={event => has(event, 'start.date') && has(event, 'end.date')}
-                    titleAccessor='summary'
-                    />}
+          onClick={() =>  <}
           >Day View</Button>
 
           <p>Testing 2 Button</p>
