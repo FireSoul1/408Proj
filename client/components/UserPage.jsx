@@ -52,7 +52,6 @@ class UserPage extends React.Component {
     }
     renderCalendar() {
         const { alert } = this.props
-        let allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k])
 
         if (!alert) {
             return (
