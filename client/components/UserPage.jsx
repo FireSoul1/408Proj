@@ -90,6 +90,7 @@ class UserPage extends React.Component {
                 <p>Testing Button</p>
                 <Button bsStyle='primary' className='DayTest' >Day View</Button>
                 </Jumbotron>
+                /**
                  <View style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -99,6 +100,7 @@ class UserPage extends React.Component {
                <View style={{flex:1, backgroundColor: 'skyblue'}} />
                <View style={{height: 50, backgroundColor: 'steelblue'}} />
              </View>
+             **/
             </div>
         )
     }
