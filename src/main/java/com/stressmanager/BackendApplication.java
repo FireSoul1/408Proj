@@ -10,6 +10,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 
+import org.springframework.web.client.RestTemplate;
+
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.client.json.JsonFactory;
@@ -94,7 +96,16 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@RequestMapping({ "/androidlogin" })
 	@ResponseBody
-	public String androidLogin(String androidIdToken) throws Exception{
+	public ResponseEntity<String> androidLogin(String androidIdToken) throws Exception{
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		System.out.println("\narf\n\n");
+
+		if(androidIdToken == null) {
+			String nope = "No token...";
+			return new ResponseEntity<String>(nope, httpHeaders, HttpStatus.FORBIDDEN);
+		}
+
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
@@ -117,9 +128,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		} else {
 		  System.out.println("Invalid ID token.");
+		  return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
 
-		return oauth2ClientContext.getAccessToken().toString();
+		final String uri = "http://localhost:8080/login/google";
+
+		return new ResponseEntity<String>("authed!", httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//set up the access token and check that is works
@@ -658,7 +672,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		//temp = http;
 		// @formatter:off
-		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
+		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/androidlogin").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
 				.logoutSuccessUrl("/").permitAll().and().csrf().disable()
@@ -674,6 +688,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
+			http.antMatcher("/androidlogin").authorizeRequests().anyRequest().authenticated();
 			// @formatter:on
 		}
 	}
