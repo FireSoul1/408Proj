@@ -103,7 +103,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		if(androidIdToken == null) {
 			String nope = "No token...";
-			return new ResponseEntity<String>(nope, httpHeaders, HttpStatus.FORBIDDEN);
+			return new ResponseEntity<String>(nope, httpHeaders, HttpStatus.BAD_REQUEST);
 		}
 
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -130,8 +130,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		  System.out.println("Invalid ID token.");
 		  return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
-
-		final String uri = "http://localhost:8080/login/google";
 
 		return new ResponseEntity<String>("authed!", httpHeaders, HttpStatus.ACCEPTED);
 	}
