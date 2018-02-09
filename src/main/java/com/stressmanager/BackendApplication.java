@@ -3,6 +3,9 @@ package com.stressmanager;
 import java.security.Principal;
 import java.util.*;
 
+import io.jsonwebtoken.*;
+import javax.crypto.spec.SecretKeySpec;
+
 import javax.servlet.Filter;
 import javax.servlet.http.*;
 
@@ -98,7 +101,9 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@ResponseBody
 	public ResponseEntity<String> androidLogin(String androidIdToken) throws Exception{
 		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		String jwtToken = "";
+		String email = "";
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 		System.out.println("\narf\n\n");
 
 		if(androidIdToken == null) {
@@ -122,7 +127,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		  System.out.println("User ID: " + userId);
 
 		  // Get profile information from payload
-		  String email = payload.getEmail();
+		  email = payload.getEmail();
 		  boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
 		  String name = (String) payload.get("name");
 
@@ -131,7 +136,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		  return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
 
-		return new ResponseEntity<String>("authed!", httpHeaders, HttpStatus.ACCEPTED);
+		jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
+            .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+
+		return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//set up the access token and check that is works
