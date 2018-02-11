@@ -103,6 +103,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		String jwtToken = "";
 		String email = "";
+		String userId = "";
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 		System.out.println("\narf\n\n");
 
@@ -123,7 +124,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		  Payload payload = idToken.getPayload();
 
 		  // Print user identifier
-		  String userId = payload.getSubject();
+		  userId = payload.getSubject();
 		  System.out.println("User ID: " + userId);
 
 		  // Get profile information from payload
@@ -138,6 +139,16 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+
+        DBSetup.remoteDB();
+        Table tab = DBSetup.getTable(userId.replaceAll(" ", "_"));
+		tab = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("username", userId);
+		Item got = tab.getItem(spec);
+		if(got == null)
+			tab.putItem(new Item().withString("username", userId).withString("calID","primary"));
+
 
 		return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
 	}
