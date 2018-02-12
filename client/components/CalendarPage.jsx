@@ -14,6 +14,28 @@ class CalendarPage extends React.Component {
     })
   }
 
+   postImportCalendar() {
+    const data = {
+      userName: this.state.user.name
+    }
+    ajax({
+      url: '/calendar/import',
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: () => {
+        // TODO give feedback to user
+        console.log("Added Imported Calendar Successfully")
+        this.getEventList()
+        //this.setActiveView(UserPage)
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
 	 render() {
 	 	return (
       <div className='container'>
