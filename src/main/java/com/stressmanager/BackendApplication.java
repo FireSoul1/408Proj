@@ -159,14 +159,23 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 	//We have a separate validation for tokens for Android users, since this is stored in the db.
-	// public boolean validateAndroidToken(String token, String user) {
-	// 	DBSetup.remoteDB();
- //        Table tab = DBSetup.getTable(user.replaceAll(" ", "_"));
-	// 	tab = DBSetup.getUsersTable();
-	// 	GetItemSpec spec = new GetItemSpec()
-	// 		   .withPrimaryKey("username", userId);
-	// 	Item got = tab.getItem(spec);
-	// }
+	public boolean validateAndroidToken(String token) {
+		String user = dbCreds.get(token);
+
+		DBSetup.remoteDB();
+
+		Table tab = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("username", user);
+		Item got = tab.getItem(spec);
+		String dbToken = (String) got.get("token");
+
+		if(token.equals(dbToken)) {
+			return true;
+		}
+
+		return false;
+	}
 
 	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
