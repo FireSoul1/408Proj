@@ -147,7 +147,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			   .withPrimaryKey("username", userId);
 		Item got = tab.getItem(spec);
 		if(got == null)
-			tab.putItem(new Item().withString("username", userId).withString("calID","primary"));
+			tab.putItem(new Item().withString("username", userId).withString("calID","primary").withString("token", jwtToken));
 
 
 		return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
@@ -158,17 +158,17 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@ResponseBody
 	public Map<String, String> user(String idToken) throws Exception{
 		Map<String, String> map = new LinkedHashMap<>();
-	// 	service = getCalendarService();
+	 	//service = getCalendarService();
 
-	// 	DateTime now = new DateTime(System.currentTimeMillis());
+		DateTime now = new DateTime(System.currentTimeMillis());
 	// 	//now.set(java.util.Calendar.DATE, 1);
 
 
-	// 	Events events = service.events().list("primary")
-	// 		.setMaxResults(50)
-	// 		.setTimeMin(now)
-	// 		.setSingleEvents(false)
-	// 		.execute();
+		Events events = service.events().list("primary")
+			.setMaxResults(50)
+			.setTimeMin(now)
+			.setSingleEvents(false)
+			.execute();
 
 	// 	List<Event> items = events.getItems();
 	// 	if (items.size() == 0) {
