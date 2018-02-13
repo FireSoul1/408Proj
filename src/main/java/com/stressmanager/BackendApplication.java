@@ -195,9 +195,15 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//set up the access token and check that is works
 	@RequestMapping({ "/androiduser", "/androidme" })
 	@ResponseBody
-	public Map<String, String> user(String idToken) throws Exception{
-		Map<String, String> map = new LinkedHashMap<>();
-	 	//service = getCalendarService();
+	public ResponseEntity<String> user(String idToken) throws Exception{
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+		if(!validateAndroidToken(idToken)) {
+			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
+		}
+
+	 	service = getAndroidCal(dbCreds.get(idToken));
 
 		DateTime now = new DateTime(System.currentTimeMillis());
 	// 	//now.set(java.util.Calendar.DATE, 1);
@@ -209,40 +215,40 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			.setSingleEvents(false)
 			.execute();
 
-	// 	List<Event> items = events.getItems();
-	// 	if (items.size() == 0) {
-	// 		System.out.println("No upcoming events found.");
-	// 	}
-	// 	else {
-	// 		System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
-	// 		for (Event event : items) {
-	// 			String str = event.getId();
-	// 			System.out.printf("%s (%s)\n", str, event.getSummary());
-	// 		}
+		List<Event> items = events.getItems();
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+		}
+		else {
+			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
+			for (Event event : items) {
+				String str = event.getId();
+				System.out.printf("%s (%s)\n", str, event.getSummary());
+			}
 
-	// 		//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
+			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
 
-	// 	}
+		}
 
 	// 	//set-up the DB
-	// 	DBSetup.remoteDB();
+		DBSetup.remoteDB();
 
-	// 	//check if the Table for that UserName exists
-	// 	Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
-	// 	if(tab == null) { //the Table doesn't Exist!!!
-	// 		System.out.println("Creating a table for "+principal.getName()+"\'s events");
-	// 		//make the table! :D
-	// 		DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
-	// 	}
+		//check if the Table for that UserName exists
+		Table tab = DBSetup.getTable(dbCreds.get(idToken));
+		if(tab == null) { //the Table doesn't Exist!!!
+			System.out.println("Creating a table for "+ dbCreds.get(idToken) +"\'s events");
+			//make the table! :D
+			DBSetup.createTable(dbCreds.get(idToken));
+		}
 
-	// 	tab = DBSetup.getUsersTable();
-	// 	GetItemSpec spec = new GetItemSpec()
-	// 		   .withPrimaryKey("username", principal.getName());
-	// 	Item got = tab.getItem(spec);
-	// 	if(got == null)
-	// 		tab.putItem(new Item().withString("username", principal.getName()).withString("calID","primary"));
+		tab = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("username", dbCreds.get(idToken));
+		Item got = tab.getItem(spec);
+		if(got == null)
+			tab.putItem(new Item().withString("username", dbCreds.get(idToken)).withString("calID","primary"));
 
-		return map;
+		return new ResponseEntity<String>("Set up correctly, now in DB", httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//set up the access token and check that is works
