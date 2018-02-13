@@ -12,6 +12,7 @@ import javax.servlet.http.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential; 
 
 import org.springframework.web.client.RestTemplate;
 
@@ -92,6 +93,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	OAuth2ClientContext oauth2ClientContext;
 
 	DBHelper db = new DBHelper();
+	private Map<String, String> dbCreds = new LinkedHashMap<>();
+	private Map<String, GoogleIdToken> googleCreds = new LinkedHashMap<>();
 
 	//static Credentials credz;
 
@@ -144,14 +147,41 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
         Table tab = DBSetup.getTable(userId.replaceAll(" ", "_"));
 		tab = DBSetup.getUsersTable();
 		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", userId);
+			   .withPrimaryKey("username", email);
 		Item got = tab.getItem(spec);
 		if(got == null)
-			tab.putItem(new Item().withString("username", userId).withString("calID","primary").withString("token", jwtToken));
+			tab.putItem(new Item().withString("username", email).withString("calID","primary").withString("token", jwtToken));
 
+		dbCreds.put(jwtToken, email);
+		googleCreds.put(email, idToken);
 
 		return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
 	}
+
+	//We have a separate validation for tokens for Android users, since this is stored in the db.
+	// public boolean validateAndroidToken(String token, String user) {
+	// 	DBSetup.remoteDB();
+ //        Table tab = DBSetup.getTable(user.replaceAll(" ", "_"));
+	// 	tab = DBSetup.getUsersTable();
+	// 	GetItemSpec spec = new GetItemSpec()
+	// 		   .withPrimaryKey("username", userId);
+	// 	Item got = tab.getItem(spec);
+	// }
+
+	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
+		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+	
+		GoogleCredential credentials = new GoogleCredential.Builder()
+	    .setClientSecrets(System.getenv("GOOGLE_CLIENT_ID"), System.getenv("GOOGLE_CLIENT_SECRET"))
+	    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build()
+	    .setAccessToken(googleCreds.get(email).toString());
+
+		com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
+		return client;
+	}
+
+
 
 	//set up the access token and check that is works
 	@RequestMapping({ "/androiduser", "/androidme" })
