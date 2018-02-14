@@ -200,6 +200,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@RequestMapping({ "/androiduser", "/androidme" })
 	@ResponseBody
 	public ResponseEntity<String> userAndroid(String idToken) throws Exception{
+		System.out.println("oh hai");
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
@@ -207,13 +208,19 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
 
+		System.out.println("validated token");
+
 	 	service = getAndroidCal(dbCreds.get(idToken));
+	 	if(service == null) {
+	 		System.out.println("it's null....awks");
+	 	}
 	 	//System.out.println("Service: " + )
 
 		DateTime now = new DateTime(System.currentTimeMillis());
 	// 	//now.set(java.util.Calendar.DATE, 1);
 
-
+		System.out.println("after datetime");
+		
 		Events events = service.events().list("primary")
 			.setMaxResults(50)
 			.setTimeMin(now)
