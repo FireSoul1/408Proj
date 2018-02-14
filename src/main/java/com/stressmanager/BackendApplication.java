@@ -549,12 +549,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//Get events for ALL OF THE USERS CALENDARIDs
 	@RequestMapping(value = "/api/calendar/androidevents")
 	@ResponseBody
-	public ResponseEntity<String> gettingAndroidEvents(String idToken) throws Exception {
+	public ResponseEntity<String> gettingAndroidEvents(String idToken, String email) throws Exception {
 
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-		if(!validateAndroidToken(idToken)) {
+		if(!validateAndroidToken(idToken, email)) {
 			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
 
