@@ -39,13 +39,13 @@ class Navigation extends React.Component {
   }
 
   renderDropdown() {
-    const { advice, authorized, getCalendars, getLogout, setActiveView } = this.props
+    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
     if (authorized) {
       return (
         <Nav pullRight>
           <NavDropdown title='Tools' id='basic-nav-dropdown'>
-             <MenuItem onClick={() =>  getImportCalendar()}>
+             <MenuItem onClick={() =>  getCalendarType()}>
               Choose Calendar
             </MenuItem>
             <MenuItem onClick={() => getCalendars()}>

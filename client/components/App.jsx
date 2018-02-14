@@ -51,6 +51,20 @@ class App extends React.Component {
 
   // API Methods
 
+  getCalendarType() {
+    ajax({
+      url: '/calendar/import',
+      type: 'get',
+      success: () => {
+       
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
   getAdvice() {
     ajax({
       url: '/advice',
@@ -137,6 +151,34 @@ class App extends React.Component {
           }
       })
   }
+
+
+
+postImportCalendar() {
+    const data = {
+      userName: this.state.user.name
+    }
+    ajax({
+      url: '/calendar/import',
+      type: 'post',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: () => {
+        // TODO give feedback to user
+        console.log("Added Imported Calendar Successfully")
+        this.getEventList()
+        //this.setActiveView(UserPage)
+      },
+      error: response => {
+        // TODO give feedback to user
+        console.log(response)
+      }
+    })
+  }
+
+
+
+  
   postCalendarAdd(calID) {
     const data = {
       calID,
@@ -206,6 +248,7 @@ class App extends React.Component {
     return fin;
   }
 
+
   render() {
     return (
       <div className="container">
@@ -218,6 +261,7 @@ class App extends React.Component {
           eventList={this.state.eventList}
           getEventList={() => this.getEventList()}
           getCalendars={() => this.getCalendars()}
+          getCalendarType={() => this.getCalendarType()}
           getLogout={() => this.getLogout()}
           postCalendarAdd={calId => this.postCalendarAdd(calId)}
           postCalendarEvent={(calEvent, stressValue, navigateTo) => this.postCalendarEvent(calEvent, stressValue, navigateTo)}
