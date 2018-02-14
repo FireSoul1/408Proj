@@ -204,6 +204,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@ResponseBody
 	public ResponseEntity<String> userAndroid(String idToken, String email) throws Exception{
 		System.out.println("oh hai");
+		System.out.println("fucking fuckers fucking: " + idToken);
+		System.out.println("yay me" + email);
 		System.out.println(Colors.ANSI_PURPLE+"kill me"+Colors.ANSI_WHITE);
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
