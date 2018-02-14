@@ -674,6 +674,16 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
     	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
 	}
 
+	///Logout a user using the Servlet Context
+	@RequestMapping(value="/androidlogout", method = RequestMethod.GET)
+	public String logoutAndroidPage (HttpServletRequest request, HttpServletResponse response) {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	if (auth != null){
+        	new SecurityContextLogoutHandler().logout(request, response, auth);
+    	}
+    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+	}
+
 	//get a month worth of events from the First day of the month to the first of the next month
 	//TODO: Fix the frontend's event cap
 	@RequestMapping(value = "/me/calendar/events")
@@ -821,6 +831,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			// @formatter:off
 			http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
 			http.antMatcher("/androidlogin").authorizeRequests().anyRequest().authenticated();
+			http.antMatcher("/api/calendar/androidevents").authorizeRequests().anyRequest().authenticated();
+			http.antMatcher("/androidlogout").authorizeRequests().anyRequest().authenticated();
 			// @formatter:on
 		}
 	}
