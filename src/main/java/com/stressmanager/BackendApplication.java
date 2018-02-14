@@ -195,7 +195,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//set up the access token and check that is works
 	@RequestMapping({ "/androiduser", "/androidme" })
 	@ResponseBody
-	public ResponseEntity<String> userAndroio(String idToken) throws Exception{
+	public ResponseEntity<String> userAndroid(String idToken) throws Exception{
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
@@ -534,22 +534,20 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//Get events for ALL OF THE USERS CALENDARIDs
 	@RequestMapping(value = "/api/calendar/androidevents")
 	@ResponseBody
-	public ResponseEntity<String> gettingAndroidEvents(@RequestBody GenericJson request) throws Exception {
+	public ResponseEntity<String> gettingAndroidEvents(String idToken) throws Exception {
 
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-		String token = (String) request.get("idToken");
-
-		if(!validateAndroidToken(token)) {
+		if(!validateAndroidToken(idToken)) {
 			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
 
-		service = getAndroidCal(token);
+		service = getAndroidCal(idToken);
 
-		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
 		//get the Username and eventID
-		String userName = (String)request.get("username");
+		String userName = dbCreds.get(idToken);
 
 		System.out.println(Colors.ANSI_BLUE+"username "+userName);
 		//String eventID = (String)request.get("eventID");
