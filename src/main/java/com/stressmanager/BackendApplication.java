@@ -187,6 +187,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	    .setAccessToken(googleCreds.get(email).toString());
 
 		com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
+
+		if(client == null) {
+			System.out.println("\nFucking hell\n");
+		}
 		return client;
 	}
 
@@ -204,6 +208,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 	 	service = getAndroidCal(dbCreds.get(idToken));
+	 	//System.out.println("Service: " + )
 
 		DateTime now = new DateTime(System.currentTimeMillis());
 	// 	//now.set(java.util.Calendar.DATE, 1);
