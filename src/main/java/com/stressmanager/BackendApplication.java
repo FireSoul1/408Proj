@@ -164,8 +164,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		DBSetup.remoteDB();
 
+		System.out.println("fucking token: " + token);
+
 		Table tab = DBSetup.getUsersTable();
-		System.out.println("meow" + email);
+		System.out.println("meow: " + email);
 		GetItemSpec spec = new GetItemSpec()
 			   .withPrimaryKey("username", email);
 		Item got = tab.getItem(spec);
