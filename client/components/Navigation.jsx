@@ -46,7 +46,7 @@ class Navigation extends React.Component {
         <Nav pullRight>
           <NavDropdown title='Tools' id='basic-nav-dropdown'>
              <MenuItem onClick={() =>  getCalendarType()}>
-              Choose Calendar
+              Choose Calendar Type
             </MenuItem>
             <MenuItem onClick={() => getCalendars()}>
               Import Calendar
