@@ -159,15 +159,15 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	}
 
 	//We have a separate validation for tokens for Android users, since this is stored in the db.
-	public boolean validateAndroidToken(String token) {
-		String user = dbCreds.get(token);
+	public boolean validateAndroidToken(String token, String email) {
+		//String user = dbCreds.get(token);
 
 		DBSetup.remoteDB();
 
 		Table tab = DBSetup.getUsersTable();
-		System.out.println("meow" + user);
+		System.out.println("meow" + email);
 		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", user);
+			   .withPrimaryKey("username", email);
 		Item got = tab.getItem(spec);
 		String dbToken = (String) got.get("token");
 
@@ -200,13 +200,13 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//set up the access token and check that is works
 	@RequestMapping({ "/androiduser", "/androidme" })
 	@ResponseBody
-	public ResponseEntity<String> userAndroid(String idToken) throws Exception{
+	public ResponseEntity<String> userAndroid(String idToken, String email) throws Exception{
 		System.out.println("oh hai");
 		System.out.println(Colors.ANSI_PURPLE+"kill me"+Colors.ANSI_WHITE);
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
-		if(!validateAndroidToken(idToken)) {
+		if(!validateAndroidToken(idToken, email)) {
 			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
 		}
 
