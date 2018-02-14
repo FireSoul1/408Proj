@@ -165,6 +165,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		DBSetup.remoteDB();
 
 		Table tab = DBSetup.getUsersTable();
+		System.out.println("meow" + user);
 		GetItemSpec spec = new GetItemSpec()
 			   .withPrimaryKey("username", user);
 		Item got = tab.getItem(spec);
@@ -201,6 +202,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	@ResponseBody
 	public ResponseEntity<String> userAndroid(String idToken) throws Exception{
 		System.out.println("oh hai");
+		System.out.println(Colors.ANSI_PURPLE+"kill me"+Colors.ANSI_WHITE);
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
@@ -220,7 +222,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	// 	//now.set(java.util.Calendar.DATE, 1);
 
 		System.out.println("after datetime");
-		
+
 		Events events = service.events().list("primary")
 			.setMaxResults(50)
 			.setTimeMin(now)
@@ -233,6 +235,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 		else {
 			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
+			
 			for (Event event : items) {
 				String str = event.getId();
 				System.out.printf("%s (%s)\n", str, event.getSummary());
@@ -824,7 +827,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		//temp = http;
 		// @formatter:off
-		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/androidlogin").permitAll().anyRequest()
+		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/androidlogin", "/androidme").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling()
 				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
 				.logoutSuccessUrl("/").permitAll().and().csrf().disable()
