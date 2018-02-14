@@ -195,7 +195,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//set up the access token and check that is works
 	@RequestMapping({ "/androiduser", "/androidme" })
 	@ResponseBody
-	public ResponseEntity<String> user(String idToken) throws Exception{
+	public ResponseEntity<String> userAndroio(String idToken) throws Exception{
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
@@ -527,6 +527,76 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 		}
 
+
+
+	}
+
+	//Get events for ALL OF THE USERS CALENDARIDs
+	@RequestMapping(value = "/api/calendar/androidevents")
+	@ResponseBody
+	public ResponseEntity<String> gettingAndroidEvents(@RequestBody GenericJson request) throws Exception {
+
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		String token = (String) request.get("idToken");
+
+		if(!validateAndroidToken(token)) {
+			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
+		}
+
+		service = getAndroidCal(token);
+
+		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//get the Username and eventID
+		String userName = (String)request.get("username");
+
+		System.out.println(Colors.ANSI_BLUE+"username "+userName);
+		//String eventID = (String)request.get("eventID");
+
+		//get the Table
+		boolean exists = tableCheck(userName);
+
+		//Set up Calendar request
+		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+		currentDate.set(java.util.Calendar.DATE, 1);
+		// The first day of the month
+		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+		System.out.println(beginningOfMonth.toString());
+		// The last day of the month
+		currentDate.roll(java.util.Calendar.MONTH, 1);
+		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+		//get the User Table and user's data from there
+		Table t = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+               .withPrimaryKey("username", userName);
+        Item got = t.getItem(spec);
+
+
+		//get a list of Calendar IDs
+		String str = got.getString("calID");
+		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
+		String[] calIDs = str.split("split");
+
+		List<Event> target = new LinkedList<>();
+		Table table = DBSetup.getTable(userName);
+		for(String val: calIDs) {
+			System.out.println(Colors.ANSI_CYAN+"The calid now is: "+val);
+			//get the events for each of these
+			List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
+			//add it to a list of all the events retrieved
+			if(addThis != null)
+				target.addAll(addThis);
+		}
+		Events events = service.events().list("primary") // Get events from primary calendar...
+			.setMaxResults(1)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
+			.execute();
+		events.setItems(target);
+
+		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
 
 	}
