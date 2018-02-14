@@ -829,6 +829,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			// @formatter:off
 			http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
 			http.antMatcher("/androidlogin").authorizeRequests().anyRequest().authenticated();
+			http.antMatcher("/androidme").authorizeRequests().anyRequest().authenticated();
 			http.antMatcher("/api/calendar/androidevents").authorizeRequests().anyRequest().authenticated();
 			http.antMatcher("/androidlogout").authorizeRequests().anyRequest().authenticated();
 			// @formatter:on
