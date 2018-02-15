@@ -49,6 +49,7 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -91,6 +92,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
+
+	@Value("${google.client.clientId}")
+	String clientID;
+
+	@Value("${google.client.clientSecret}")
+	String clientSecret;
 
 	DBHelper db = new DBHelper();
 	private Map<String, String> dbCreds = new LinkedHashMap<>();
@@ -172,6 +179,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 			   .withPrimaryKey("username", email);
 		Item got = tab.getItem(spec);
 		String dbToken = (String) got.get("token");
+		System.out.println("Dynamo token: " + dbToken);
+		System.out.println("Compared with...this token: " + token);
 
 		if(token.equals(dbToken)) {
 			return true;
@@ -183,11 +192,15 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-	
+		System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
+		System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
+		ClientResources clienty = new ClientResources();
+		System.out.println(clienty.getClient().getClientId());
+		System.out.println("yml shit: " + clientID);
 		GoogleCredential credentials = new GoogleCredential.Builder()
-	    .setClientSecrets(System.getenv("GOOGLE_CLIENT_ID"), System.getenv("GOOGLE_CLIENT_SECRET"))
+	    .setClientSecrets(clientID, clientSecret)
 	    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build()
-	    .setAccessToken(googleCreds.get(email).toString());
+	    .setAccessToken(email);
 
 		com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
 
@@ -202,7 +215,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	//set up the access token and check that is works
 	@RequestMapping({ "/androiduser", "/androidme" })
 	@ResponseBody
-	public ResponseEntity<String> userAndroid(String idToken, String email) throws Exception{
+	public ResponseEntity<String> userAndroid(@RequestHeader String idToken, @RequestHeader String email) throws Exception{
+		//String email = "fuck";
 		System.out.println("oh hai");
 		System.out.println("fucking fuckers fucking: " + idToken);
 		System.out.println("yay me" + email);
