@@ -13,6 +13,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential; 
+import com.google.api.client.util.store.FileDataStoreFactory;
+//import com.google.api.client.auth.oauth2.Credential;
+//import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -171,6 +175,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 		DBSetup.remoteDB();
 
+
 		System.out.println("fucking token: " + token);
 
 		Table tab = DBSetup.getUsersTable();
@@ -197,10 +202,37 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		ClientResources clienty = new ClientResources();
 		System.out.println(clienty.getClient().getClientId());
 		System.out.println("yml shit: " + clientID);
+
+		// private static FileDataStoreFactory DATA_STORE_FACTORY;
+		// private static final java.io.File DATA_STORE_DIR = new java.io.File(
+  //       System.getProperty("user.home"), "408Project/407/408Proj/src/main/java/resources");
+
+		// DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+
+
+		// GoogleAuthorizationCodeFlow flow =
+  //               new GoogleAuthorizationCodeFlow.Builder(
+  //                       HTTP_TRANSPORT, JSON_FACTORY, clientID, clientSecret, SCOPES)
+  //               .setDataStoreFactory(DATA_STORE_FACTORY)
+  //               .setAccessType("offline")
+  //               .build();
+
+  //       Credential credentials = new AuthorizationCodeInstalledApp(
+  //           flow, new LocalServerReceiver()).authorize("user");
+
 		GoogleCredential credentials = new GoogleCredential.Builder()
-	    .setClientSecrets(clientID, clientSecret)
-	    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build()
-	    .setAccessToken(email);
+		    .setClientSecrets(clientID, clientSecret)
+		    .setServiceAccountId(email)
+		    .setServiceAccountScopes(Collections.singleton("https://www.googleapis.com/auth/calendar"))
+		    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build();
+
+		// GoogleCredential credentials = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT)
+  //           .setJsonFactory(JSON_FACTORY)
+  //           .setServiceAccountId(email)
+  //           .setServiceAccountScopes(Collections.singleton("https://www.googleapis.com/auth/calendar"))
+  //           .setClientSecrets(clientID, clientSecret)
+  //           .setServiceAccountUser(email)
+  //           .build();
 
 		com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
 
