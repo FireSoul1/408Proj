@@ -21,12 +21,14 @@ public class EpsteinApiHelper {
                     .connectTimeout(60 * 5, TimeUnit.SECONDS)
                     .readTimeout(60 * 5, TimeUnit.SECONDS)
                     .writeTimeout(60 * 5, TimeUnit.SECONDS);
+            okHttpClient.interceptors().add(new ReceivedCookiesInterceptor());
+            okHttpClient.interceptors().add(new LoggingInterceptor());
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://10.186.95.94:8080/")
+                    .baseUrl("https://theepstein.herokuapp.com/")
                     .client(okHttpClient.build())
-                    .addConverterFactory(GsonConverterFactory.create())
                     .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
             coRecApi = retrofit.create(EpsteinApi.class);
