@@ -1,15 +1,42 @@
 import React from 'react'
-class CalendarPage extends React.Component {
-	
+import {
+  Button,
+  FormControl,
+  FormGroup,
+  Jumbotron
+} from 'react-bootstrap'
+import { map } from 'lodash'
+import SweetAlert from 'react-bootstrap-sweetalert'
+
+
+class ImportPage extends React.Component {
   constructor(props) {
-  super(props)
-   this.state = {
-      calendarType: 'Google'
+    super(props)
+
+    this.state = {
+      calID: '',
+      alertVisible: false
     }
   }
 
+  renderOptions() {
+    const { calendarList } = this.props
 
- renderAlert() {
+    return map(calendarList, calendar => {
+      return (<option key={calendar.id} value={calendar.id}>{calendar.summary}</option>)
+    })
+  }
+  postTheCalID(calID) {
+      const { postCalendarAdd, getEventList } = this.props
+
+      if(calID =="") {
+          this.setState({alertVisible: true})
+          return
+      }
+      postCalendarAdd(calID)
+      
+  }
+  renderAlert() {
       const { alertVisible } = this.state
 
       if (alertVisible) {
@@ -25,24 +52,37 @@ class CalendarPage extends React.Component {
       return null
   }
 
-  
+  render() {
+    const { postCalendarAdd } = this.props
+    const { calID } = this.state
 
-	 render() {
-	 	return (
+    return (
       <div className='container'>
-         {this.renderAlert()}
+          {this.renderAlert()}
         <Jumbotron>
-          <p>Import Google CalendarPage.</p>
- <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Outlook'})}>
-        {this.state.calendarType} >Outlook </Button>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Outlook'})}>
-        {this.state.calendarType} >Outlook </Button>
+          <p>Please select a calendar to import from the dropdown below</p>
+          <FormGroup controlId="formControlsSelect">
+            <FormControl
+              componentClass="select"
+              onChange={e => this.setState({ calID: e.target.value })}
+              placeholder="select"
+            >
+              {this.renderOptions()}
+            </FormControl>
+          </FormGroup>
+
+          <Button
+            bsStyle='primary'
+            className='submit-button-right'
+            onClick={() => this.postTheCalID(calID)}
+          >
+            Submit
+          </Button>
+
         </Jumbotron>
       </div>
-      )
-	 }
-	}
-	export default CalendarPage
-	
+    )
+  }
+}
 
-	
+export default ImportPage
