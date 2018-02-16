@@ -5,7 +5,24 @@ class CalendarPage extends React.Component {
   super(props)
    this.state = {
       calendarType: 'Google'
-}
+    }
+  }
+
+
+ renderAlert() {
+      const { alertVisible } = this.state
+
+      if (alertVisible) {
+        return (
+          <SweetAlert
+            type="error"
+            title="Error"
+            onConfirm={() => this.setState({ alertVisible: false })}>
+            <p><strong>Pick a Calendar to Import</strong></p>
+          </SweetAlert>
+        )
+      }
+      return null
   }
 
   
@@ -13,18 +30,16 @@ class CalendarPage extends React.Component {
 	 render() {
 	 	return (
       <div className='container'>
+         {this.renderAlert()}
         <Jumbotron>
           <p>Import Google CalendarPage.</p>
-          <Button bsStyle='primary' 
-          className='Googlebtn' 
-           onClick={() => tthis.setState({ calendarType: 'Google' })}
-          Google 
-          </Button>
-           <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Outlook'})}>
+ <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Outlook'})}>
+        {this.state.calendarType} >Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Outlook'})}>
         {this.state.calendarType} >Outlook </Button>
         </Jumbotron>
       </div>
-)
+      )
 	 }
 	}
 	export default CalendarPage
