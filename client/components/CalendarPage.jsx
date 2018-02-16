@@ -24,7 +24,7 @@ class CalendarPage extends React.Component {
         <Jumbotron>
           <p>Import Google CalendarPage.</p>
  <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Google'})}>
-        {this.state.calendarType} >Outlook </Button>
+        {this.state.calendarType} > Google </Button>
         <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({calendarType: 'Outlook'})}>
         {this.state.calendarType} >Outlook </Button>
         </Jumbotron>
