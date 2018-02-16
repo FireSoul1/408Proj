@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.*;
 
 import io.jsonwebtoken.*;
+
 import javax.crypto.spec.SecretKeySpec;
 
 import javax.servlet.Filter;
@@ -12,7 +13,7 @@ import javax.servlet.http.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential; 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -90,898 +91,887 @@ import com.google.gson.reflect.*;
 @Order(6)
 public class BackendApplication extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	OAuth2ClientContext oauth2ClientContext;
+    @Autowired
+    OAuth2ClientContext oauth2ClientContext;
 
-	@Value("${google.client.clientId}")
-	String clientID;
+    @Value("${google.client.clientId}")
+    String clientID;
 
-	@Value("${google.client.clientSecret}")
-	String clientSecret;
+    @Value("${google.client.clientSecret}")
+    String clientSecret;
 
-	DBHelper db = new DBHelper();
-	private Map<String, String> dbCreds = new LinkedHashMap<>();
-	private Map<String, GoogleIdToken> googleCreds = new LinkedHashMap<>();
+    DBHelper db = new DBHelper();
+    private Map<String, String> dbCreds = new LinkedHashMap<>();
+    private Map<String, GoogleIdToken> googleCreds = new LinkedHashMap<>();
 
-	//static Credentials credz;
+    //static Credentials credz;
 
-	static com.google.api.services.calendar.Calendar service;
+    static com.google.api.services.calendar.Calendar service;
 
-	@RequestMapping({ "/androidlogin" })
-	@ResponseBody
-	public ResponseEntity<String> androidLogin(String androidIdToken) throws Exception{
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		String jwtToken = "";
-		String email = "";
-		String userId = "";
-		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-		System.out.println("\narf\n\n");
+    @RequestMapping({"/androidlogin"})
+    @ResponseBody
+    public ResponseEntity<String> androidLogin(String androidIdToken) throws Exception {
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        String jwtToken = "";
+        String email = "";
+        String userId = "";
+        httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+        System.out.println("\narf\n\n");
 
-		if(androidIdToken == null) {
-			String nope = "No token...";
-			return new ResponseEntity<String>(nope, httpHeaders, HttpStatus.BAD_REQUEST);
-		}
+        if (androidIdToken == null) {
+            String nope = "No token...";
+            return new ResponseEntity<String>(nope, httpHeaders, HttpStatus.BAD_REQUEST);
+        }
 
-		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+        HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(HTTP_TRANSPORT, JSON_FACTORY)
-		    .setAudience(Collections.singletonList("319724472283-tqcoogggi701pj1tjpp5v8r7ja38i243.apps.googleusercontent.com"))
-		    .build();
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(HTTP_TRANSPORT, JSON_FACTORY)
+                .setAudience(Collections.singletonList("319724472283-tqcoogggi701pj1tjpp5v8r7ja38i243.apps.googleusercontent.com"))
+                .build();
 
-		GoogleIdToken idToken = verifier.verify(androidIdToken);
-		if (idToken != null) {
-		  Payload payload = idToken.getPayload();
+        GoogleIdToken idToken = verifier.verify(androidIdToken);
+        if (idToken != null) {
+            Payload payload = idToken.getPayload();
 
-		  // Print user identifier
-		  userId = payload.getSubject();
-		  System.out.println("User ID: " + userId);
+            // Print user identifier
+            userId = payload.getSubject();
+            System.out.println("User ID: " + userId);
 
-		  // Get profile information from payload
-		  email = payload.getEmail();
-		  boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-		  String name = (String) payload.get("name");
+            // Get profile information from payload
+            email = payload.getEmail();
+            boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+            String name = (String) payload.get("name");
 
-		} else {
-		  System.out.println("Invalid ID token.");
-		  return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
-		}
+        } else {
+            System.out.println("Invalid ID token.");
+            return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
+        }
 
-		jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-            .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+        jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
+                .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
 
         DBSetup.remoteDB();
         Table tab = DBSetup.getTable(userId.replaceAll(" ", "_"));
-		tab = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", email);
-		Item got = tab.getItem(spec);
-		if(got == null)
-			tab.putItem(new Item().withString("username", email).withString("calID","primary").withString("token", jwtToken));
-
-		dbCreds.put(jwtToken, email);
-		googleCreds.put(email, idToken);
-
-		return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
-	}
-
-	//We have a separate validation for tokens for Android users, since this is stored in the db.
-	public boolean validateAndroidToken(String token, String email) {
-		//String user = dbCreds.get(token);
-
-		DBSetup.remoteDB();
-
-		System.out.println("fucking token: " + token);
-
-		Table tab = DBSetup.getUsersTable();
-		System.out.println("meow: " + email);
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", email);
-		Item got = tab.getItem(spec);
-		String dbToken = (String) got.get("token");
-		System.out.println("Dynamo token: " + dbToken);
-		System.out.println("Compared with...this token: " + token);
-
-		if(token.equals(dbToken)) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
-		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-		System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
-		System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
-		ClientResources clienty = new ClientResources();
-		System.out.println(clienty.getClient().getClientId());
-		System.out.println("yml shit: " + clientID);
-		GoogleCredential credentials = new GoogleCredential.Builder()
-	    .setClientSecrets(clientID, clientSecret)
-	    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build()
-	    .setAccessToken(email);
-
-		com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
-
-		if(client == null) {
-			System.out.println("\nFucking hell\n");
-		}
-		return client;
-	}
-
-
-
-	//set up the access token and check that is works
-	@RequestMapping({ "/androiduser", "/androidme" })
-	@ResponseBody
-	public ResponseEntity<String> userAndroid(@RequestHeader String idToken, @RequestHeader String email) throws Exception{
-		//String email = "fuck";
-		System.out.println("oh hai");
-		System.out.println("fucking fuckers fucking: " + idToken);
-		System.out.println("yay me" + email);
-		System.out.println(Colors.ANSI_PURPLE+"kill me"+Colors.ANSI_WHITE);
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-		if(!validateAndroidToken(idToken, email)) {
-			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
-		}
-
-		System.out.println("validated token");
-
-	 	service = getAndroidCal(dbCreds.get(idToken));
-	 	if(service == null) {
-	 		System.out.println("it's null....awks");
-	 	}
-	 	//System.out.println("Service: " + )
-
-		DateTime now = new DateTime(System.currentTimeMillis());
-	// 	//now.set(java.util.Calendar.DATE, 1);
-
-		System.out.println("after datetime");
-
-		Events events = service.events().list("primary")
-			.setMaxResults(50)
-			.setTimeMin(now)
-			.setSingleEvents(false)
-			.execute();
-
-		List<Event> items = events.getItems();
-		if (items.size() == 0) {
-			System.out.println("No upcoming events found.");
-		}
-		else {
-			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
-			
-			for (Event event : items) {
-				String str = event.getId();
-				System.out.printf("%s (%s)\n", str, event.getSummary());
-			}
-
-			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
-
-		}
-
-	// 	//set-up the DB
-		DBSetup.remoteDB();
-
-		//check if the Table for that UserName exists
-		Table tab = DBSetup.getTable(dbCreds.get(idToken));
-		if(tab == null) { //the Table doesn't Exist!!!
-			System.out.println("Creating a table for "+ dbCreds.get(idToken) +"\'s events");
-			//make the table! :D
-			DBSetup.createTable(dbCreds.get(idToken));
-		}
-
-		tab = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", dbCreds.get(idToken));
-		Item got = tab.getItem(spec);
-		if(got == null)
-			tab.putItem(new Item().withString("username", dbCreds.get(idToken)).withString("calID","primary"));
-
-		return new ResponseEntity<String>("Set up correctly, now in DB", httpHeaders, HttpStatus.ACCEPTED);
-	}
-
-	//set up the access token and check that is works
-	@RequestMapping({ "/user", "/me" })
-	@ResponseBody
-	public Map<String, String> user(Principal principal) throws Exception{
-		Map<String, String> map = new LinkedHashMap<>();
-		map.put("name", principal.getName());
-		map.put("auth", oauth2ClientContext.getAccessToken().toString());
-
-		System.out.println();
-		System.out.println();
-		System.out.println("========================================");
-		System.out.println(oauth2ClientContext.getAccessToken().toString());
-		System.out.println("========================================");
-		System.out.println("authenticated!!!!");
-
-		service = getCalendarService();
-
-		DateTime now = new DateTime(System.currentTimeMillis());
-		//now.set(java.util.Calendar.DATE, 1);
-
-
-		Events events = service.events().list("primary")
-			.setMaxResults(50)
-			.setTimeMin(now)
-			.setSingleEvents(false)
-			.execute();
-
-		List<Event> items = events.getItems();
-		if (items.size() == 0) {
-			System.out.println("No upcoming events found.");
-		}
-		else {
-			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
-			for (Event event : items) {
-				String str = event.getId();
-				System.out.printf("%s (%s)\n", str, event.getSummary());
-			}
-
-			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
-
-		}
-
-		//set-up the DB
-		DBSetup.remoteDB();
-
-		//check if the Table for that UserName exists
-		Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
-		if(tab == null) { //the Table doesn't Exist!!!
-			System.out.println("Creating a table for "+principal.getName()+"\'s events");
-			//make the table! :D
-			DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
-		}
-
-		tab = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", principal.getName());
-		Item got = tab.getItem(spec);
-		if(got == null)
-			tab.putItem(new Item().withString("username", principal.getName()).withString("calID","primary"));
-
-		return map;///list.get(1).getColorId();
-	}
-
-	//get the Credz for the new User
-	public Credential authorize() throws Exception {
-		final List<String> SCOPES =
-        	Arrays.asList(CalendarScopes.CALENDAR);
-
-		TokenResponse tolkien = new TokenResponse();
-		tolkien.setAccessToken(oauth2ClientContext.getAccessToken().toString());
-
-		Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
-			.setFromTokenResponse(tolkien);
-		System.out.println("authorized!!!");
-		return credz;
-
-	}
-
-	//get and instance of Google Calendar API services
-	public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
-		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-		Credential credz = authorize();
-		return new com.google.api.services.calendar.Calendar.Builder(
-			HTTP_TRANSPORT, JSON_FACTORY, credz)
-			.setApplicationName("Stressmanager")
-			.build();
-	}
-
-
-	//get events from @calID Calendar
-	public List<Event> getEventsMultiCal(String calID, DateTime start, DateTime end, boolean tableExists, String user) throws Exception {
-
-		Events events = service.events().list(calID) // Get events from calendar calID...
-			.setTimeMin(start) // Starting at the beginning of the month
-			.setTimeMax(end) // and ending at the last day of the month
-			.setMaxResults(100)
-			.setSingleEvents(true)
-			.setOrderBy("startTime")
-			.execute();
-		//get the data from the HttpServletRequest
-		List<Event> items = events.getItems();
-		Table table = DBSetup.getTable(user.replaceAll(" ","_"));
-		if (items.size() == 0) {
-			System.out.println("No upcoming events found.");
-			return null;
-		}
-		else
-		{
-			//make a list of GenericJson
-			List<Event> target = new LinkedList<>();
-			System.out.println("Upcoming events for "+calID);
-			for (Event event : items) {
-				//get the stresslvl from the DB if possible
-				String eventID = event.getId();
-				Integer val = null;
-				if(tableExists) {
-					GetItemSpec spec;
-					if(eventID.indexOf("_") != -1)
-					{
-						eventID = eventID.substring(0, eventID.indexOf("_"));
-						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
-					}
-					spec = new GetItemSpec()
-						.withPrimaryKey("eventID", eventID);
-					//the event is in the DB!
-					Item it = null;
-					try {
-						it = table.getItem(spec);
-					} catch (ResourceNotFoundException e) {
-						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 2"+e.getMessage());
-						//maybe if we make the table?
-						//DBSetup.createTable(user.replaceAll(" ", "_"));
-						//return null;
-					}
-					if(it != null)
-					System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
-					//get the stresslvl
-
-					if(it != null){
-						try{
-							val = it.getInt("stressValue");
-						} catch (Exception e) {
-							val = null;
-						}
-					}
-				}
-				else
-					val = null;
-
-				//add to the Event class and add to list
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
-			}
-
-			//set the 'items' to the new List
-			events = events.setItems(target);
-
-			return target;
-
-		}
-
-	}
-	//Get events for SPECIFIC CALENDARID
-	@RequestMapping(value = "/api/calendar/events/calId")
-	@ResponseBody
-	public ResponseEntity<String> gettingEventsSpecfic(@RequestBody GenericJson request) throws Exception {
-
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		service = getCalendarService();
-
-		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
-		//get the Username and eventID
-		String userName = (String)request.get("userName");
-		String callID = (String)request.get("calID");
-		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
-		//String eventID = (String)request.get("eventID");
-
-		//get the Table
-		boolean exists = tableCheck(userName);
-
-		//Set up Calendar request
-		java.util.Calendar currentDate = java.util.Calendar.getInstance();
-		currentDate.set(java.util.Calendar.DATE, 1);
-		// The first day of the month
-		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
-		System.out.println(beginningOfMonth.toString());
-		// The last day of the month
-		currentDate.roll(java.util.Calendar.MONTH, 1);
-		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
-
-		//get the User Table and user's data from there
-		Table t = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("userID", userName);
-		Item got = t.getItem(spec);
-
-
-		//get a list of Calendar IDs
-		String str = got.getString("calID");
-		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
-		String[] calIDs = str.split("split");
-
-
-		Events events = service.events().list(callID) // Get events from primary calendar...
-			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
-			.setTimeMax(endOfMonth) // and ending at the last day of the month
-			.setMaxResults(100)
-			.setSingleEvents(true)
-			.setOrderBy("startTime")
-			.execute();
-
-		//get the data from the HttpServletRequest
-		List<Event> items = events.getItems();
-		if (items.size() == 0) {
-			System.out.println("No upcoming events found.");
- 			return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
-		}
-		else
-		{
-			//make a list of GenericJson
-			List<Event> target = new LinkedList<>();
-			Table table = DBSetup.getTable(userName);
-
-			System.out.println("Upcoming events");
-			for (Event event : items) {
-				//get the stresslvl from the DB if possible
-				String eventID = event.getId();
-				Integer val = null;
-				if(exists) {
-					if(eventID.indexOf("_") != -1)
-					{
-						eventID = eventID.substring(0, eventID.indexOf("_"));
-						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
-					}
-					spec = new GetItemSpec()
-						.withPrimaryKey("eventID", eventID);
-					//the event is in the DB!
-					Item it = null;
-					try {
-						it = table.getItem(spec);
-					} catch (ResourceNotFoundException e) {
-
-						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 3"+e.getMessage());
-						//maybe if we make the table?
-						//DBSetup.createTable(userName.replaceAll(" ", "_"));
-						//return null;
-					}
-					if(it != null)
-						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
-					//get the stresslvl
-
-					if(it != null){
-						try{
-							val = it.getInt("stressValue");
-						} catch (Exception e) {
-							val = null;
-						}
-					}
-				}
-				else
-					val = null;
-
-				//add to the Event class and add to list
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
-				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
-			}
-
-			//set the 'items' to the new List
-			events = events.setItems(target);
-
-			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
-		}
-
-
-
-	}
-
-	//Get events for ALL OF THE USERS CALENDARIDs
-	@RequestMapping(value = "/api/calendar/androidevents")
-	@ResponseBody
-	public ResponseEntity<String> gettingAndroidEvents(String idToken, String email) throws Exception {
-
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		if(!validateAndroidToken(idToken, email)) {
-			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
-		}
-
-		service = getAndroidCal(idToken);
-
-		//System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
-		//get the Username and eventID
-		String userName = dbCreds.get(idToken);
-
-		System.out.println(Colors.ANSI_BLUE+"username "+userName);
-		//String eventID = (String)request.get("eventID");
-
-		//get the Table
-		boolean exists = tableCheck(userName);
-
-		//Set up Calendar request
-		java.util.Calendar currentDate = java.util.Calendar.getInstance();
-		currentDate.set(java.util.Calendar.DATE, 1);
-		// The first day of the month
-		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
-		System.out.println(beginningOfMonth.toString());
-		// The last day of the month
-		currentDate.roll(java.util.Calendar.MONTH, 1);
-		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
-
-		//get the User Table and user's data from there
-		Table t = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-               .withPrimaryKey("username", userName);
+        tab = DBSetup.getUsersTable();
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("username", email);
+        Item got = tab.getItem(spec);
+        if (got == null)
+            tab.putItem(new Item().withString("username", email).withString("calID", "primary").withString("token", jwtToken));
+
+        dbCreds.put(jwtToken, email);
+        googleCreds.put(email, idToken);
+
+        return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
+    }
+
+    //We have a separate validation for tokens for Android users, since this is stored in the db.
+    public boolean validateAndroidToken(String token, String email) {
+        //String user = dbCreds.get(token);
+
+        DBSetup.remoteDB();
+
+        System.out.println("fucking token: " + token);
+
+        Table tab = DBSetup.getUsersTable();
+        System.out.println("meow: " + email);
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("username", email);
+        Item got = tab.getItem(spec);
+        String dbToken = (String) got.get("token");
+        System.out.println("Dynamo token: " + dbToken);
+        System.out.println("Compared with...this token: " + token);
+
+        if (token.equals(dbToken)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
+        final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+        HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
+        System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
+        ClientResources clienty = new ClientResources();
+        System.out.println(clienty.getClient().getClientId());
+        System.out.println("yml shit: " + clientID);
+        GoogleCredential credentials = new GoogleCredential.Builder()
+                .setClientSecrets(clientID, clientSecret)
+                .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT)
+                .build()
+                .setAccessToken(email);
+
+        com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
+
+        if (client == null) {
+            System.out.println("\nFucking hell\n");
+        }
+        return client;
+    }
+
+
+    //set up the access token and check that is works
+    @RequestMapping({"/androiduser", "/androidme"})
+    @ResponseBody
+    public ResponseEntity<String> userAndroid(@RequestHeader String idToken, @RequestHeader String email) throws Exception {
+        //String email = "fuck";
+        System.out.println("oh hai");
+        System.out.println("fucking fuckers fucking: " + idToken);
+        System.out.println("yay me" + email);
+        System.out.println(Colors.ANSI_PURPLE + "kill me" + Colors.ANSI_WHITE);
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+
+        if (!validateAndroidToken(idToken, email)) {
+            return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
+        }
+
+        System.out.println("validated token");
+
+        service = getAndroidCal(dbCreds.get(idToken));
+        if (service == null) {
+            System.out.println("it's null....awks");
+        }
+        //System.out.println("Service: " + )
+
+        DateTime now = new DateTime(System.currentTimeMillis());
+        // 	//now.set(java.util.Calendar.DATE, 1);
+
+        System.out.println("after datetime");
+
+        Events events = service.events().list("primary")
+                .setMaxResults(50)
+                .setTimeMin(now)
+                .setSingleEvents(false)
+                .execute();
+
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println(Colors.ANSI_PURPLE + "Upcoming events (Me route)" + Colors.ANSI_WHITE);
+
+            for (Event event : items) {
+                String str = event.getId();
+                System.out.printf("%s (%s)\n", str, event.getSummary());
+            }
+
+            //System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
+
+        }
+
+        // 	//set-up the DB
+        DBSetup.remoteDB();
+
+        //check if the Table for that UserName exists
+        Table tab = DBSetup.getTable(dbCreds.get(idToken));
+        if (tab == null) { //the Table doesn't Exist!!!
+            System.out.println("Creating a table for " + dbCreds.get(idToken) + "\'s events");
+            //make the table! :D
+            DBSetup.createTable(dbCreds.get(idToken));
+        }
+
+        tab = DBSetup.getUsersTable();
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("username", dbCreds.get(idToken));
+        Item got = tab.getItem(spec);
+        if (got == null)
+            tab.putItem(new Item().withString("username", dbCreds.get(idToken)).withString("calID", "primary"));
+
+        return new ResponseEntity<String>("Set up correctly, now in DB", httpHeaders, HttpStatus.ACCEPTED);
+    }
+
+    //set up the access token and check that is works
+    @RequestMapping({"/user", "/me"})
+    @ResponseBody
+    public Map<String, String> user(Principal principal) throws Exception {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("name", principal.getName());
+        map.put("auth", oauth2ClientContext.getAccessToken().toString());
+
+        System.out.println();
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println(oauth2ClientContext.getAccessToken().toString());
+        System.out.println("========================================");
+        System.out.println("authenticated!!!!");
+
+        service = getCalendarService();
+
+        DateTime now = new DateTime(System.currentTimeMillis());
+        //now.set(java.util.Calendar.DATE, 1);
+
+
+        Events events = service.events().list("primary")
+                .setMaxResults(50)
+                .setTimeMin(now)
+                .setSingleEvents(false)
+                .execute();
+
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println(Colors.ANSI_PURPLE + "Upcoming events (Me route)" + Colors.ANSI_WHITE);
+            for (Event event : items) {
+                String str = event.getId();
+                System.out.printf("%s (%s)\n", str, event.getSummary());
+            }
+
+            //System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
+
+        }
+
+        //set-up the DB
+        DBSetup.remoteDB();
+
+        //check if the Table for that UserName exists
+        Table tab = DBSetup.getTable(principal.getName().replaceAll(" ", "_"));
+        if (tab == null) { //the Table doesn't Exist!!!
+            System.out.println("Creating a table for " + principal.getName() + "\'s events");
+            //make the table! :D
+            DBSetup.createTable(principal.getName().replaceAll(" ", "_"));
+        }
+
+        tab = DBSetup.getUsersTable();
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("username", principal.getName());
+        Item got = tab.getItem(spec);
+        if (got == null)
+            tab.putItem(new Item().withString("username", principal.getName()).withString("calID", "primary"));
+
+        return map;///list.get(1).getColorId();
+    }
+
+    //get the Credz for the new User
+    public Credential authorize() throws Exception {
+        final List<String> SCOPES =
+                Arrays.asList(CalendarScopes.CALENDAR);
+
+        TokenResponse tolkien = new TokenResponse();
+        tolkien.setAccessToken(oauth2ClientContext.getAccessToken().toString());
+
+        Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
+                .setFromTokenResponse(tolkien);
+        System.out.println("authorized!!!");
+        return credz;
+
+    }
+
+    //get and instance of Google Calendar API services
+    public com.google.api.services.calendar.Calendar getCalendarService() throws Exception {
+        final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+        HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Credential credz = authorize();
+        return new com.google.api.services.calendar.Calendar.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, credz)
+                .setApplicationName("Stressmanager")
+                .build();
+    }
+
+
+    //get events from @calID Calendar
+    public List<Event> getEventsMultiCal(String calID, DateTime start, DateTime end, boolean tableExists, String user) throws Exception {
+
+        Events events = service.events().list(calID) // Get events from calendar calID...
+                .setTimeMin(start) // Starting at the beginning of the month
+                .setTimeMax(end) // and ending at the last day of the month
+                .setMaxResults(100)
+                .setSingleEvents(true)
+                .setOrderBy("startTime")
+                .execute();
+        //get the data from the HttpServletRequest
+        List<Event> items = events.getItems();
+        Table table = DBSetup.getTable(user.replaceAll(" ", "_"));
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+            return null;
+        } else {
+            //make a list of GenericJson
+            List<Event> target = new LinkedList<>();
+            System.out.println("Upcoming events for " + calID);
+            for (Event event : items) {
+                //get the stresslvl from the DB if possible
+                String eventID = event.getId();
+                Integer val = null;
+                if (tableExists) {
+                    GetItemSpec spec;
+                    if (eventID.indexOf("_") != -1) {
+                        eventID = eventID.substring(0, eventID.indexOf("_"));
+                        System.out.println(Colors.ANSI_RED + "=" + eventID + "= " + event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+                    }
+                    spec = new GetItemSpec()
+                            .withPrimaryKey("eventID", eventID);
+                    //the event is in the DB!
+                    Item it = null;
+                    try {
+                        it = table.getItem(spec);
+                    } catch (ResourceNotFoundException e) {
+                        //System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 2"+e.getMessage());
+                        //maybe if we make the table?
+                        //DBSetup.createTable(user.replaceAll(" ", "_"));
+                        //return null;
+                    }
+                    if (it != null)
+                        System.out.println(Colors.ANSI_CYAN + eventID + "  " + it.getJSON("stressValue"));
+                    //get the stresslvl
+
+                    if (it != null) {
+                        try {
+                            val = it.getInt("stressValue");
+                        } catch (Exception e) {
+                            val = null;
+                        }
+                    }
+                } else
+                    val = null;
+
+                //add to the Event class and add to list
+                GenericJson new1 = (GenericJson) event.set("stressValue", val);
+                target.add((Event) new1);
+            }
+
+            //set the 'items' to the new List
+            events = events.setItems(target);
+
+            return target;
+
+        }
+
+    }
+
+    //Get events for SPECIFIC CALENDARID
+    @RequestMapping(value = "/api/calendar/events/calId")
+    @ResponseBody
+    public ResponseEntity<String> gettingEventsSpecfic(@RequestBody GenericJson request) throws Exception {
+
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        service = getCalendarService();
+
+        System.out.println(Colors.ANSI_BLUE + "JSON " + request.toPrettyString());
+        //get the Username and eventID
+        String userName = (String) request.get("userName");
+        String callID = (String) request.get("calID");
+        System.out.println(Colors.ANSI_BLUE + "userName " + userName);
+        //String eventID = (String)request.get("eventID");
+
+        //get the Table
+        boolean exists = tableCheck(userName);
+
+        //Set up Calendar request
+        java.util.Calendar currentDate = java.util.Calendar.getInstance();
+        currentDate.set(java.util.Calendar.DATE, 1);
+        // The first day of the month
+        DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+        System.out.println(beginningOfMonth.toString());
+        // The last day of the month
+        currentDate.roll(java.util.Calendar.MONTH, 1);
+        DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+        //get the User Table and user's data from there
+        Table t = DBSetup.getUsersTable();
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("userID", userName);
         Item got = t.getItem(spec);
 
 
-		//get a list of Calendar IDs
-		String str = got.getString("calID");
-		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
-		String[] calIDs = str.split("split");
-
-		List<Event> target = new LinkedList<>();
-		Table table = DBSetup.getTable(userName);
-		for(String val: calIDs) {
-			System.out.println(Colors.ANSI_CYAN+"The calid now is: "+val);
-			//get the events for each of these
-			List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
-			//add it to a list of all the events retrieved
-			if(addThis != null)
-				target.addAll(addThis);
-		}
-		Events events = service.events().list("primary") // Get events from primary calendar...
-			.setMaxResults(1)
-			.setSingleEvents(true)
-			.setOrderBy("startTime")
-			.execute();
-		events.setItems(target);
-
-		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+        //get a list of Calendar IDs
+        String str = got.getString("calID");
+        System.out.println(Colors.ANSI_CYAN + "The User Has: " + str);
+        String[] calIDs = str.split("split");
 
 
-	}
+        Events events = service.events().list(callID) // Get events from primary calendar...
+                .setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+                .setTimeMax(endOfMonth) // and ending at the last day of the month
+                .setMaxResults(100)
+                .setSingleEvents(true)
+                .setOrderBy("startTime")
+                .execute();
 
-	//Get events for ALL OF THE USERS CALENDARIDs
-	@RequestMapping(value = "/api/calendar/events")
-	@ResponseBody
-	public ResponseEntity<String> gettingEvents(@RequestBody GenericJson request) throws Exception {
+        //get the data from the HttpServletRequest
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+            return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
+        } else {
+            //make a list of GenericJson
+            List<Event> target = new LinkedList<>();
+            Table table = DBSetup.getTable(userName);
 
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		service = getCalendarService();
+            System.out.println("Upcoming events");
+            for (Event event : items) {
+                //get the stresslvl from the DB if possible
+                String eventID = event.getId();
+                Integer val = null;
+                if (exists) {
+                    if (eventID.indexOf("_") != -1) {
+                        eventID = eventID.substring(0, eventID.indexOf("_"));
+                        System.out.println(Colors.ANSI_RED + "=" + eventID + "= " + event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+                    }
+                    spec = new GetItemSpec()
+                            .withPrimaryKey("eventID", eventID);
+                    //the event is in the DB!
+                    Item it = null;
+                    try {
+                        it = table.getItem(spec);
+                    } catch (ResourceNotFoundException e) {
 
-		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
-		//get the Username and eventID
-		String userName = (String)request.get("userName");
+                        //System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 3"+e.getMessage());
+                        //maybe if we make the table?
+                        //DBSetup.createTable(userName.replaceAll(" ", "_"));
+                        //return null;
+                    }
+                    if (it != null)
+                        System.out.println(Colors.ANSI_CYAN + eventID + "  " + it.getJSON("stressValue"));
+                    //get the stresslvl
 
-		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
-		//String eventID = (String)request.get("eventID");
+                    if (it != null) {
+                        try {
+                            val = it.getInt("stressValue");
+                        } catch (Exception e) {
+                            val = null;
+                        }
+                    }
+                } else
+                    val = null;
 
-		//get the Table
-		boolean exists = tableCheck(userName);
+                //add to the Event class and add to list
+                GenericJson new1 = (GenericJson) event.set("stressValue", val);
+                target.add((Event) new1);
+                //System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
+            }
 
-		//Set up Calendar request
-		java.util.Calendar currentDate = java.util.Calendar.getInstance();
-		currentDate.set(java.util.Calendar.DATE, 1);
-		// The first day of the month
-		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
-		System.out.println(beginningOfMonth.toString());
-		// The last day of the month
-		currentDate.roll(java.util.Calendar.MONTH, 1);
-		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+            //set the 'items' to the new List
+            events = events.setItems(target);
 
-		//get the User Table and user's data from there
-		Table t = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-               .withPrimaryKey("username", userName);
+            return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+        }
+
+
+    }
+
+    //Get events for ALL OF THE USERS CALENDARIDs
+    @RequestMapping(value = "/api/calendar/androidevents")
+    @ResponseBody
+    public ResponseEntity<String> gettingAndroidEvents(String idToken, String email) throws Exception {
+
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        if (!validateAndroidToken(idToken, email)) {
+            return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
+        }
+
+        service = getAndroidCal(idToken);
+
+        //System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+        //get the Username and eventID
+        String userName = dbCreds.get(idToken);
+
+        System.out.println(Colors.ANSI_BLUE + "username " + userName);
+        //String eventID = (String)request.get("eventID");
+
+        //get the Table
+        boolean exists = tableCheck(userName);
+
+        //Set up Calendar request
+        java.util.Calendar currentDate = java.util.Calendar.getInstance();
+        currentDate.set(java.util.Calendar.DATE, 1);
+        // The first day of the month
+        DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+        System.out.println(beginningOfMonth.toString());
+        // The last day of the month
+        currentDate.roll(java.util.Calendar.MONTH, 1);
+        DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+        //get the User Table and user's data from there
+        Table t = DBSetup.getUsersTable();
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("username", userName);
         Item got = t.getItem(spec);
 
 
-		//get a list of Calendar IDs
-		String str = got.getString("calID");
-		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
-		String[] calIDs = str.split("split");
+        //get a list of Calendar IDs
+        String str = got.getString("calID");
+        System.out.println(Colors.ANSI_CYAN + "The User Has: " + str);
+        String[] calIDs = str.split("split");
 
-		List<Event> target = new LinkedList<>();
-		Table table = DBSetup.getTable(userName);
-		for(String val: calIDs) {
-			System.out.println(Colors.ANSI_CYAN+"The calid now is: "+val);
-			//get the events for each of these
-			List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
-			//add it to a list of all the events retrieved
-			if(addThis != null)
-				target.addAll(addThis);
-		}
-		Events events = service.events().list("primary") // Get events from primary calendar...
-			.setMaxResults(1)
-			.setSingleEvents(true)
-			.setOrderBy("startTime")
-			.execute();
-		events.setItems(target);
+        List<Event> target = new LinkedList<>();
+        Table table = DBSetup.getTable(userName);
+        for (String val : calIDs) {
+            System.out.println(Colors.ANSI_CYAN + "The calid now is: " + val);
+            //get the events for each of these
+            List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
+            //add it to a list of all the events retrieved
+            if (addThis != null)
+                target.addAll(addThis);
+        }
+        Events events = service.events().list("primary") // Get events from primary calendar...
+                .setMaxResults(1)
+                .setSingleEvents(true)
+                .setOrderBy("startTime")
+                .execute();
+        events.setItems(target);
 
-		return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
-
-
-	}
-
-	///Logout a user using the Servlet Context
-	@RequestMapping(value="/logout", method = RequestMethod.GET)
-	public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	if (auth != null){
-        	new SecurityContextLogoutHandler().logout(request, response, auth);
-    	}
-    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
-	}
-
-	///Logout a user using the Servlet Context
-	@RequestMapping(value="/androidlogout", method = RequestMethod.GET)
-	public String logoutAndroidPage (HttpServletRequest request, HttpServletResponse response) {
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	if (auth != null){
-        	new SecurityContextLogoutHandler().logout(request, response, auth);
-    	}
-    	return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
-	}
-
-	//get a month worth of events from the First day of the month to the first of the next month
-	//TODO: Fix the frontend's event cap
-	@RequestMapping(value = "/me/calendar/events")
-	@ResponseBody
-	public ResponseEntity<String> events(@RequestBody GenericJson request) throws Exception {
-		//HTTP Headers
-
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		// Returns all events in the current month
-		service = getCalendarService();
-
-		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
-		//get the Username and eventID
-		String userName = (String)request.get("userName");
-
-		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
-		//String eventID = (String)request.get("eventID");
-
-		//get the Table
-		boolean exists = tableCheck(userName);
+        return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
 
-		//Set up Calendar request
-		java.util.Calendar currentDate = java.util.Calendar.getInstance();
-		currentDate.set(java.util.Calendar.DATE, 1);
-		// The first day of the month
-		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
-		System.out.println(beginningOfMonth.toString());
-		// The last day of the month
-		currentDate.roll(java.util.Calendar.MONTH, 1);
-		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+    }
 
-		Events events = service.events().list("primary") // Get events from primary calendar...
-			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
-			.setTimeMax(endOfMonth) // and ending at the last day of the month
-			.setMaxResults(150)
-			.setSingleEvents(true)
-			.setOrderBy("startTime")
-			.execute();
+    //Get events for ALL OF THE USERS CALENDARIDs
+    @RequestMapping(value = "/api/calendar/events")
+    @ResponseBody
+    public ResponseEntity<String> gettingEvents(@RequestBody GenericJson request) throws Exception {
 
-		//get the data from the HttpServletRequest
-		List<Event> items = events.getItems();
-		if (items.size() == 0) {
-			System.out.println("No upcoming events found.");
- 			return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
-		}
-		else
-		{
-			//make a list of GenericJson
-			List<Event> target = new LinkedList<>();
-			Table table = DBSetup.getTable(userName);
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        service = getCalendarService();
 
-			System.out.println("Upcoming events");
-			for (Event event : items) {
-				//get the stresslvl from the DB if possible
-				String eventID = event.getId();
-				Integer val = null;
-				if(exists) {
-					GetItemSpec spec;
-					if(eventID.indexOf("_") != -1)
-					{
-						eventID = eventID.substring(0, eventID.indexOf("_"));
-						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
-					}
-					spec = new GetItemSpec()
-						.withPrimaryKey("eventID", eventID);
-					//the event is in the DB!
-					Item it = null;
-					try {
-						it = table.getItem(spec);
-					} catch (ResourceNotFoundException e) {
-						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 4"+e.getMessage());
-						//maybe if we make the table?
-						//DBSetup.createTable(userName.replaceAll(" ", "_"));
-						//return null;
-					}
-					if(it != null)
-						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
-					//get the stresslvl
+        System.out.println(Colors.ANSI_BLUE + "JSON " + request.toPrettyString());
+        //get the Username and eventID
+        String userName = (String) request.get("userName");
 
-					if(it != null){
-						try{
-							val = it.getInt("stressValue");
-						} catch (Exception e) {
-							val = null;
-						}
-					}
-				}
-				else
-					val = null;
+        System.out.println(Colors.ANSI_BLUE + "userName " + userName);
+        //String eventID = (String)request.get("eventID");
 
-				//add to the Event class and add to list
-				GenericJson new1 = (GenericJson)event.set("stressValue",val);
-				target.add((Event)new1);
-				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
-			}
+        //get the Table
+        boolean exists = tableCheck(userName);
 
-			//set the 'items' to the new List
-			events = events.setItems(target);
+        //Set up Calendar request
+        java.util.Calendar currentDate = java.util.Calendar.getInstance();
+        currentDate.set(java.util.Calendar.DATE, 1);
+        // The first day of the month
+        DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+        System.out.println(beginningOfMonth.toString());
+        // The last day of the month
+        currentDate.roll(java.util.Calendar.MONTH, 1);
+        DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
 
-			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
-		}
-	}
+        //get the User Table and user's data from there
+        Table t = DBSetup.getUsersTable();
+        GetItemSpec spec = new GetItemSpec()
+                .withPrimaryKey("username", userName);
+        Item got = t.getItem(spec);
 
-	// Display the information for a single event in the user's calendar
-	@RequestMapping(value = "/event/detail")
-	@ResponseBody
-	public ResponseEntity<String> eventDetails(@RequestBody GenericJson request) throws Exception {
-		db.accessDB();
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-		service = getCalendarService();
-		String calID = (String)request.get("calID");
-		String eventID = (String)request.get("eventID");
+        //get a list of Calendar IDs
+        String str = got.getString("calID");
+        System.out.println(Colors.ANSI_CYAN + "The User Has: " + str);
+        String[] calIDs = str.split("split");
 
-		Event event = service.events().get(calID, eventID).execute();
-		return new ResponseEntity<String>(event.toPrettyString(), httpHeaders, HttpStatus.OK);
+        List<Event> target = new LinkedList<>();
+        Table table = DBSetup.getTable(userName);
+        for (String val : calIDs) {
+            System.out.println(Colors.ANSI_CYAN + "The calid now is: " + val);
+            //get the events for each of these
+            List<Event> addThis = getEventsMultiCal(val, beginningOfMonth, endOfMonth, true, userName);
+            //add it to a list of all the events retrieved
+            if (addThis != null)
+                target.addAll(addThis);
+        }
+        Events events = service.events().list("primary") // Get events from primary calendar...
+                .setMaxResults(1)
+                .setSingleEvents(true)
+                .setOrderBy("startTime")
+                .execute();
+        events.setItems(target);
 
-	}
+        return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
 
-	/*
-	* Spring Security Set up
-	*/
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		//temp = http;
-		// @formatter:off
-		http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/androidlogin", "/androidme").permitAll().anyRequest()
-				.authenticated().and().exceptionHandling()
-				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
-				.logoutSuccessUrl("/").permitAll().and().csrf().disable()
-				///disabled the CSRF Tokens
-				.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
-		// @formatter:on
-	}
 
-	@Configuration
-	@EnableResourceServer
-	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
-		@Override
-		public void configure(HttpSecurity http) throws Exception {
-			// @formatter:off
-			http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
-			http.antMatcher("/androidlogin").authorizeRequests().anyRequest().authenticated();
-			http.antMatcher("/androidme").authorizeRequests().anyRequest().authenticated();
-			http.antMatcher("/api/calendar/androidevents").authorizeRequests().anyRequest().authenticated();
-			http.antMatcher("/androidlogout").authorizeRequests().anyRequest().authenticated();
-			// @formatter:on
-		}
-	}
+    }
 
-	@Bean
-	public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		System.out.println("FILTER BEING MADE");
-		registration.setFilter(filter);
-		registration.setOrder(-100);
-		return registration;
-	}
+    ///Logout a user using the Servlet Context
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+    }
 
-	@Bean
-	@ConfigurationProperties("google")//Google Login setup
-	public ClientResources google() {
-		System.out.println("RESOURCE BEING MADE");
-		return new ClientResources();
-	}
-	private Filter ssoFilter() {
-		CompositeFilter filter = new CompositeFilter();
-		List<Filter> filters = new ArrayList<>();
-		System.out.println("FILTER LIST MADE");
-		String path = "/login/google";
-		filters.add(ssoFilter(google(), path));
-		filter.setFilters(filters);
-		System.out.println("RESOURCE BEING MADE");
-		return filter;
-	}
-	private Filter ssoFilter(ClientResources client, String path) {
-		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-				path);
-		OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
-		filter.setRestTemplate(template);
-		UserInfoTokenServices tokenServices = new UserInfoTokenServices(
-				client.getResource().getUserInfoUri(), client.getClient().getClientId());
-		tokenServices.setRestTemplate(template);
-		filter.setTokenServices(tokenServices);
-		return filter;
-	}
+    ///Logout a user using the Servlet Context
+    @RequestMapping(value = "/androidlogout", method = RequestMethod.GET)
+    public String logoutAndroidPage(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return "index";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+    }
 
-	//Deploy the Server
-	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);
-	}
+    //get a month worth of events from the First day of the month to the first of the next month
+    //TODO: Fix the frontend's event cap
+    @RequestMapping(value = "/me/calendar/events")
+    @ResponseBody
+    public ResponseEntity<String> events(@RequestBody GenericJson request) throws Exception {
+        //HTTP Headers
 
-	/*
-	** Helper Methods
-	** to keep the code clean
-	*/
-	public boolean tableCheck(String userName) {
-		boolean exists = true;
-		Table table = DBSetup.getTable(userName);
-		GetItemSpec spec12 = new GetItemSpec()
-			.withPrimaryKey("eventID", "123213213fwqefefw");
-		//the event is in the DB!
-		Item it1 = null;
-		try {
-			it1 = table.getItem(spec12);
-			return true;
-		} catch (ResourceNotFoundException e) {
-			//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 1"+e.getMessage());
-			//maybe if we make the table?
-			DBSetup.createTable(userName.replaceAll(" ", "_"));
-			return false;
-		}
-	}
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        // Returns all events in the current month
+        service = getCalendarService();
+
+        System.out.println(Colors.ANSI_BLUE + "JSON " + request.toPrettyString());
+        //get the Username and eventID
+        String userName = (String) request.get("userName");
+
+        System.out.println(Colors.ANSI_BLUE + "userName " + userName);
+        //String eventID = (String)request.get("eventID");
+
+        //get the Table
+        boolean exists = tableCheck(userName);
+
+
+        //Set up Calendar request
+        java.util.Calendar currentDate = java.util.Calendar.getInstance();
+        currentDate.set(java.util.Calendar.DATE, 1);
+        // The first day of the month
+        DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+        System.out.println(beginningOfMonth.toString());
+        // The last day of the month
+        currentDate.roll(java.util.Calendar.MONTH, 1);
+        DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+        Events events = service.events().list("primary") // Get events from primary calendar...
+                .setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+                .setTimeMax(endOfMonth) // and ending at the last day of the month
+                .setMaxResults(150)
+                .setSingleEvents(true)
+                .setOrderBy("startTime")
+                .execute();
+
+        //get the data from the HttpServletRequest
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+            return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
+        } else {
+            //make a list of GenericJson
+            List<Event> target = new LinkedList<>();
+            Table table = DBSetup.getTable(userName);
+
+            System.out.println("Upcoming events");
+            for (Event event : items) {
+                //get the stresslvl from the DB if possible
+                String eventID = event.getId();
+                Integer val = null;
+                if (exists) {
+                    GetItemSpec spec;
+                    if (eventID.indexOf("_") != -1) {
+                        eventID = eventID.substring(0, eventID.indexOf("_"));
+                        System.out.println(Colors.ANSI_RED + "=" + eventID + "= " + event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+                    }
+                    spec = new GetItemSpec()
+                            .withPrimaryKey("eventID", eventID);
+                    //the event is in the DB!
+                    Item it = null;
+                    try {
+                        it = table.getItem(spec);
+                    } catch (ResourceNotFoundException e) {
+                        //System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 4"+e.getMessage());
+                        //maybe if we make the table?
+                        //DBSetup.createTable(userName.replaceAll(" ", "_"));
+                        //return null;
+                    }
+                    if (it != null)
+                        System.out.println(Colors.ANSI_CYAN + eventID + "  " + it.getJSON("stressValue"));
+                    //get the stresslvl
+
+                    if (it != null) {
+                        try {
+                            val = it.getInt("stressValue");
+                        } catch (Exception e) {
+                            val = null;
+                        }
+                    }
+                } else
+                    val = null;
+
+                //add to the Event class and add to list
+                GenericJson new1 = (GenericJson) event.set("stressValue", val);
+                target.add((Event) new1);
+                //System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
+            }
+
+            //set the 'items' to the new List
+            events = events.setItems(target);
+
+            return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+        }
+    }
+
+    // Display the information for a single event in the user's calendar
+    @RequestMapping(value = "/event/detail")
+    @ResponseBody
+    public ResponseEntity<String> eventDetails(@RequestBody GenericJson request) throws Exception {
+        db.accessDB();
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        service = getCalendarService();
+        String calID = (String) request.get("calID");
+        String eventID = (String) request.get("eventID");
+
+        Event event = service.events().get(calID, eventID).execute();
+        return new ResponseEntity<String>(event.toPrettyString(), httpHeaders, HttpStatus.OK);
+
+    }
+
+    /*
+     * Spring Security Set up
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //temp = http;
+        // @formatter:off
+        http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/androidlogin", "/androidme").permitAll().anyRequest()
+                .authenticated().and().exceptionHandling()
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
+                .logoutSuccessUrl("/").permitAll().and().csrf().disable()
+                ///disabled the CSRF Tokens
+                .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+        // @formatter:on
+    }
+
+    @Configuration
+    @EnableResourceServer
+    protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            // @formatter:off
+            http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
+            http.antMatcher("/androidlogin").authorizeRequests().anyRequest().authenticated();
+            http.antMatcher("/androidme").authorizeRequests().anyRequest().authenticated();
+            http.antMatcher("/api/calendar/androidevents").authorizeRequests().anyRequest().authenticated();
+            http.antMatcher("/androidlogout").authorizeRequests().anyRequest().authenticated();
+            // @formatter:on
+        }
+    }
+
+    @Bean
+    public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        System.out.println("FILTER BEING MADE");
+        registration.setFilter(filter);
+        registration.setOrder(-100);
+        return registration;
+    }
+
+    @Bean
+    @ConfigurationProperties("google")//Google Login setup
+    public ClientResources google() {
+        System.out.println("RESOURCE BEING MADE");
+        return new ClientResources();
+    }
+
+    private Filter ssoFilter() {
+        CompositeFilter filter = new CompositeFilter();
+        List<Filter> filters = new ArrayList<>();
+        System.out.println("FILTER LIST MADE");
+        String path = "/login/google";
+        filters.add(ssoFilter(google(), path));
+        filter.setFilters(filters);
+        System.out.println("RESOURCE BEING MADE");
+        return filter;
+    }
+
+    private Filter ssoFilter(ClientResources client, String path) {
+        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
+                path);
+        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
+        filter.setRestTemplate(template);
+        UserInfoTokenServices tokenServices = new UserInfoTokenServices(
+                client.getResource().getUserInfoUri(), client.getClient().getClientId());
+        tokenServices.setRestTemplate(template);
+        filter.setTokenServices(tokenServices);
+        return filter;
+    }
+
+    //Deploy the Server
+    public static void main(String[] args) {
+        SpringApplication.run(BackendApplication.class, args);
+    }
+
+    /*
+     ** Helper Methods
+     ** to keep the code clean
+     */
+    public boolean tableCheck(String userName) {
+        boolean exists = true;
+        Table table = DBSetup.getTable(userName);
+        GetItemSpec spec12 = new GetItemSpec()
+                .withPrimaryKey("eventID", "123213213fwqefefw");
+        //the event is in the DB!
+        Item it1 = null;
+        try {
+            it1 = table.getItem(spec12);
+            return true;
+        } catch (ResourceNotFoundException e) {
+            //System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 1"+e.getMessage());
+            //maybe if we make the table?
+            DBSetup.createTable(userName.replaceAll(" ", "_"));
+            return false;
+        }
+    }
 }
 
 
 class ClientResources {
 
-	@NestedConfigurationProperty
-	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
+    @NestedConfigurationProperty
+    private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
 
-	@NestedConfigurationProperty
-	private ResourceServerProperties resource = new ResourceServerProperties();
+    @NestedConfigurationProperty
+    private ResourceServerProperties resource = new ResourceServerProperties();
 
 
-	public ClientResources() {
-		client.setClientId(System.getenv("GOOGLE_CLIENT_ID"));
-		client.setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"));
-		List<String> str = new ArrayList<>();
-		str.add(CalendarScopes.CALENDAR);
-		client.setScope(str);
-	}
+    public ClientResources() {
+        client.setClientId(System.getenv("GOOGLE_CLIENT_ID"));
+        client.setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"));
+        List<String> str = new ArrayList<>();
+        str.add(CalendarScopes.CALENDAR);
+        client.setScope(str);
+    }
 
-	public AuthorizationCodeResourceDetails getClient() {
-		return client;
-	}
+    public AuthorizationCodeResourceDetails getClient() {
+        return client;
+    }
 
-	public ResourceServerProperties getResource() {
-		return resource;
-	}
+    public ResourceServerProperties getResource() {
+        return resource;
+    }
 }
+
 class ClientResourcesTest {
 
-	@NestedConfigurationProperty
-	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
+    @NestedConfigurationProperty
+    private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
 
-	@NestedConfigurationProperty
-	private ResourceServerProperties resource = new ResourceServerProperties();
+    @NestedConfigurationProperty
+    private ResourceServerProperties resource = new ResourceServerProperties();
 
 
-	public ClientResourcesTest() {
-		client.setClientId(System.getenv("GOOGLE_CLIENT_ID_TEST"));
-		client.setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET_TEST"));
-		List<String> str = new ArrayList<>();
-		str.add(CalendarScopes.CALENDAR);
-		client.setScope(str);
-	}
+    public ClientResourcesTest() {
+        client.setClientId(System.getenv("GOOGLE_CLIENT_ID_TEST"));
+        client.setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET_TEST"));
+        List<String> str = new ArrayList<>();
+        str.add(CalendarScopes.CALENDAR);
+        client.setScope(str);
+    }
 
-	public AuthorizationCodeResourceDetails getClient() {
-		return client;
-	}
+    public AuthorizationCodeResourceDetails getClient() {
+        return client;
+    }
 
-	public ResourceServerProperties getResource() {
-		return resource;
-	}
+    public ResourceServerProperties getResource() {
+        return resource;
+    }
 }

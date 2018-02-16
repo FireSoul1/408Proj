@@ -16,6 +16,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +25,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import xyz.jhughes.epsteinandroid.R;
 import xyz.jhughes.epsteinandroid.networking.EpsteinApiHelper;
+import xyz.jhughes.epsteinandroid.utilities.SharedPrefsHelper;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -43,6 +45,11 @@ public class LoginActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        try {
+            getSupportActionBar().hide();
+        } catch (NullPointerException e) {
+            // Meh...
+        }
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.google_client_id))
                 .requestServerAuthCode(getString(R.string.google_client_id))
+                .requestScopes(new Scope("https://www.googleapis.com/auth/calendar"))
                 .requestEmail()
                 .build();
 
@@ -101,14 +109,15 @@ public class LoginActivity extends AppCompatActivity {
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
 
-            // Signed in successfully, show authenticated UI.
-            Toast.makeText(this, "Signed in with Google", Toast.LENGTH_LONG).show();
-
             EpsteinApiHelper.getInstance().login(account.getIdToken()).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    System.out.println(response.code());
-                    System.out.println(response.body());
+                    if (response.code() == 202) {
+                        SharedPrefsHelper.getSharedPrefs(getApplicationContext()).edit().putString("idToken", response.body()).apply();
+                        startActivity(new Intent(getApplicationContext(), CalendarActivity.class));
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Couldn't sign in to Epstein", Toast.LENGTH_LONG).show();
+                    }
                 }
 
                 @Override

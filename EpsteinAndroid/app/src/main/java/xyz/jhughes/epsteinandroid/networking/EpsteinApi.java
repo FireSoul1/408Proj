@@ -15,6 +15,6 @@ public interface EpsteinApi {
     @POST("androidlogin")
     Call<String> login(@Field("androidIdToken") String androidIdToken);
 
-    @GET("me")
-    Call<Me> getMe(@Header("Cookie") String JSESSIONID);
+    @GET("androidme")
+    Call<Me> getMe(@Header("email") String email, @Header("idToken") String idToken);
 }
