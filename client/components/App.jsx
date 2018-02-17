@@ -90,7 +90,8 @@ class App extends React.Component {
           this.setState({ user, authorized: true })
          
           if(calendarType == 'Google'){
-             this.setActiveView(CalendarPage)
+             //this.setActiveView(CalendarPage)
+             this.setActiveView(ImportPage)
           }
           else {
             this.setActiveView(UserPage)
