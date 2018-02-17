@@ -1,4 +1,5 @@
 import React from 'react'
+import './CalendarVariables.jsx'
 class CalendarPage extends React.Component {
 	
   constructor(props) {
