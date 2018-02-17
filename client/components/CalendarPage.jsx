@@ -14,7 +14,14 @@ class CalendarPage extends React.Component {
   super(props)
    this.state = {
       calendarType: ''
+      calendarExist: false
     }
+  }
+
+  GoogleFunc(){
+    this.setState({ calendarType: 'Google' })}
+    this.setActiveView(ImportPage)
+
   }
 
   
