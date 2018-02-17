@@ -89,13 +89,8 @@ class App extends React.Component {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
          
-          if(calendarExist == false){
-             //this.setActiveView(CalendarPage)
-             this.setActiveView(ImportPage)
-          }
-          else {
             this.setActiveView(UserPage)
-          }
+          
            
           this.getEventList()
           return
