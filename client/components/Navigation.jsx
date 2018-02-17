@@ -45,7 +45,7 @@ class Navigation extends React.Component {
       return (
         <Nav pullRight>
           <NavDropdown title='Tools' id='basic-nav-dropdown'>
-             <MenuItem onClick={() =>  setActiveView(CalendarPage)}>
+             <MenuItem onClick={() =>  getCalendarType()}>
               Choose Calendar Type
             </MenuItem>
             <MenuItem onClick={() => getCalendars()}>
