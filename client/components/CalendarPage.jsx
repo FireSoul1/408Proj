@@ -1,4 +1,5 @@
 import React from 'react'
+<<<<<<< HEAD
 import {
   Button,
   FormControl,
@@ -10,6 +11,8 @@ import SweetAlert from 'react-bootstrap-sweetalert'
 
 import './CalendarVariables.jsx'
 
+=======
+>>>>>>> parent of d11d86e... made import statements on CalendarPage.jsx and App.jsx
 class CalendarPage extends React.Component {
 	
   constructor(props) {
