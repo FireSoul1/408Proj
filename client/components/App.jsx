@@ -133,7 +133,8 @@ class App extends React.Component {
 
         }
 
-        this.setActiveView(ImportPage)
+        //this.setActiveView(ImportPage)
+        this.setActiveView(CalendarPage)
       },
       error: response => {
         // TODO give feedback to user
