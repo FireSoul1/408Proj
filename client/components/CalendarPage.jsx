@@ -8,11 +8,14 @@ import {
 } from 'react-bootstrap'
 import { map } from 'lodash'
 import SweetAlert from 'react-bootstrap-sweetalert'
+<<<<<<< HEAD
 
 import './CalendarVariables.jsx'
 
 =======
 >>>>>>> parent of d11d86e... made import statements on CalendarPage.jsx and App.jsx
+=======
+>>>>>>> 57210a18ffa9012ed729a11d818b59f7dcbc191b
 class CalendarPage extends React.Component {
 	
   constructor(props) {
