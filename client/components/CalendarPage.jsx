@@ -1,5 +1,4 @@
 import React from 'react'
-<<<<<<< HEAD
 import {
   Button,
   FormControl,
@@ -8,9 +7,6 @@ import {
 } from 'react-bootstrap'
 import { map } from 'lodash'
 import SweetAlert from 'react-bootstrap-sweetalert'
-
-import './CalendarVariables.jsx'
-
 class CalendarPage extends React.Component {
 	
   constructor(props) {
