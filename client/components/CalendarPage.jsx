@@ -17,6 +17,7 @@ class CalendarPage extends React.Component {
   }
 
   
+  // button for importing google and outlook calendars
 
 	 render() {
 	 	return (
