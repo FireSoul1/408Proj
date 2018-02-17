@@ -23,7 +23,7 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' justifyContent = 'space-between'  > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn'  onClick={() => this.setState({ calendarType: 'Google' })} > Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
         </Jumbotron>
