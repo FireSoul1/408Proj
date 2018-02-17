@@ -56,7 +56,7 @@ class App extends React.Component {
     ajax({
       url: '/calendar/import',
       type: 'get',
-      success: () => {
+      success: (data, status, xhr) => {
         this.setActiveView(CalendarPage)
        
       },
