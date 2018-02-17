@@ -12,8 +12,9 @@ class CalendarPage extends React.Component {
 	
   constructor(props) {
   super(props)
-   this.CalType = CalType
-   this.CalExist = CalExist
+   this.state = {
+      calendarType: ''
+    }
   }
 
   
@@ -24,9 +25,9 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn'  onClick={() => this.CalType = 'Google'} > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn'  onClick={() => this.setState({ calendarType: 'Google' })} > Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.CalExist = 'Outlook'}>Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({ calendarType: 'Outlook' })}>Outlook </Button>
         </Jumbotron>
       </div>
   )

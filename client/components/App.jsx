@@ -88,7 +88,13 @@ class App extends React.Component {
       success: (user, status, xhr) => {
         if (this.responseIsJson(xhr)) {
           this.setState({ user, authorized: true })
-          this.setActiveView(UserPage)
+         
+          if(calendarType == 'Google'){
+             this.setActiveView(CalendarPage)
+          }
+          else {
+            this.setActiveView(UserPage)
+          }
            
           this.getEventList()
           return
