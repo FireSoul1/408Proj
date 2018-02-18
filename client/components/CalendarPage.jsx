@@ -16,6 +16,7 @@ class CalendarPage extends React.Component {
    
       this.calendarType = ''
       this.calendarExist =  false
+      this.GoogleFunc = this.GoogleFunc.bind(this);
   }
 
   GoogleFunc(){
