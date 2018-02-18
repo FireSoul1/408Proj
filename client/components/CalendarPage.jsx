@@ -31,20 +31,12 @@ class CalendarPage extends React.Component {
 	 render() {
 	 	return (
       <div className='container'>
-      /*  <Jumbotron>
+        <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.getCalendars()} > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.GoogleFunc()} > Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.calendarType = 'Outlook'}>Outlook </Button>
-        </Jumbotron>*/
-
-         <Button
-          bsStyle='primary'
-          className='Googlebtn'
-          onClick={() => this.GoogleFunc()}
-        >
-          Google
-        </Button>
+        </Jumbotron>
       </div>
   )
 	 }
