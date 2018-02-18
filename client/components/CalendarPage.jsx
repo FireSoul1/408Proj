@@ -7,6 +7,7 @@ import {
 } from 'react-bootstrap'
 import { map } from 'lodash'
 import SweetAlert from 'react-bootstrap-sweetalert'
+import ImportPage from './ImportPage'
 
 class CalendarPage extends React.Component {
 	
@@ -19,7 +20,8 @@ class CalendarPage extends React.Component {
 
   GoogleFunc(){
     this.calendarType = 'Google'
-    this.setActiveView(ImportPage)
+    //this.setActiveView(ImportPage)
+    getCalendars()
 
   }
 
