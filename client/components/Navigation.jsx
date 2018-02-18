@@ -72,7 +72,7 @@ class Navigation extends React.Component {
       <Navbar fixedTop>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>Stress Manager</a>
+            <a href="#" onClick={() => this.props.setActiveView(UserPage)}>Epstein</a>
           </Navbar.Brand>
         </Navbar.Header>
         {this.renderDropdown()}
