@@ -40,7 +40,7 @@ class CalendarPage extends React.Component {
          <p>     </p>
         <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
         <p>     </p>
-        <Button bsStyle='primary' className='testbtn' href = './ImportPage'>test</Button>
+        <Button bsStyle='primary' className='testbtn' href = './ImportPage.jsx'>test</Button>
         </Jumbotron>
       </div>
   )
