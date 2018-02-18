@@ -23,7 +23,7 @@ class CalendarPage extends React.Component {
      const { getCalendars, setActiveView } = this.props
      this.calendarType = 'Google'
    // this.setActiveView(ImportPage)
-    getCalendars()
+    this.getCalendars()
      alert('alert');
 
 
