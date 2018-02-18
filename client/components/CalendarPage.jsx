@@ -22,21 +22,24 @@ class CalendarPage extends React.Component {
   GoogleFunc(){
     this.calendarType = 'Google'
     this.setActiveView(ImportPage)
-    getCalendars()
+    this.getCalendars()
 
   }
 
   
-  // button for importing google and outlook calendars
+  // buttons for importing google and outlook calendars
 
 	 render() {
 	 	return (
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.GoogleFunc()} > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.GoogleFunc} > Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.calendarType = 'Outlook'}>Outlook </Button>
+
+        <p>     </p>
+        <Button bsStyle='primary' className='testbtn' onClick={console.log('The link was clicked.')}>test </Button>
         </Jumbotron>
       </div>
   )
