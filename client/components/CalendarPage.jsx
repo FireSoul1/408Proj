@@ -11,15 +11,14 @@ import SweetAlert from 'react-bootstrap-sweetalert'
 class CalendarPage extends React.Component {
 	
   constructor(props) {
-  super(props)
-   this.state = {
-      calendarType: '',
-      calendarExist: false
-    }
+    super(props)
+   
+      this.calendarType = ''
+      this.calendarExist =  false
   }
 
   GoogleFunc(){
-    this.setState({ calendarType: 'Google' })
+    this.calendarType = 'Google'
     this.setActiveView(ImportPage)
 
   }
@@ -32,9 +31,9 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.Googlebtn} > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.GoogleFunc} > Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.setState({ calendarType: 'Outlook' })}>Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.calendarType = 'Outlook'}>Outlook </Button>
         </Jumbotron>
       </div>
   )
