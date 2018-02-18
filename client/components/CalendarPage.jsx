@@ -36,7 +36,7 @@ class CalendarPage extends React.Component {
           <p>Choose type of calendar to import.</p>
         <Button bsStyle='primary' className='Googlebtn' onClick={() => this.GoogleFunc()} > Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.calendarType = 'Outlook'}>Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' onClick={getCalendars()}>Outlook </Button>
         </Jumbotron>
       </div>
   )
