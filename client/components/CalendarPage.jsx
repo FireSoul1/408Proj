@@ -13,6 +13,10 @@ class CalendarPage extends React.Component {
 	
   constructor(props) {
     super(props)
+    this.state = {
+      calID: '',
+      alertVisible: false
+    }
    
       this.calendarType = ''
       this.calendarExist =  false
@@ -25,6 +29,16 @@ class CalendarPage extends React.Component {
     return
 
   }
+    postTheCalID(calID) {
+      const { postCalendarAdd, getEventList } = this.props
+
+      if(calID =="") {
+          this.setState({alertVisible: true})
+          return
+      }
+      postCalendarAdd(calID)
+      
+  }
 
   
   // button for importing google and outlook calendars
@@ -34,9 +48,13 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.GoogleFunc()} > Google </Button>
-        <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.calendarType = 'Outlook'}>Outlook </Button>
+         <Button
+            bsStyle='primary'
+            className='submit-button-right'
+            onClick={() => this.postTheCalID(calID)}
+          >
+            Submit
+          </Button>
         </Jumbotron>
       </div>
   )
