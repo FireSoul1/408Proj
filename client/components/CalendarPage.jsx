@@ -29,9 +29,20 @@ class CalendarPage extends React.Component {
 
 
   }
+  toImportPage() {
+    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
   
-  // buttons for importing google and outlook calendars
+      return (
+               <Button bsStyle='primary' className='Calbtn' onClick={() => getCalendars()} > 
+               Calendar
+               </Button>
+
+      )
+    
+  }
+
+  
 
 	 render() {
 	 	return (
@@ -49,6 +60,8 @@ class CalendarPage extends React.Component {
         <Button bsStyle='primary' className='testbtn' onClick={() => GoogleFunc()} >test2</Button>
          <p>     </p>
         <Button bsStyle='primary' className='testbtn' onClick={() => this.GoogleFunc()} >test3</Button>
+         <p>     </p>
+         {this.toImportPage()}  
         </Jumbotron>
       </div>
   )
