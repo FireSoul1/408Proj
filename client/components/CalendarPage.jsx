@@ -3,11 +3,18 @@ import {
   Button,
   FormControl,
   FormGroup,
-  Jumbotron
+  Jumbotron,
+  MenuItem,
+  Nav,
+  Navbar,
+  NavDropdown
 } from 'react-bootstrap'
 import { map } from 'lodash'
 import SweetAlert from 'react-bootstrap-sweetalert'
+
 import ImportPage from './ImportPage'
+import StressFormPage from './StressFormPage'
+import UserPage from './UserPage'
 
 class CalendarPage extends React.Component {
 	
@@ -23,13 +30,13 @@ class CalendarPage extends React.Component {
     const { getCalendars, setActiveView } = this.props
      window.location += './ImportPage'
      //this.calendarType = 'Google'
-     //setActiveView(ImportPage)
-     //getCalendars()
+     setActiveView(ImportPage)
+     getCalendars()
      alert('alert');
 
 
   }
-  toImportPage() {
+/*  toImportPage() {
     const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
   
@@ -40,8 +47,35 @@ class CalendarPage extends React.Component {
 
       )
     
-  }
+  }*/
+ renderDropdown() {
+    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
+    if (authorized) {
+      return (
+        <Nav pullRight>
+          <NavDropdown title='Tools' id='basic-nav-dropdown'>
+             <MenuItem onClick={() =>  setActiveView(CalendarPage)}>
+              Choose Calendar Type
+            </MenuItem>
+            <MenuItem onClick={() => getCalendars()}>
+              Import Calendar
+            </MenuItem>
+            <MenuItem onClick={() => setActiveView(StressFormPage)}>
+              Rate Events
+            </MenuItem>
+            <MenuItem onClick={() => this.setState({ alertVisible: true })}>
+              Advice
+            </MenuItem>
+            <MenuItem divider/>
+            <MenuItem onClick={() => getLogout()}>
+              Logout
+            </MenuItem>
+          </NavDropdown>
+        </Nav>
+      )
+    }
+  }
   
 
 	 render() {
@@ -60,9 +94,9 @@ class CalendarPage extends React.Component {
         <Button bsStyle='primary' className='testbtn' onClick={() => GoogleFunc()} >test2</Button>
          <p>     </p>
         <Button bsStyle='primary' className='testbtn' onClick={() => this.GoogleFunc()} >test3</Button>
-         <p>     </p>
-         {this.toImportPage()}  
         </Jumbotron>
+         <p>     </p>
+         {this.renderDropdown()}
       </div>
   )
 	 }
