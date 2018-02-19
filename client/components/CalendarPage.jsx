@@ -8,6 +8,7 @@ import {
 import { map } from 'lodash'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import ImportPage from './ImportPage'
+import App from './App'
 
 class CalendarPage extends React.Component {
 	
@@ -16,12 +17,12 @@ class CalendarPage extends React.Component {
    
       this.calendarType = ''
       this.calendarExist =  false
-     // this.GoogleFunc = this.GoogleFunc.bind(this);
+     this.GoogleFunc = this.GoogleFunc.bind(this);
   }
 
   GoogleFunc(){
     //const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
-
+    window.location = './ImportPage'
     this.calendarType = 'Google'
      //setActiveView(ImportPage);
     //this.getCalendars()
@@ -42,7 +43,7 @@ class CalendarPage extends React.Component {
         }
         <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)}> Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.props.getCalendars()}>Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
          <p>     </p>
         <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
          <p>     </p>
