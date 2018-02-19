@@ -43,6 +43,8 @@ class CalendarPage extends React.Component {
         <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
          <p>     </p>
         <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
+         <p>     </p>
+        <Button bsStyle='primary' className='testbtn' href = './ImportPage'>test</Button>
         </Jumbotron>
       </div>
   )
