@@ -43,10 +43,6 @@ class CalendarPage extends React.Component {
         <Button bsStyle='primary' className='Outlookbtn' onClick={getCalendars()}>Outlook </Button>
          <p>     </p>
         <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
-        <p>     </p>
-        <Button bsStyle='primary' className='testbtn' href = './ImportPage'>test</Button>
-        <p>     </p>
-        <Button bsStyle='primary' className='testbtn' onClick = {this.GoogleFunc} >test2</Button>
         </Jumbotron>
       </div>
   )
