@@ -38,13 +38,13 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn'  > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)} > Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
          <p>     </p>
         <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
          <p>     </p>
-        <Button bsStyle='primary' className='testbtn' href = './ImportPage'>test</Button>
+        <Button bsStyle='primary' className='testbtn' href = 'ImportPage'>test</Button>
         </Jumbotron>
       </div>
   )
