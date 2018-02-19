@@ -21,11 +21,10 @@ class CalendarPage extends React.Component {
 
   GoogleFunc(){
     const { getCalendars, setActiveView } = this.props
-    setActiveView(UserPage)
      //window.location = getCalendars()
      this.calendarType = 'Google'
      //setActiveView(ImportPage)
-    //this.getCalendars()
+      getCalendars()
      alert('alert');
 
 
@@ -47,7 +46,7 @@ class CalendarPage extends React.Component {
          <p>     </p>
         <Button bsStyle='primary' className='testbtn' href = 'ImportPage'>test</Button>
          <p>     </p>
-        <Button bsStyle='primary' className='testbtn' onClick={() => this.GoogleFunc()} >test2</Button>
+        <Button bsStyle='primary' className='testbtn' onClick={() => GoogleFunc()} >test2</Button>
          <p>     </p>
         <Button bsStyle='primary' className='testbtn' onClick={() => this.GoogleFunc()} >test3</Button>
         </Jumbotron>
