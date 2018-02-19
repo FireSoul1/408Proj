@@ -38,7 +38,7 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)} > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => setActiveView(ImportPage)} > Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' onClick={this.props.getCalendars()}>Outlook </Button>
          <p>     </p>
