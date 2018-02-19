@@ -46,7 +46,7 @@ class CalendarPage extends React.Component {
         <p>     </p>
         <Button bsStyle='primary' className='testbtn' href = './ImportPage'>test</Button>
         <p>     </p>
-        <Button bsStyle='primary' className='testbtn' onClick = {this.GoogleFunc.bind()} >test2</Button>
+        <Button bsStyle='primary' className='testbtn' onClick = {this.GoogleFunc} >test2</Button>
         </Jumbotron>
       </div>
   )
