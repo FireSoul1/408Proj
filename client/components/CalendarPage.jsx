@@ -20,10 +20,10 @@ class CalendarPage extends React.Component {
   }
 
   GoogleFunc(){
-//    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
+    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
      this.calendarType = 'Google'
-      //setActiveView(ImportPage)
+     setActiveView(ImportPage);
     //this.getCalendars()
     // alert('alert');
 
@@ -37,7 +37,9 @@ class CalendarPage extends React.Component {
 	 	return (
       <div className='container'>
         <Jumbotron>
+        {this.renderRedirect()}
           <p>Choose type of calendar to import.</p>
+        }
         <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)}> Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
