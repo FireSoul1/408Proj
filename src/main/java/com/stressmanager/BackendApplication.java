@@ -11,8 +11,11 @@ import javax.servlet.http.*;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential; 
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.MemoryDataStoreFactory;
@@ -87,6 +90,9 @@ import com.amazonaws.services.dynamodbv2.model.*;
 import com.google.gson.*;
 import com.google.gson.reflect.*;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.FileReader;
 
 @RestController
 @EnableOAuth2Client
@@ -106,8 +112,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	static String clientSecret;
 
 	String access = "";
-	private OAuth2Helper oAuth2Helper = new OAuth2Helper();
-	String authorizationUrl = oAuth2Helper.getAuthorizationUrl();
+	// private OAuth2Helper oAuth2Helper = new OAuth2Helper();
+	// String authorizationUrl = oAuth2Helper.getAuthorizationUrl();
 
 	DBHelper db = new DBHelper();
 	private Map<String, String> dbCreds = new LinkedHashMap<>();
@@ -135,45 +141,83 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(HTTP_TRANSPORT, JSON_FACTORY)
-		    .setAudience(Collections.singletonList("319724472283-tqcoogggi701pj1tjpp5v8r7ja38i243.apps.googleusercontent.com"))
-		    .build();
+		GoogleClientSecrets clientSecrets =
+    	GoogleClientSecrets.load(
+        	JacksonFactory.getDefaultInstance(), new FileReader("client_secrets.json"));
+			GoogleTokenResponse tokenResponse =
+          		new GoogleAuthorizationCodeTokenRequest(
+	              HTTP_TRANSPORT,
+	              JSON_FACTORY,
+	              "https://www.googleapis.com/oauth2/v4/token",
+	              clientSecrets.getDetails().getClientId(),
+	              clientSecrets.getDetails().getClientSecret(),
+	              androidIdToken,
+	              "http://localhost:8080")  // Specify the same redirect URI that you use with your web
+	                             // app. If you don't have a web version of your app, you can
+	                             // specify an empty string.
+	              .execute();
 
-		GoogleIdToken idToken = verifier.verify(androidIdToken);
-		//access = idToken.
-		if (idToken != null) {
-		  Payload payload = idToken.getPayload();
+				String accessToken = tokenResponse.getAccessToken();
 
-		  // Print user identifier
-		  userId = payload.getSubject();
-		  System.out.println("User ID: " + userId);
+				// Use access token to call API
+				GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+				// Drive drive =
+				//     new Drive.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
+				//         .setApplicationName("Auth Code Exchange Demo")
+				//         .build();
+				// File file = drive.files().get("appfolder").execute();
 
-		  // Get profile information from payload
-		  email = payload.getEmail();
-		  boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-		  String name = (String) payload.get("name");
+				// Get profile info from ID token
+				GoogleIdToken idToken = tokenResponse.parseIdToken();
+				GoogleIdToken.Payload payload = idToken.getPayload();
+				userId = payload.getSubject();  // Use this value as a key to identify a user.
+				email = payload.getEmail();
+				boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+				String name = (String) payload.get("name");
+				String pictureUrl = (String) payload.get("picture");
+				String locale = (String) payload.get("locale");
+				String familyName = (String) payload.get("family_name");
+				String givenName = (String) payload.get("given_name");
 
-		} else {
-		  System.out.println("Invalid ID token.");
-		  return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
-		}
+		// GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(HTTP_TRANSPORT, JSON_FACTORY)
+		//     .setAudience(Collections.singletonList("319724472283-tqcoogggi701pj1tjpp5v8r7ja38i243.apps.googleusercontent.com"))
+		//     .build();
 
-		jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-            .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+		// GoogleIdToken idToken = verifier.verify(androidIdToken);
+		// //access = idToken.
+		// if (idToken != null) {
+		//   Payload payload = idToken.getPayload();
 
-        DBSetup.remoteDB();
-        Table tab = DBSetup.getTable(userId.replaceAll(" ", "_"));
-		tab = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", email);
-		Item got = tab.getItem(spec);
-		if(got == null)
-			tab.putItem(new Item().withString("username", email).withString("calID","primary").withString("token", jwtToken));
+		//   // Print user identifier
+		//   userId = payload.getSubject();
+		//   System.out.println("User ID: " + userId);
 
-		dbCreds.put(jwtToken, email);
-		googleCreds.put(email, idToken);
+		//   // Get profile information from payload
+		//   email = payload.getEmail();
+		//   boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+		//   String name = (String) payload.get("name");
 
-		return new ResponseEntity<String>(jwtToken, httpHeaders, HttpStatus.ACCEPTED);
+		// } else {
+		//   System.out.println("Invalid ID token.");
+		//   return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
+		// }
+
+		// jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
+  //           .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+
+  //       DBSetup.remoteDB();
+  //       Table tab = DBSetup.getTable(userId.replaceAll(" ", "_"));
+		// tab = DBSetup.getUsersTable();
+		// GetItemSpec spec = new GetItemSpec()
+		// 	   .withPrimaryKey("username", email);
+		// Item got = tab.getItem(spec);
+		// if(got == null)
+		// 	tab.putItem(new Item().withString("username", email).withString("calID","primary").withString("token", jwtToken));
+
+		// dbCreds.put(jwtToken, email);
+		// googleCreds.put(email, idToken);
+
+		return new ResponseEntity<String>("meow", httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//We have a separate validation for tokens for Android users, since this is stored in the db.
@@ -203,24 +247,24 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	static DataStoreFactory storeFactory = new MemoryDataStoreFactory();
 
-	private static Credential androidAuthorize() throws Exception {
-	  // load client secrets
-	  // set up authorization code flow
-	  final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	  HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-	  GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-	      HTTP_TRANSPORT, JSON_FACTORY, clientID, clientSecret,
-	      Collections.singleton(CalendarScopes.CALENDAR)).setDataStoreFactory(storeFactory)
-	      .build();
-	  // authorize
-	  return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-	} 
+	// private static Credential androidAuthorize() throws Exception {
+	//   // load client secrets
+	//   // set up authorization code flow
+	//   final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	//   HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+	//   GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+	//       HTTP_TRANSPORT, JSON_FACTORY, clientID, clientSecret,
+	//       Collections.singleton(CalendarScopes.CALENDAR)).setDataStoreFactory(storeFactory)
+	//       .build();
+	//   // authorize
+	//   return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+	// } 
 
 	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-		Credential credz = androidAuthorize();
+		//Credential credz = androidAuthorize();
 		// System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
 		// System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
 		// ClientResources clienty = new ClientResources();
@@ -251,10 +295,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
   //       Credential credentials = new AuthorizationCodeInstalledApp(
   //           flow, new LocalServerReceiver()).authorize("user");
-		return new com.google.api.services.calendar.Calendar.Builder(
-			HTTP_TRANSPORT, JSON_FACTORY, credz)
-			.setApplicationName("Stressmanager")
-			.build();
+		// return new com.google.api.services.calendar.Calendar.Builder(
+		// 	HTTP_TRANSPORT, JSON_FACTORY, credz)
+		// 	.setApplicationName("Stressmanager")
+		// 	.build();
 		// GoogleCredential credentials = new GoogleCredential.Builder()
 		//     .setClientSecrets(clientID, clientSecret)
 		//     .setServiceAccountId(email)
@@ -269,12 +313,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
   //           .setServiceAccountUser(email)
   //           .build();
 
-		com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
+		//com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
 
-		if(client == null) {
-			System.out.println("\nFucking hell\n");
-		}
-		return client;
+		// if(client == null) {
+		// 	System.out.println("\nFucking hell\n");
+		// }
+		return null;
 	}
 
 
