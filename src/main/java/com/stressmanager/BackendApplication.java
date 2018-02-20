@@ -14,9 +14,11 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential; 
 import com.google.api.client.util.store.FileDataStoreFactory;
-//import com.google.api.client.auth.oauth2.Credential;
-//import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-//import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.util.store.DataStoreFactory;
+import com.google.api.client.util.store.MemoryDataStoreFactory;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -98,10 +100,14 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	OAuth2ClientContext oauth2ClientContext;
 
 	@Value("${google.client.clientId}")
-	String clientID;
+	static String clientID;
 
 	@Value("${google.client.clientSecret}")
-	String clientSecret;
+	static String clientSecret;
+
+	String access = "";
+	private OAuth2Helper oAuth2Helper = new OAuth2Helper();
+	String authorizationUrl = oAuth2Helper.getAuthorizationUrl();
 
 	DBHelper db = new DBHelper();
 	private Map<String, String> dbCreds = new LinkedHashMap<>();
@@ -134,6 +140,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		    .build();
 
 		GoogleIdToken idToken = verifier.verify(androidIdToken);
+		//access = idToken.
 		if (idToken != null) {
 		  Payload payload = idToken.getPayload();
 
@@ -194,14 +201,39 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		return false;
 	}
 
+	static DataStoreFactory storeFactory = new MemoryDataStoreFactory();
+
+	private static Credential androidAuthorize() throws Exception {
+	  // load client secrets
+	  // set up authorization code flow
+	  final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	  HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+	  GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+	      HTTP_TRANSPORT, JSON_FACTORY, clientID, clientSecret,
+	      Collections.singleton(CalendarScopes.CALENDAR)).setDataStoreFactory(storeFactory)
+	      .build();
+	  // authorize
+	  return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+	} 
+
 	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
 		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-		System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
-		System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
-		ClientResources clienty = new ClientResources();
-		System.out.println(clienty.getClient().getClientId());
-		System.out.println("yml shit: " + clientID);
+
+		Credential credz = androidAuthorize();
+		// System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
+		// System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
+		// ClientResources clienty = new ClientResources();
+		// System.out.println(clienty.getClient().getClientId());
+		// System.out.println("yml shit: " + clientID);
+
+		// this.flow = new AuthorizationCodeFlow.Builder(oauth2Params.getAccessMethod() , HTTP_TRANSPORT, JSON_FACTORY, new GenericUrl(oauth2Params.getTokenServerUrl()), new ClientParametersAuthentication(oauth2Params.getClientId(),oauth2Params.getClientSecret()), oauth2Params.getClientId(), oauth2Params.getAuthorizationServerEncodedUrl()).setCredentialStore(this.credentialStore).build();
+		//GoogleTokenResponse gTokenResponse = userUtils.getFlow().newTokenRequest(authCode).setRedirectUri(userUtils.getRedirectUri()).execute();
+		// TokenResponse tolkien = new TokenResponse();
+		// tolkien.setAccessToken();
+
+		// Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
+		// 	.setFromTokenResponse(tolkien);
 
 		// private static FileDataStoreFactory DATA_STORE_FACTORY;
 		// private static final java.io.File DATA_STORE_DIR = new java.io.File(
@@ -219,12 +251,15 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
   //       Credential credentials = new AuthorizationCodeInstalledApp(
   //           flow, new LocalServerReceiver()).authorize("user");
-
-		GoogleCredential credentials = new GoogleCredential.Builder()
-		    .setClientSecrets(clientID, clientSecret)
-		    .setServiceAccountId(email)
-		    .setServiceAccountScopes(Collections.singleton("https://www.googleapis.com/auth/calendar"))
-		    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build();
+		return new com.google.api.services.calendar.Calendar.Builder(
+			HTTP_TRANSPORT, JSON_FACTORY, credz)
+			.setApplicationName("Stressmanager")
+			.build();
+		// GoogleCredential credentials = new GoogleCredential.Builder()
+		//     .setClientSecrets(clientID, clientSecret)
+		//     .setServiceAccountId(email)
+		//     .setServiceAccountScopes(Collections.singleton("https://www.googleapis.com/auth/calendar"))
+		//     .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build();
 
 		// GoogleCredential credentials = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT)
   //           .setJsonFactory(JSON_FACTORY)
