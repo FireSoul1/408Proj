@@ -217,7 +217,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		// dbCreds.put(jwtToken, email);
 		// googleCreds.put(email, idToken);
 
-		return new ResponseEntity<String>("meow", httpHeaders, HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>(accessToken, httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//We have a separate validation for tokens for Android users, since this is stored in the db.
