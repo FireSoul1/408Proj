@@ -59,16 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         signInButton.setSize(SignInButton.SIZE_STANDARD);
-
-<<<<<<< HEAD
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(
-                GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.google_client_id))
-                .requestServerAuthCode(getString(R.string.google_client_id))
-=======
+        
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestServerAuthCode(getString(R.string.google_server_client_id))
->>>>>>> bc77222579dcfb3168817f5d80742a216c8a32d6
                 .requestScopes(new Scope("https://www.googleapis.com/auth/calendar"))
                 .requestScopes(new Scope("https://www.googleapis.com/auth/calendar.readonly"))
                 .requestEmail()
@@ -117,11 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             if (account != null) {
                 SharedPrefsHelper.getSharedPrefs(getApplicationContext()).edit().putString("email", account.getEmail()).apply();
 
-<<<<<<< HEAD
-                loginEpstein(account.getEmail(), account.getIdToken());
-=======
                 loginEpstein(account.getEmail(), account.getServerAuthCode());
->>>>>>> bc77222579dcfb3168817f5d80742a216c8a32d6
             }
 
         } catch (ApiException e) {
@@ -130,21 +119,15 @@ public class LoginActivity extends AppCompatActivity {
     }
     
     private void loginEpstein(final String email, final String androidIdToken) {
-<<<<<<< HEAD
-=======
         dialog = ProgressDialog.show(LoginActivity.this, "", "Logging in. Please wait...", true);
         dialog.show();
 
->>>>>>> bc77222579dcfb3168817f5d80742a216c8a32d6
         EpsteinApiHelper.getInstance().login(androidIdToken).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.code() == 202) {
-<<<<<<< HEAD
                     dialog = ProgressDialog.show(LoginActivity.this, "", "Logging in. Please wait...", true);
                     dialog.show();
-=======
->>>>>>> bc77222579dcfb3168817f5d80742a216c8a32d6
 
                     SharedPrefsHelper.getSharedPrefs(getApplicationContext()).edit().putString("idToken", response.body()).apply();
 
@@ -158,13 +141,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<String> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "Couldn't sign in to Epstein", Toast.LENGTH_LONG).show();
 
-<<<<<<< HEAD
-                dialog.cancel();
-=======
                 if (dialog != null) {
                     dialog.cancel();
                 }
->>>>>>> bc77222579dcfb3168817f5d80742a216c8a32d6
 
                 t.printStackTrace();
             }
