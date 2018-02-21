@@ -5,6 +5,7 @@ src/main/resources/static/*
 web/
 client/mock/
 package-lock.json
+application.yml
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
