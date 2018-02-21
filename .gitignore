@@ -4,6 +4,8 @@ src/main/resources/static/*
 *log
 web/
 client/mock/
+.directory
+package-lock.json
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -36,3 +38,6 @@ nbdist/
 ### Jest ###
 client/__tests__/__snapshots__/
 *.snap
+
+client_secrets.json
+application.yml

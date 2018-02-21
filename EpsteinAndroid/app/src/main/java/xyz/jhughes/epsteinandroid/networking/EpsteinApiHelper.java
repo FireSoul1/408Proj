@@ -25,7 +25,11 @@ public class EpsteinApiHelper {
             okHttpClient.interceptors().add(new LoggingInterceptor());
 
             Retrofit retrofit = new Retrofit.Builder()
+<<<<<<< HEAD
                     .baseUrl("https://theepstein.herokuapp.com/")
+=======
+                    .baseUrl("http://10.186.83.125:8080/")
+>>>>>>> bc77222579dcfb3168817f5d80742a216c8a32d6
                     .client(okHttpClient.build())
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())

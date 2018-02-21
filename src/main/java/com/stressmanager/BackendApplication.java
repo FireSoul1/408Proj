@@ -152,7 +152,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	              clientSecrets.getDetails().getClientId(),
 	              clientSecrets.getDetails().getClientSecret(),
 	              androidIdToken,
-	              "http://localhost:8080")  // Specify the same redirect URI that you use with your web
+	              "http://localhost:8080/login/google")  // Specify the same redirect URI that you use with your web
 	                             // app. If you don't have a web version of your app, you can
 	                             // specify an empty string.
 	              .execute();
