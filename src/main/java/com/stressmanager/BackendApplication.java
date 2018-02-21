@@ -112,8 +112,10 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	@Value("${google.client.clientSecret}")
 	static String clientSecret;
+        
+    private static String email = "";
 
-	String access = "";
+	static String access = "";
 
     DBHelper db = new DBHelper();
     private Map<String, String> dbCreds = new LinkedHashMap<>();
@@ -127,8 +129,8 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
     @ResponseBody
     public ResponseEntity<String> androidLogin(String androidIdToken) throws Exception {
         final HttpHeaders httpHeaders = new HttpHeaders();
-        String jwtToken = "";
-        String email = "";
+        access = "";
+        email = "";
         String userId = "";
         httpHeaders.setContentType(MediaType.TEXT_PLAIN);
         System.out.println("\narf\n\n");
@@ -158,10 +160,11 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 	              .execute();
 
 				String accessToken = tokenResponse.getAccessToken();
+				access = accessToken;
 
 				// Use access token to call API
 				GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
-				com.google.api.services.calendar.Calendar service = new com.google.api.services.calendar.Calendar.Builder(
+				service = new com.google.api.services.calendar.Calendar.Builder(
 					HTTP_TRANSPORT, JSON_FACTORY, credential)
 					.setApplicationName("Epstein")
 					.build();
@@ -184,8 +187,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 						String str = event.getId();
 						System.out.printf("%s (%s)\n", str, event.getSummary());
 					}
-
-					//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
 
 				}
 
@@ -212,29 +213,25 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				}
 
 				tab = DBSetup.getUsersTable();
-				// GetItemSpec spec = new GetItemSpec()
-				// 	   .withPrimaryKey("username", dbCreds.get(accessToken));
-				// Item got = tab.getItem(spec);
-				// if(got == null)
-				tab.updateItem(new Item().withString("username", email).withString("calID","primary"));
-				tab.updateItem(new Item().withString("username", email).withString("token",accessToken));
+				tab.putItem(new Item().withString("username", email).withString("calID","primary"));
+				tab.putItem(new Item().withString("username", email).withString("token",accessToken));
 
 		return new ResponseEntity<String>(accessToken, httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//We have a separate validation for tokens for Android users, since this is stored in the db.
-	public boolean validateAndroidToken(String token, String email) {
+	public boolean validateAndroidToken(String token, String emailo) {
 		//String user = dbCreds.get(token);
 
 		DBSetup.remoteDB();
 
-
+		System.out.println("email..." + emailo);
 		System.out.println("fucking token: " + token);
 
 		Table tab = DBSetup.getUsersTable();
-		System.out.println("meow: " + email);
+		System.out.println("meow: " + emailo);
 		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", email);
+			   .withPrimaryKey("username", emailo);
 		Item got = tab.getItem(spec);
 		String dbToken = (String) got.get("token");
 		System.out.println("Dynamo token: " + dbToken);
@@ -245,156 +242,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 		}
 
 		return false;
-	}
-
-	static DataStoreFactory storeFactory = new MemoryDataStoreFactory();
-
-	// private static Credential androidAuthorize() throws Exception {
-	//   // load client secrets
-	//   // set up authorization code flow
-	//   final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	//   HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-	//   GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-	//       HTTP_TRANSPORT, JSON_FACTORY, clientID, clientSecret,
-	//       Collections.singleton(CalendarScopes.CALENDAR)).setDataStoreFactory(storeFactory)
-	//       .build();
-	//   // authorize
-	//   return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-	// } 
-
-	public com.google.api.services.calendar.Calendar getAndroidCal(String email) throws Exception {
-		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-
-		//Credential credz = androidAuthorize();
-		// System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_ID"));
-		// System.out.println("Creds...GOOGLE_CLIENT_ID: " + System.getenv("GOOGLE_CLIENT_SECRET"));
-		// ClientResources clienty = new ClientResources();
-		// System.out.println(clienty.getClient().getClientId());
-		// System.out.println("yml shit: " + clientID);
-
-		// this.flow = new AuthorizationCodeFlow.Builder(oauth2Params.getAccessMethod() , HTTP_TRANSPORT, JSON_FACTORY, new GenericUrl(oauth2Params.getTokenServerUrl()), new ClientParametersAuthentication(oauth2Params.getClientId(),oauth2Params.getClientSecret()), oauth2Params.getClientId(), oauth2Params.getAuthorizationServerEncodedUrl()).setCredentialStore(this.credentialStore).build();
-		//GoogleTokenResponse gTokenResponse = userUtils.getFlow().newTokenRequest(authCode).setRedirectUri(userUtils.getRedirectUri()).execute();
-		// TokenResponse tolkien = new TokenResponse();
-		// tolkien.setAccessToken();
-
-		// Credential credz = new Credential(BearerToken.authorizationHeaderAccessMethod())
-		// 	.setFromTokenResponse(tolkien);
-
-		// private static FileDataStoreFactory DATA_STORE_FACTORY;
-		// private static final java.io.File DATA_STORE_DIR = new java.io.File(
-  //       System.getProperty("user.home"), "408Project/407/408Proj/src/main/java/resources");
-
-		// DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-
-
-		// GoogleAuthorizationCodeFlow flow =
-  //               new GoogleAuthorizationCodeFlow.Builder(
-  //                       HTTP_TRANSPORT, JSON_FACTORY, clientID, clientSecret, SCOPES)
-  //               .setDataStoreFactory(DATA_STORE_FACTORY)
-  //               .setAccessType("offline")
-  //               .build();
-
-  //       Credential credentials = new AuthorizationCodeInstalledApp(
-  //           flow, new LocalServerReceiver()).authorize("user");
-		// return new com.google.api.services.calendar.Calendar.Builder(
-		// 	HTTP_TRANSPORT, JSON_FACTORY, credz)
-		// 	.setApplicationName("Stressmanager")
-		// 	.build();
-		// GoogleCredential credentials = new GoogleCredential.Builder()
-		//     .setClientSecrets(clientID, clientSecret)
-		//     .setServiceAccountId(email)
-		//     .setServiceAccountScopes(Collections.singleton("https://www.googleapis.com/auth/calendar"))
-		//     .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build();
-
-		// GoogleCredential credentials = new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT)
-  //           .setJsonFactory(JSON_FACTORY)
-  //           .setServiceAccountId(email)
-  //           .setServiceAccountScopes(Collections.singleton("https://www.googleapis.com/auth/calendar"))
-  //           .setClientSecrets(clientID, clientSecret)
-  //           .setServiceAccountUser(email)
-  //           .build();
-
-		//com.google.api.services.calendar.Calendar client = new com.google.api.services.calendar.Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials).setApplicationName("Epstein").build();
-
-		// if(client == null) {
-		// 	System.out.println("\nFucking hell\n");
-		// }
-		return null;
-	}
-
-
-
-	//set up the access token and check that is works
-	@RequestMapping({ "/androiduser", "/androidme" })
-	@ResponseBody
-	public ResponseEntity<String> userAndroid(@RequestHeader String idToken, @RequestHeader String email) throws Exception{
-		//String email = "fuck";
-		System.out.println("oh hai");
-		System.out.println("fucking fuckers fucking: " + idToken);
-		System.out.println("yay me" + email);
-		System.out.println(Colors.ANSI_PURPLE+"kill me"+Colors.ANSI_WHITE);
-		final HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-		if(!validateAndroidToken(idToken, email)) {
-			return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
-		}
-
-		System.out.println("validated token");
-
-	 	service = getAndroidCal(dbCreds.get(idToken));
-	 	if(service == null) {
-	 		System.out.println("it's null....awks");
-	 	}
-	 	//System.out.println("Service: " + )
-
-		DateTime now = new DateTime(System.currentTimeMillis());
-	// 	//now.set(java.util.Calendar.DATE, 1);
-
-		System.out.println("after datetime");
-
-		Events events = service.events().list("primary")
-			.setMaxResults(50)
-			.setTimeMin(now)
-			.setSingleEvents(false)
-			.execute();
-
-		List<Event> items = events.getItems();
-		if (items.size() == 0) {
-			System.out.println("No upcoming events found.");
-		}
-		else {
-			System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
-			
-			for (Event event : items) {
-				String str = event.getId();
-				System.out.printf("%s (%s)\n", str, event.getSummary());
-			}
-
-			//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
-
-		}
-
-	// 	//set-up the DB
-		DBSetup.remoteDB();
-
-		//check if the Table for that UserName exists
-		Table tab = DBSetup.getTable(dbCreds.get(idToken));
-		if(tab == null) { //the Table doesn't Exist!!!
-			System.out.println("Creating a table for "+ dbCreds.get(idToken) +"\'s events");
-			//make the table! :D
-			DBSetup.createTable(dbCreds.get(idToken));
-		}
-
-		tab = DBSetup.getUsersTable();
-		GetItemSpec spec = new GetItemSpec()
-			   .withPrimaryKey("username", dbCreds.get(idToken));
-		Item got = tab.getItem(spec);
-		if(got == null)
-			tab.putItem(new Item().withString("username", dbCreds.get(idToken)).withString("calID","primary"));
-
-		return new ResponseEntity<String>("Set up correctly, now in DB", httpHeaders, HttpStatus.ACCEPTED);
 	}
 
 	//set up the access token and check that is works
@@ -677,6 +524,129 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 	}
 
+	//Get events for SPECIFIC CALENDARID for android
+	@RequestMapping(value = "/api/calendar/androidevents/calId")
+	@ResponseBody
+	public ResponseEntity<String> gettingAndroidEventsSpecfic(@RequestBody GenericJson request) throws Exception {
+		final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+		HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		
+		GoogleCredential credential = new GoogleCredential().setAccessToken(access);
+		com.google.api.services.calendar.Calendar service = new com.google.api.services.calendar.Calendar.Builder(
+					HTTP_TRANSPORT, JSON_FACTORY, credential)
+					.setApplicationName("Epstein")
+					.build();
+
+
+		System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
+		//get the Username and eventID
+		String userName = (String)request.get("userName");
+		String callID = (String)request.get("calID");
+		System.out.println(Colors.ANSI_BLUE+"userName "+userName);
+		//String eventID = (String)request.get("eventID");
+
+		//get the Table
+		boolean exists = tableCheck(userName);
+
+		//Set up Calendar request
+		java.util.Calendar currentDate = java.util.Calendar.getInstance();
+		currentDate.set(java.util.Calendar.DATE, 1);
+		// The first day of the month
+		DateTime beginningOfMonth = new DateTime(currentDate.getTimeInMillis());
+		System.out.println(beginningOfMonth.toString());
+		// The last day of the month
+		currentDate.roll(java.util.Calendar.MONTH, 1);
+		DateTime endOfMonth = new DateTime(currentDate.getTimeInMillis());
+
+		//get the User Table and user's data from there
+		Table t = DBSetup.getUsersTable();
+		GetItemSpec spec = new GetItemSpec()
+			   .withPrimaryKey("userID", userName);
+		Item got = t.getItem(spec);
+
+
+		//get a list of Calendar IDs
+		String str = got.getString("calID");
+		System.out.println(Colors.ANSI_CYAN+"The User Has: "+str);
+		String[] calIDs = str.split("split");
+
+
+		Events events = service.events().list(callID) // Get events from primary calendar...
+			.setTimeMin(beginningOfMonth) // Starting at the beginning of the month
+			.setTimeMax(endOfMonth) // and ending at the last day of the month
+			.setMaxResults(100)
+			.setSingleEvents(true)
+			.setOrderBy("startTime")
+			.execute();
+
+		//get the data from the HttpServletRequest
+		List<Event> items = events.getItems();
+		if (items.size() == 0) {
+			System.out.println("No upcoming events found.");
+ 			return new ResponseEntity<String>("{\"error\":\"404 Resource Not Found\"}", httpHeaders, HttpStatus.OK);
+		}
+		else
+		{
+			//make a list of GenericJson
+			List<Event> target = new LinkedList<>();
+			Table table = DBSetup.getTable(userName);
+
+			System.out.println("Upcoming events");
+			for (Event event : items) {
+				//get the stresslvl from the DB if possible
+				String eventID = event.getId();
+				Integer val = null;
+				if(exists) {
+					if(eventID.indexOf("_") != -1)
+					{
+						eventID = eventID.substring(0, eventID.indexOf("_"));
+						System.out.println(Colors.ANSI_RED+"="+eventID+"= "+event.getSummary());//+Colors.ANSI_RED+"=nos9g4bakgg4lsgs6tkscuhsjc=");
+					}
+					spec = new GetItemSpec()
+						.withPrimaryKey("eventID", eventID);
+					//the event is in the DB!
+					Item it = null;
+					try {
+						it = table.getItem(spec);
+					} catch (ResourceNotFoundException e) {
+
+						//System.out.println(Colors.ANSI_CYAN+"Get Item is messing up: 3"+e.getMessage());
+						//maybe if we make the table?
+						//DBSetup.createTable(userName.replaceAll(" ", "_"));
+						//return null;
+					}
+					if(it != null)
+						System.out.println(Colors.ANSI_CYAN+eventID+ "  "+it.getJSON("stressValue"));
+					//get the stresslvl
+
+					if(it != null){
+						try{
+							val = it.getInt("stressValue");
+						} catch (Exception e) {
+							val = null;
+						}
+					}
+				}
+				else
+					val = null;
+
+				//add to the Event class and add to list
+				GenericJson new1 = (GenericJson)event.set("stressValue",val);
+				target.add((Event)new1);
+				//System.out.printf("%s: ==> (%s)\n", new1.toPrettyString(), eventID);
+			}
+
+			//set the 'items' to the new List
+			events = events.setItems(target);
+
+			return new ResponseEntity<String>(events.toPrettyString(), httpHeaders, HttpStatus.OK);
+		}
+
+
+
+	}
 	//Get events for ALL OF THE USERS CALENDARIDs
 	// @RequestMapping(value = "/api/calendar/androidevents")
 	// @ResponseBody
@@ -807,7 +777,7 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
             return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
         }
 
-        service = getAndroidCal(idToken);
+        //service = getAndroidCal(idToken);
 
         //System.out.println(Colors.ANSI_BLUE+"JSON "+request.toPrettyString());
         //get the Username and eventID
