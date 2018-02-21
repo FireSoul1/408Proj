@@ -14,7 +14,11 @@ import CalendarPage from './CalendarPage'
 
 class Navigation extends React.Component {
   constructor(props) {
+    console.log("-----nav props----");
+    console.log(props);
     super(props)
+    console.log("Navigation")
+     console.log(props)
 
     this.state = {
       alertVisible: false
@@ -46,16 +50,13 @@ class Navigation extends React.Component {
         <Nav pullRight>
           <NavDropdown title='Tools' id='basic-nav-dropdown'>
              <MenuItem onClick={() =>  setActiveView(CalendarPage)}>
-              Choose Calendar Type
+              Choose Calendar Service
             </MenuItem>
             <MenuItem onClick={() => getCalendars()}>
               Import Calendar
             </MenuItem>
             <MenuItem onClick={() => setActiveView(StressFormPage)}>
               Rate Events
-            </MenuItem>
-            <MenuItem onClick={() => setActiveView(CalendarPage)}>
-              Calendar Page
             </MenuItem>
             <MenuItem onClick={() => this.setState({ alertVisible: true })}>
               Advice

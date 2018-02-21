@@ -14,6 +14,8 @@ import CalendarPage from './CalendarPage'
 
 class App extends React.Component {
   constructor(props) {
+    console.log("----app---");
+    console.log(props);
     super(props)
 
     this.state = {
@@ -87,18 +89,9 @@ class App extends React.Component {
       type: 'get',
       success: (user, status, xhr) => {
         if (this.responseIsJson(xhr)) {
-          this.setState({ user, authorized: true })
-         
-          if(this.calendarExist == false){
-             //this.setActiveView(CalendarPage)
-             //his.setActiveView(ImportPage)
-             getCalendars()
-          }
-          else {
+            this.setState({ user, authorized: true })
             this.setActiveView(UserPage)
-          }
-           
-          this.getEventList()
+            this.getEventList()
           return
         }
 

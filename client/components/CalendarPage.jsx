@@ -16,12 +16,18 @@ import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
 import UserPage from './UserPage'
 
+
 class CalendarPage extends React.Component {
 	
   constructor(props) {
-    super(props)
+     console.log("props at start of calendar page")
     console.log(props)
-   
+
+    super(props)
+     //this.setActiveView = this.setActiveView.bind(this);
+    console.log("choose calendar service")
+    console.log(this.props)
+     
       this.calendarType = ''
       this.calendarExist =  false
      this.GoogleFunc = this.GoogleFunc.bind(this);
@@ -33,6 +39,7 @@ class CalendarPage extends React.Component {
      //this.calendarType = 'Google'
      setActiveView(ImportPage)
      getCalendars()
+     this.props.render(I)
     alert('alert');
 
   }
@@ -49,9 +56,14 @@ class CalendarPage extends React.Component {
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)}> Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.getCalendars()}> Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' onClick={
+          () =>  {console.log("fucking work");
+          this.setState({ ImportPage });
+          console.log("-------after-----");
+        }
+         } >Outlook </Button>
         
         </Jumbotron>
         
