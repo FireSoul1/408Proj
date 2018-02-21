@@ -76,9 +76,11 @@ public class LoginActivity extends AppCompatActivity {
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
-        if (account != null) {
+        if (account != null
+                && SharedPrefsHelper.getSharedPrefs(this).contains("idToken")
+                && SharedPrefsHelper.getSharedPrefs(this).contains("email")) {
             Log.d("TAG", "Got cached sign-in");
-            handleSignInResultAlreadySignedIn(account);
+            startActivity(new Intent(getApplicationContext(), CalendarActivity.class));
         }
     }
 
@@ -115,13 +117,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "Couldn't sign in with Google", Toast.LENGTH_SHORT).show();
         }
     }
-
-    private void handleSignInResultAlreadySignedIn(GoogleSignInAccount account) {
-        if (SharedPrefsHelper.getSharedPrefs(this).contains("idToken")) {
-            me(account.getEmail(), SharedPrefsHelper.getSharedPrefs(this).getString("idToken", null));
-        }
-    }
-
+    
     private void loginEpstein(final String email, final String androidIdToken) {
         dialog = ProgressDialog.show(LoginActivity.this, "", "Logging in. Please wait...", true);
         dialog.show();
@@ -133,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     SharedPrefsHelper.getSharedPrefs(getApplicationContext()).edit().putString("idToken", response.body()).apply();
 
-                    me(email, response.body());
+                    startActivity(new Intent(getApplicationContext(), CalendarActivity.class));
                 } else {
                     Toast.makeText(getApplicationContext(), "Couldn't sign in to Epstein", Toast.LENGTH_LONG).show();
                 }
@@ -148,34 +144,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 t.printStackTrace();
-            }
-        });
-    }
-
-    private void me(String email, String idToken) {
-        EpsteinApiHelper.getInstance().getMe(email, idToken).enqueue(new Callback<Me>() {
-            @Override
-            public void onResponse(Call<Me> call, Response<Me> response) {
-                if (dialog != null && !dialog.isShowing()) {
-                    dialog = ProgressDialog.show(LoginActivity.this, "", "Logging in. Please wait...", true);
-                    dialog.show();
-                }
-
-                if (response.code() == 202) {
-                    startActivity(new Intent(getApplicationContext(), CalendarActivity.class));
-
-                    dialog.cancel();
-                } else {
-                    dialog.cancel();
-
-                    Toast.makeText(getApplicationContext(), "Couldn't get Epstein profile info", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Me> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Couldn't get Epstein profile info", Toast.LENGTH_LONG).show();
-                dialog.cancel();
             }
         });
     }
