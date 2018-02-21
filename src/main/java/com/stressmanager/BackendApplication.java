@@ -161,6 +161,32 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 				// Use access token to call API
 				GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+				com.google.api.services.calendar.Calendar service = com.google.api.services.calendar.Calendar.Builder(
+					HTTP_TRANSPORT, JSON_FACTORY, credential)
+					.setApplicationName("Epstein")
+					.build();
+
+				Events events = service.events().list("primary")
+					.setMaxResults(50)
+					.setTimeMin(now)
+					.setSingleEvents(false)
+					.execute();
+
+				List<Event> items = events.getItems();
+				if (items.size() == 0) {
+					System.out.println("No upcoming events found.");
+				}
+				else {
+					System.out.println(Colors.ANSI_PURPLE+"Upcoming events (Me route)"+Colors.ANSI_WHITE);
+					for (Event event : items) {
+						String str = event.getId();
+						System.out.printf("%s (%s)\n", str, event.getSummary());
+					}
+
+					//System.out.println(Colors.ANSI_YELLOW+events.toPrettyString());
+
+				}
+
 				// Drive drive =
 				//     new Drive.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
 				//         .setApplicationName("Auth Code Exchange Demo")
