@@ -6,7 +6,7 @@ web/
 client/mock/
 .directory
 package-lock.json
-
+application.yml
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
