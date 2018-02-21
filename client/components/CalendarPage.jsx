@@ -36,18 +36,6 @@ class CalendarPage extends React.Component {
 
   }
 
-/*  toImportPage() {
-    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
-
-  
-      return (
-               <Button bsStyle='primary' className='Calbtn' onClick={() => getCalendars()} > 
-               Calendar
-               </Button>
-
-      )
-    
-  }*/
  renderDropdown() {
     const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
