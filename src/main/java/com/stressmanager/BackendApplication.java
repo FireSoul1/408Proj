@@ -161,10 +161,12 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 				// Use access token to call API
 				GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
-				com.google.api.services.calendar.Calendar service = com.google.api.services.calendar.Calendar.Builder(
+				com.google.api.services.calendar.Calendar service = new com.google.api.services.calendar.Calendar.Builder(
 					HTTP_TRANSPORT, JSON_FACTORY, credential)
 					.setApplicationName("Epstein")
 					.build();
+
+				DateTime now = new DateTime(System.currentTimeMillis());
 
 				Events events = service.events().list("primary")
 					.setMaxResults(50)
