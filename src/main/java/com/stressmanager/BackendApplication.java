@@ -189,12 +189,6 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 
 				}
 
-				// Drive drive =
-				//     new Drive.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
-				//         .setApplicationName("Auth Code Exchange Demo")
-				//         .build();
-				// File file = drive.files().get("appfolder").execute();
-
 				// Get profile info from ID token
 				GoogleIdToken idToken = tokenResponse.parseIdToken();
 				GoogleIdToken.Payload payload = idToken.getPayload();
@@ -207,43 +201,23 @@ public class BackendApplication extends WebSecurityConfigurerAdapter {
 				String familyName = (String) payload.get("family_name");
 				String givenName = (String) payload.get("given_name");
 
-		// GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(HTTP_TRANSPORT, JSON_FACTORY)
-		//     .setAudience(Collections.singletonList("319724472283-tqcoogggi701pj1tjpp5v8r7ja38i243.apps.googleusercontent.com"))
-		//     .build();
+				DBSetup.remoteDB();
 
-		// GoogleIdToken idToken = verifier.verify(androidIdToken);
-		// //access = idToken.
-		// if (idToken != null) {
-		//   Payload payload = idToken.getPayload();
+				//check if the Table for that UserName exists
+				Table tab = DBSetup.getTable(email);
+				if(tab == null) { //the Table doesn't Exist!!!
+					System.out.println("Creating a table for "+ email +"\'s events");
+					//make the table! :D
+					DBSetup.createTable(email);
+				}
 
-		//   // Print user identifier
-		//   userId = payload.getSubject();
-		//   System.out.println("User ID: " + userId);
-
-		//   // Get profile information from payload
-		//   email = payload.getEmail();
-		//   boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
-		//   String name = (String) payload.get("name");
-
-		// } else {
-		//   System.out.println("Invalid ID token.");
-		//   return new ResponseEntity<String>("Invalid ID token", httpHeaders, HttpStatus.FORBIDDEN);
-		// }
-
-		// jwtToken = Jwts.builder().setSubject(email).claim("roles", "user").setIssuedAt(new Date())
-  //           .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-
-  //       DBSetup.remoteDB();
-  //       Table tab = DBSetup.getTable(userId.replaceAll(" ", "_"));
-		// tab = DBSetup.getUsersTable();
-		// GetItemSpec spec = new GetItemSpec()
-		// 	   .withPrimaryKey("username", email);
-		// Item got = tab.getItem(spec);
-		// if(got == null)
-		// 	tab.putItem(new Item().withString("username", email).withString("calID","primary").withString("token", jwtToken));
-
-		// dbCreds.put(jwtToken, email);
-		// googleCreds.put(email, idToken);
+				tab = DBSetup.getUsersTable();
+				// GetItemSpec spec = new GetItemSpec()
+				// 	   .withPrimaryKey("username", dbCreds.get(accessToken));
+				// Item got = tab.getItem(spec);
+				// if(got == null)
+				tab.updateItem(new Item().withString("username", email).withString("calID","primary"));
+				tab.updateItem(new Item().withString("username", email).withString("token",accessToken));
 
 		return new ResponseEntity<String>(accessToken, httpHeaders, HttpStatus.ACCEPTED);
 	}
