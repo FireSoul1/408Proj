@@ -20,6 +20,7 @@ class CalendarPage extends React.Component {
 	
   constructor(props) {
     super(props)
+    console.log(props)
    
       this.calendarType = ''
       this.calendarExist =  false
@@ -51,18 +52,9 @@ class CalendarPage extends React.Component {
         <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)}> Google </Button>
         <p>     </p>
         <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
-         <p>     </p>
-        <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
-         <p>     </p>
-        <Button bsStyle='primary' className='testbtn' href = 'ImportPage'>test</Button>
-         <p>     </p>
-
-        <Button bsStyle='primary' className='testbtn' onClick={() => GoogleFunc()} >test2</Button>
-         <p>     </p>
-        <Button bsStyle='primary' className='testbtn' onClick={() => this.GoogleFunc()} >test3</Button>
+        
         </Jumbotron>
-         <p>     </p>
-         {this.renderDropdown()}
+        
       </div>
       )
    }
