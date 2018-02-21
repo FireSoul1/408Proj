@@ -36,3 +36,5 @@ nbdist/
 ### Jest ###
 client/__tests__/__snapshots__/
 *.snap
+
+client_secrets.json
