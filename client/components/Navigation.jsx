@@ -54,6 +54,9 @@ class Navigation extends React.Component {
             <MenuItem onClick={() => setActiveView(StressFormPage)}>
               Rate Events
             </MenuItem>
+            <MenuItem onClick={() => setActiveView(CalendarPage)}>
+              Calendar Page
+            </MenuItem>
             <MenuItem onClick={() => this.setState({ alertVisible: true })}>
               Advice
             </MenuItem>

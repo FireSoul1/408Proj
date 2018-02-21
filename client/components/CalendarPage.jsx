@@ -32,10 +32,10 @@ class CalendarPage extends React.Component {
      //this.calendarType = 'Google'
      setActiveView(ImportPage)
      getCalendars()
-     alert('alert');
-
+    alert('alert');
 
   }
+
 /*  toImportPage() {
     const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
 
@@ -78,19 +78,25 @@ class CalendarPage extends React.Component {
   }
   
 
-	 render() {
-	 	return (
+
+
+  
+  // buttons for importing google and outlook calendars
+
+   render() {
+    return (
       <div className='container'>
         <Jumbotron>
           <p>Choose type of calendar to import.</p>
-        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(UserPage)} > Google </Button>
+        <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)}> Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' onClick={() => this.props.getCalendars()}>Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
          <p>     </p>
         <Button bsStyle='primary' className='alertbtn' onClick={()=>{ alert('alert'); }}>alert</Button>
          <p>     </p>
         <Button bsStyle='primary' className='testbtn' href = 'ImportPage'>test</Button>
          <p>     </p>
+
         <Button bsStyle='primary' className='testbtn' onClick={() => GoogleFunc()} >test2</Button>
          <p>     </p>
         <Button bsStyle='primary' className='testbtn' onClick={() => this.GoogleFunc()} >test3</Button>
@@ -102,6 +108,14 @@ class CalendarPage extends React.Component {
 	 }
 	}
 	export default CalendarPage
-	
+
+        <Button bsStyle='primary' className='testbtn' onClick = {this.GoogleFunc()} >test2</Button>
+        </Jumbotron>
+      </div>
+  )
+   }
+  }
+  export default CalendarPage
+
 
 	
