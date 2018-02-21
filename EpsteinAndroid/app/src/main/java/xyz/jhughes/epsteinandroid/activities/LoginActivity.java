@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         signInButton.setSize(SignInButton.SIZE_STANDARD);
-        
+
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestServerAuthCode(getString(R.string.google_server_client_id))
                 .requestScopes(new Scope("https://www.googleapis.com/auth/calendar"))
