@@ -36,47 +36,6 @@ class CalendarPage extends React.Component {
 
   }
 
-/*  toImportPage() {
-    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
-
-  
-      return (
-               <Button bsStyle='primary' className='Calbtn' onClick={() => getCalendars()} > 
-               Calendar
-               </Button>
-
-      )
-    
-  }*/
- renderDropdown() {
-    const { advice, authorized, getCalendars, getCalendarType, getLogout, setActiveView } = this.props
-
-    if (authorized) {
-      return (
-        <Nav pullRight>
-          <NavDropdown title='Tools' id='basic-nav-dropdown'>
-             <MenuItem onClick={() =>  setActiveView(CalendarPage)}>
-              Choose Calendar Type
-            </MenuItem>
-            <MenuItem onClick={() => getCalendars()}>
-              Import Calendar
-            </MenuItem>
-            <MenuItem onClick={() => setActiveView(StressFormPage)}>
-              Rate Events
-            </MenuItem>
-            <MenuItem onClick={() => this.setState({ alertVisible: true })}>
-              Advice
-            </MenuItem>
-            <MenuItem divider/>
-            <MenuItem onClick={() => getLogout()}>
-              Logout
-            </MenuItem>
-          </NavDropdown>
-        </Nav>
-      )
-    }
-  }
-  
 
 
 
@@ -104,15 +63,7 @@ class CalendarPage extends React.Component {
          <p>     </p>
          {this.renderDropdown()}
       </div>
-  )
-	 }
-	}
-	export default CalendarPage
-
-        <Button bsStyle='primary' className='testbtn' onClick = {this.GoogleFunc()} >test2</Button>
-        </Jumbotron>
-      </div>
-  )
+      )
    }
   }
   export default CalendarPage
