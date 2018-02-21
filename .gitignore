@@ -4,6 +4,7 @@ src/main/resources/static/*
 *log
 web/
 client/mock/
+.directory
 package-lock.json
 application.yml
 target/
@@ -37,3 +38,6 @@ nbdist/
 ### Jest ###
 client/__tests__/__snapshots__/
 *.snap
+
+client_secrets.json
+application.yml
