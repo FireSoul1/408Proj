@@ -15,6 +15,7 @@ import SweetAlert from 'react-bootstrap-sweetalert'
 import ImportPage from './ImportPage'
 import StressFormPage from './StressFormPage'
 import UserPage from './UserPage'
+import Navigation from './Navigation'
 
 class CalendarPage extends React.Component {
 	
@@ -36,11 +37,6 @@ class CalendarPage extends React.Component {
     alert('alert');
 
   }
-
-
-
-
-
   
   // buttons for importing google and outlook calendars
 
@@ -51,7 +47,7 @@ class CalendarPage extends React.Component {
           <p>Choose type of calendar to import.</p>
         <Button bsStyle='primary' className='Googlebtn' onClick={() => this.props.setActiveView(ImportPage)}> Google </Button>
         <p>     </p>
-        <Button bsStyle='primary' className='Outlookbtn' >Outlook </Button>
+        <Button bsStyle='primary' className='Outlookbtn' > Outlook </Button>
         
         </Jumbotron>
         
