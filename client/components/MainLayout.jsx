@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Navigation from './Navigation'
-import CalendarPage from './CalendarPage'
+
 
 class MainLayout extends React.Component {
   render() {
